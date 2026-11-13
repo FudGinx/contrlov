@@ -1,0 +1,142 @@
+{
+  "games": 450,
+  "physicalCardConservationCheckedEveryAction": true,
+  "usesRealBotChoices": true,
+  "results": [
+    {
+      "character": "apiarist",
+      "players": 2,
+      "games": 30,
+      "meanRounds": 8.433333333333334,
+      "hostPerkUses": 54,
+      "allPerkUses": 55,
+      "maxHand": 22
+    },
+    {
+      "character": "apiarist",
+      "players": 4,
+      "games": 30,
+      "meanRounds": 7.333333333333333,
+      "hostPerkUses": 32,
+      "allPerkUses": 43,
+      "maxHand": 18
+    },
+    {
+      "character": "apiarist",
+      "players": 6,
+      "games": 30,
+      "meanRounds": 8.233333333333333,
+      "hostPerkUses": 26,
+      "allPerkUses": 46,
+      "maxHand": 13
+    },
+    {
+      "character": "quietbrewer",
+      "players": 2,
+      "games": 30,
+      "meanRounds": 7.833333333333333,
+      "hostPerkUses": 28,
+      "allPerkUses": 28,
+      "maxHand": 25
+    },
+    {
+      "character": "quietbrewer",
+      "players": 4,
+      "games": 30,
+      "meanRounds": 7.666666666666667,
+      "hostPerkUses": 29,
+      "allPerkUses": 42,
+      "maxHand": 15
+    },
+    {
+      "character": "quietbrewer",
+      "players": 6,
+      "games": 30,
+      "meanRounds": 8.3,
+      "hostPerkUses": 28,
+      "allPerkUses": 53,
+      "maxHand": 13
+    },
+    {
+      "character": "barterer",
+      "players": 2,
+      "games": 30,
+      "meanRounds": 8.433333333333334,
+      "hostPerkUses": 18,
+      "allPerkUses": 22,
+      "maxHand": 21
+    },
+    {
+      "character": "barterer",
+      "players": 4,
+      "games": 30,
+      "meanRounds": 7.833333333333333,
+      "hostPerkUses": 18,
+      "allPerkUses": 32,
+      "maxHand": 15
+    },
+    {
+      "character": "barterer",
+      "players": 6,
+      "games": 30,
+      "meanRounds": 8.366666666666667,
+      "hostPerkUses": 19,
+      "allPerkUses": 41,
+      "maxHand": 15
+    },
+    {
+      "character": "mosskeeper",
+      "players": 2,
+      "games": 30,
+      "meanRounds": 8.533333333333333,
+      "hostPerkUses": 9,
+      "allPerkUses": 13,
+      "maxHand": 23
+    },
+    {
+      "character": "mosskeeper",
+      "players": 4,
+      "games": 30,
+      "meanRounds": 7.8,
+      "hostPerkUses": 18,
+      "allPerkUses": 34,
+      "maxHand": 17
+    },
+    {
+      "character": "mosskeeper",
+      "players": 6,
+      "games": 30,
+      "meanRounds": 8.3,
+      "hostPerkUses": 11,
+      "allPerkUses": 35,
+      "maxHand": 12
+    },
+    {
+      "character": "travnytsia",
+      "players": 2,
+      "games": 30,
+      "meanRounds": 8.4,
+      "hostPerkUses": 0,
+      "allPerkUses": 2,
+      "maxHand": 23
+    },
+    {
+      "character": "travnytsia",
+      "players": 4,
+      "games": 30,
+      "meanRounds": 7.9,
+      "hostPerkUses": 0,
+      "allPerkUses": 20,
+      "maxHand": 16
+    },
+    {
+      "character": "travnytsia",
+      "players": 6,
+      "games": 30,
+      "meanRounds": 8.166666666666666,
+      "hostPerkUses": 0,
+      "allPerkUses": 32,
+      "maxHand": 14
+    }
+  ]
+}
