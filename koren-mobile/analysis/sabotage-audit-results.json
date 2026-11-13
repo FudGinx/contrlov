@@ -1,0 +1,201 @@
+{
+  "games": 1800,
+  "notes": "Automated existing bots; cap per ingredient, not entire potion. No trading or active distillation. Raw negative is not actual lost score. With automatic Znakhar and rotating response priority.",
+  "out": [
+    {
+      "players": 2,
+      "cap": "none",
+      "games": 200,
+      "meanRounds": 8.15,
+      "windows": 3254,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 1062,
+        "1": 2192
+      },
+      "completePotions": 1047,
+      "zeroPotions": 1,
+      "zeroPotionShare": 0.0009551098376313276,
+      "attacks": 2192,
+      "rawNegativePerAttack": 2.331660583941606,
+      "meanEndTurnHand": 9.715225845049357,
+      "maxEndTurnHand": 24
+    },
+    {
+      "players": 2,
+      "cap": 4,
+      "games": 200,
+      "meanRounds": 8.15,
+      "windows": 3254,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 1062,
+        "1": 2192
+      },
+      "completePotions": 1047,
+      "zeroPotions": 1,
+      "zeroPotionShare": 0.0009551098376313276,
+      "attacks": 2192,
+      "rawNegativePerAttack": 2.331660583941606,
+      "meanEndTurnHand": 9.715225845049357,
+      "maxEndTurnHand": 24
+    },
+    {
+      "players": 2,
+      "cap": 3,
+      "games": 200,
+      "meanRounds": 8.15,
+      "windows": 3254,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 1062,
+        "1": 2192
+      },
+      "completePotions": 1047,
+      "zeroPotions": 1,
+      "zeroPotionShare": 0.0009551098376313276,
+      "attacks": 2192,
+      "rawNegativePerAttack": 2.331660583941606,
+      "meanEndTurnHand": 9.715225845049357,
+      "maxEndTurnHand": 24
+    },
+    {
+      "players": 4,
+      "cap": "none",
+      "games": 200,
+      "meanRounds": 7.9,
+      "windows": 6207,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 870,
+        "1": 2288,
+        "2": 2258,
+        "3": 791
+      },
+      "completePotions": 1778,
+      "zeroPotions": 142,
+      "zeroPotionShare": 0.0798650168728909,
+      "attacks": 9177,
+      "rawNegativePerAttack": 2.1840470742072573,
+      "meanEndTurnHand": 6.25019046167911,
+      "maxEndTurnHand": 16
+    },
+    {
+      "players": 4,
+      "cap": 4,
+      "games": 200,
+      "meanRounds": 7.9,
+      "windows": 6207,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 870,
+        "1": 2288,
+        "2": 2258,
+        "3": 791
+      },
+      "completePotions": 1778,
+      "zeroPotions": 142,
+      "zeroPotionShare": 0.0798650168728909,
+      "attacks": 9177,
+      "rawNegativePerAttack": 2.1840470742072573,
+      "meanEndTurnHand": 6.25019046167911,
+      "maxEndTurnHand": 16
+    },
+    {
+      "players": 4,
+      "cap": 3,
+      "games": 200,
+      "meanRounds": 7.9,
+      "windows": 6207,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 870,
+        "1": 2288,
+        "2": 2258,
+        "3": 791
+      },
+      "completePotions": 1778,
+      "zeroPotions": 142,
+      "zeroPotionShare": 0.0798650168728909,
+      "attacks": 9177,
+      "rawNegativePerAttack": 2.1840470742072573,
+      "meanEndTurnHand": 6.25019046167911,
+      "maxEndTurnHand": 16
+    },
+    {
+      "players": 6,
+      "cap": "none",
+      "games": 200,
+      "meanRounds": 7.88,
+      "windows": 9061,
+      "over3Share": 0.09193245778611632,
+      "over4Share": 0.01015340470146783,
+      "distribution": {
+        "0": 1200,
+        "1": 2469,
+        "2": 2719,
+        "3": 1840,
+        "4": 741,
+        "5": 92
+      },
+      "completePotions": 2332,
+      "zeroPotions": 417,
+      "zeroPotionShare": 0.17881646655231562,
+      "attacks": 16851,
+      "rawNegativePerAttack": 2.124206278559136,
+      "meanEndTurnHand": 4.58189000303859,
+      "maxEndTurnHand": 15
+    },
+    {
+      "players": 6,
+      "cap": 4,
+      "games": 200,
+      "meanRounds": 7.915,
+      "windows": 9092,
+      "over3Share": 0.09018917729872415,
+      "over4Share": 0,
+      "distribution": {
+        "0": 1189,
+        "1": 2485,
+        "2": 2709,
+        "3": 1889,
+        "4": 820
+      },
+      "completePotions": 2343,
+      "zeroPotions": 425,
+      "zeroPotionShare": 0.18139137857447715,
+      "attacks": 16850,
+      "rawNegativePerAttack": 2.1220178041543027,
+      "meanEndTurnHand": 4.593545133635905,
+      "maxEndTurnHand": 15
+    },
+    {
+      "players": 6,
+      "cap": 3,
+      "games": 200,
+      "meanRounds": 7.83,
+      "windows": 9054,
+      "over3Share": 0,
+      "over4Share": 0,
+      "distribution": {
+        "0": 1137,
+        "1": 2402,
+        "2": 2631,
+        "3": 2884
+      },
+      "completePotions": 2359,
+      "zeroPotions": 348,
+      "zeroPotionShare": 0.14752013565069944,
+      "attacks": 16316,
+      "rawNegativePerAttack": 2.1268080411865653,
+      "meanEndTurnHand": 4.705383593829809,
+      "maxEndTurnHand": 12
+    }
+  ]
+}
