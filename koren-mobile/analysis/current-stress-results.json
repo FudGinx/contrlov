@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-13",
+  "games": 300,
+  "cardConservationCheckedAfterEveryAction": true,
+  "results": [
+    {
+      "players": 2,
+      "games": 100,
+      "meanRounds": 8.24,
+      "meanActions": 120.83,
+      "choices": 366,
+      "whiteReturns": 44
+    },
+    {
+      "players": 4,
+      "games": 100,
+      "meanRounds": 7.74,
+      "meanActions": 289.07,
+      "choices": 588,
+      "whiteReturns": 119
+    },
+    {
+      "players": 6,
+      "games": 100,
+      "meanRounds": 8.12,
+      "meanActions": 536.64,
+      "choices": 818,
+      "whiteReturns": 212
+    }
+  ]
+}
