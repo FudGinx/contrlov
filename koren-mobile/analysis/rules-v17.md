@@ -24,7 +24,7 @@ After sabotage, one finish-turn request resolves a completed ordinary potion and
 
 Validation:
 
-- Build and all 74 automated tests pass, including server privacy/concurrency, offline start and meaningful new-rule regressions.
+- Build and all 75 automated tests pass, including server privacy/concurrency, offline start and meaningful new-rule regressions. Mavka's extra addition stacks with a printed continuation even when the next ingredient already matches its recipe position.
 - 285 bot games across all 19 identities and 2/4/6 players finish; every post-deal action conserves all 80 physical cards, with at most three attacks per ingredient. Latest results: folklore-stress.json. This is functional testing, not human balance evidence.
 - Chrome mouse (844×390) and emulated touch (667×250) exercise actual frontend action requests against engine fixtures: one confirmation, contextual chaos completion, witch attack, harvest, capture, Domovyk, insect replacement, zeroing, slot reorder/pair, potion swap and extension. No page errors.
 - Real iPhone Safari has not been tested. A new party is required for the new deck, recipe set and roster.
