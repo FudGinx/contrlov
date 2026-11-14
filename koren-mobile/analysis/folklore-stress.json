@@ -7,98 +7,98 @@
       "character": "mavka",
       "players": 2,
       "games": 5,
-      "meanRounds": 7.4,
+      "meanRounds": 8.6,
       "activePerkUses": 0
     },
     {
       "character": "mavka",
       "players": 4,
       "games": 5,
-      "meanRounds": 9.2,
+      "meanRounds": 9,
       "activePerkUses": 0
     },
     {
       "character": "mavka",
       "players": 6,
+      "games": 5,
+      "meanRounds": 7.6,
+      "activePerkUses": 0
+    },
+    {
+      "character": "znakhar",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 8.8,
+      "activePerkUses": 0
+    },
+    {
+      "character": "znakhar",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 9,
+      "activePerkUses": 0
+    },
+    {
+      "character": "znakhar",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 10.2,
+      "activePerkUses": 0
+    },
+    {
+      "character": "vidma",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 9.6,
+      "activePerkUses": 0
+    },
+    {
+      "character": "vidma",
+      "players": 4,
       "games": 5,
       "meanRounds": 8,
       "activePerkUses": 0
     },
     {
-      "character": "znakhar",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 8.4,
-      "activePerkUses": 0
-    },
-    {
-      "character": "znakhar",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 0
-    },
-    {
-      "character": "znakhar",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 8.2,
-      "activePerkUses": 0
-    },
-    {
-      "character": "vidma",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 9.4,
-      "activePerkUses": 0
-    },
-    {
-      "character": "vidma",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 0
-    },
-    {
       "character": "vidma",
       "players": 6,
+      "games": 5,
+      "meanRounds": 10.4,
+      "activePerkUses": 0
+    },
+    {
+      "character": "chumak",
+      "players": 2,
       "games": 5,
       "meanRounds": 8.8,
       "activePerkUses": 0
     },
     {
       "character": "chumak",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 7.4,
-      "activePerkUses": 0
-    },
-    {
-      "character": "chumak",
       "players": 4,
       "games": 5,
-      "meanRounds": 7.6,
+      "meanRounds": 9,
       "activePerkUses": 0
     },
     {
       "character": "chumak",
       "players": 6,
       "games": 5,
-      "meanRounds": 9.8,
+      "meanRounds": 8.6,
       "activePerkUses": 0
     },
     {
       "character": "vorozhka",
       "players": 2,
       "games": 5,
-      "meanRounds": 9.2,
-      "activePerkUses": 12
+      "meanRounds": 9.6,
+      "activePerkUses": 9
     },
     {
       "character": "vorozhka",
       "players": 4,
       "games": 5,
-      "meanRounds": 9.6,
+      "meanRounds": 9.2,
       "activePerkUses": 17
     },
     {
@@ -106,244 +106,244 @@
       "players": 6,
       "games": 5,
       "meanRounds": 9.2,
-      "activePerkUses": 13
+      "activePerkUses": 15
     },
     {
       "character": "travnytsia",
       "players": 2,
       "games": 5,
-      "meanRounds": 8.2,
-      "activePerkUses": 5
+      "meanRounds": 8.6,
+      "activePerkUses": 6
     },
     {
       "character": "travnytsia",
       "players": 4,
       "games": 5,
-      "meanRounds": 8.4,
-      "activePerkUses": 7
+      "meanRounds": 9.6,
+      "activePerkUses": 5
     },
     {
       "character": "travnytsia",
       "players": 6,
       "games": 5,
-      "meanRounds": 9.6,
-      "activePerkUses": 6
+      "meanRounds": 11,
+      "activePerkUses": 4
     },
     {
       "character": "molfar",
       "players": 2,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 9.4,
       "activePerkUses": 11
     },
     {
       "character": "molfar",
       "players": 4,
       "games": 5,
-      "meanRounds": 8,
+      "meanRounds": 8.6,
       "activePerkUses": 9
     },
     {
       "character": "molfar",
       "players": 6,
       "games": 5,
-      "meanRounds": 9.2,
-      "activePerkUses": 16
-    },
-    {
-      "character": "dyer",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 9.2,
-      "activePerkUses": 0
-    },
-    {
-      "character": "dyer",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 0
-    },
-    {
-      "character": "dyer",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 0
-    },
-    {
-      "character": "distiller",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 9.2,
-      "activePerkUses": 0
-    },
-    {
-      "character": "distiller",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 8.2,
-      "activePerkUses": 0
-    },
-    {
-      "character": "distiller",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 0
-    },
-    {
-      "character": "apiarist",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 8.2,
-      "activePerkUses": 6
-    },
-    {
-      "character": "apiarist",
-      "players": 4,
-      "games": 5,
       "meanRounds": 10,
-      "activePerkUses": 9
-    },
-    {
-      "character": "apiarist",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 7
-    },
-    {
-      "character": "quietbrewer",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 8.4,
-      "activePerkUses": 4
-    },
-    {
-      "character": "quietbrewer",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 7.2,
-      "activePerkUses": 3
-    },
-    {
-      "character": "quietbrewer",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 10.4,
-      "activePerkUses": 4
-    },
-    {
-      "character": "barterer",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 7.8,
-      "activePerkUses": 0
-    },
-    {
-      "character": "barterer",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 9.6,
       "activePerkUses": 13
     },
     {
-      "character": "barterer",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 8.2,
-      "activePerkUses": 5
-    },
-    {
-      "character": "mosskeeper",
+      "character": "dyer",
       "players": 2,
-      "games": 5,
-      "meanRounds": 7.2,
-      "activePerkUses": 0
-    },
-    {
-      "character": "mosskeeper",
-      "players": 4,
       "games": 5,
       "meanRounds": 8.4,
       "activePerkUses": 0
     },
     {
-      "character": "mosskeeper",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 8.4,
-      "activePerkUses": 0
-    },
-    {
-      "character": "kharakternyk",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 9.2,
-      "activePerkUses": 13
-    },
-    {
-      "character": "kharakternyk",
-      "players": 4,
-      "games": 5,
-      "meanRounds": 9,
-      "activePerkUses": 10
-    },
-    {
-      "character": "kharakternyk",
-      "players": 6,
-      "games": 5,
-      "meanRounds": 11.8,
-      "activePerkUses": 16
-    },
-    {
-      "character": "perelesnyk",
-      "players": 2,
-      "games": 5,
-      "meanRounds": 8.4,
-      "activePerkUses": 1
-    },
-    {
-      "character": "perelesnyk",
+      "character": "dyer",
       "players": 4,
       "games": 5,
       "meanRounds": 9.4,
       "activePerkUses": 0
     },
     {
+      "character": "dyer",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 9.2,
+      "activePerkUses": 0
+    },
+    {
+      "character": "distiller",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 8.4,
+      "activePerkUses": 0
+    },
+    {
+      "character": "distiller",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 8.4,
+      "activePerkUses": 0
+    },
+    {
+      "character": "distiller",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 7.8,
+      "activePerkUses": 0
+    },
+    {
+      "character": "apiarist",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 9.4,
+      "activePerkUses": 2
+    },
+    {
+      "character": "apiarist",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 9.2,
+      "activePerkUses": 3
+    },
+    {
+      "character": "apiarist",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 9.4,
+      "activePerkUses": 4
+    },
+    {
+      "character": "quietbrewer",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 7.4,
+      "activePerkUses": 3
+    },
+    {
+      "character": "quietbrewer",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 7.8,
+      "activePerkUses": 5
+    },
+    {
+      "character": "quietbrewer",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 8,
+      "activePerkUses": 5
+    },
+    {
+      "character": "barterer",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 8.6,
+      "activePerkUses": 1
+    },
+    {
+      "character": "barterer",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 9,
+      "activePerkUses": 6
+    },
+    {
+      "character": "barterer",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 10,
+      "activePerkUses": 10
+    },
+    {
+      "character": "mosskeeper",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 8.4,
+      "activePerkUses": 0
+    },
+    {
+      "character": "mosskeeper",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 6,
+      "activePerkUses": 0
+    },
+    {
+      "character": "mosskeeper",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 8,
+      "activePerkUses": 0
+    },
+    {
+      "character": "kharakternyk",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 8.4,
+      "activePerkUses": 19
+    },
+    {
+      "character": "kharakternyk",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 9.6,
+      "activePerkUses": 32
+    },
+    {
+      "character": "kharakternyk",
+      "players": 6,
+      "games": 5,
+      "meanRounds": 10,
+      "activePerkUses": 36
+    },
+    {
+      "character": "perelesnyk",
+      "players": 2,
+      "games": 5,
+      "meanRounds": 9.8,
+      "activePerkUses": 0
+    },
+    {
+      "character": "perelesnyk",
+      "players": 4,
+      "games": 5,
+      "meanRounds": 9.6,
+      "activePerkUses": 0
+    },
+    {
       "character": "perelesnyk",
       "players": 6,
       "games": 5,
-      "meanRounds": 8.6,
+      "meanRounds": 10.6,
       "activePerkUses": 3
     },
     {
       "character": "blud",
       "players": 2,
       "games": 5,
-      "meanRounds": 8.4,
+      "meanRounds": 10.2,
       "activePerkUses": 2
     },
     {
       "character": "blud",
       "players": 4,
       "games": 5,
-      "meanRounds": 9.6,
-      "activePerkUses": 10
+      "meanRounds": 11,
+      "activePerkUses": 17
     },
     {
       "character": "blud",
       "players": 6,
       "games": 5,
-      "meanRounds": 11.6,
-      "activePerkUses": 23
+      "meanRounds": 9.2,
+      "activePerkUses": 19
     },
     {
       "character": "chugaister",
       "players": 2,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 9.2,
       "activePerkUses": 0
     },
     {
@@ -357,42 +357,42 @@
       "character": "chugaister",
       "players": 6,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 10.6,
       "activePerkUses": 0
     },
     {
       "character": "vodianyk",
       "players": 2,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 9.2,
       "activePerkUses": 0
     },
     {
       "character": "vodianyk",
       "players": 4,
       "games": 5,
-      "meanRounds": 7.8,
+      "meanRounds": 9.4,
       "activePerkUses": 0
     },
     {
       "character": "vodianyk",
       "players": 6,
       "games": 5,
-      "meanRounds": 8.2,
+      "meanRounds": 8.8,
       "activePerkUses": 0
     },
     {
       "character": "domovyk",
       "players": 2,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 8.8,
       "activePerkUses": 0
     },
     {
       "character": "domovyk",
       "players": 4,
       "games": 5,
-      "meanRounds": 9,
+      "meanRounds": 7.6,
       "activePerkUses": 0
     },
     {
