@@ -1,3 +1,4 @@
+import './check-table-v20.mjs';
 import {readFileSync,writeFileSync,mkdirSync,copyFileSync,existsSync} from 'node:fs';
 import {COLORS,CHARACTERS} from '../src/engine.js';
 const root=new URL('../',import.meta.url);const read=p=>readFileSync(new URL(p,root),'utf8');

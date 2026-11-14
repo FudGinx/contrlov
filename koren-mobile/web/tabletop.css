@@ -42,3 +42,26 @@
 .choose-screen{display:flex;flex-direction:column;height:var(--app-viewport-h,100dvh);min-height:0;padding-bottom:env(safe-area-inset-bottom,0px);overflow:hidden;box-sizing:border-box}.choose-screen>.topbar,.choose-screen>.choice-title,.choose-screen>.draft-seats{flex:0 0 auto}.choose-screen>.character-choices{flex:1 1 0;min-height:0;height:auto;overflow-y:auto;overflow-x:hidden;align-content:start;overscroll-behavior-y:contain;touch-action:pan-y;padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}.choose-screen .character-choice{touch-action:pan-y}@media(max-height:310px){.choose-screen>.topbar{height:32px;min-height:32px}.choose-screen .topbar .small{min-height:28px;height:28px;padding:3px 7px;font-size:12px}.choose-screen>.choice-title{padding:4px 12px;min-height:28px}.choose-screen .choice-title h2{font-size:17px;line-height:20px}.choose-screen .choice-title>span{font-size:11px}.choose-screen>.draft-seats{margin:0 10px 4px}.choose-screen .draft-seat{min-width:100px;padding:1px 4px;font-size:10px}.choose-screen .draft-seat small{font-size:9px}.choose-screen .draft-seat .table-portrait,.choose-screen .empty-portrait{width:19px;height:22px}.choose-screen .character-choices{gap:8px;padding-left:10px;padding-right:32px}.choose-screen .character-choice{min-height:112px;padding:8px;gap:8px}.choose-screen .character-choice>.table-portrait{width:43px;height:56px}.choose-screen .character-choice h3{font-size:17px;line-height:19px;margin-bottom:3px}.choose-screen .character-choice div>b{font-size:11px;line-height:13px}.choose-screen .character-choice p{font-size:12px;line-height:15px;margin-top:3px}}
 .choose-screen>.draft-seats{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;margin-left:10px;margin-right:10px}.choose-screen .draft-seat{flex:0 0 auto}.choose-screen>.character-choices{grid-auto-rows:max-content;padding-bottom:8px}.choose-screen .character-choice{height:max-content;align-self:start}.choose-screen .character-choice>div{min-width:0}.choose-screen .character-choice p{overflow-wrap:anywhere}
 .tabletop .table-card>strong{height:calc(var(--face-font,13px)*2.3);min-height:calc(var(--face-font,13px)*2.3);max-height:calc(var(--face-font,13px)*2.3);flex:0 0 calc(var(--face-font,13px)*2.3)}@media(max-width:1100px){.choose-screen>.character-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* v20: legible orders, explicit stack inspection and opaque hand availability. */
+.tabletop .table-hand .table-card.cannot-play{filter:brightness(.78) saturate(.85);opacity:1}
+.tabletop .table-hand .table-card{transition:filter .18s ease}
+.brew-stack-count{position:absolute;left:1px;top:-3px;z-index:15;border:1px solid #ddc47b;border-radius:4px;padding:2px 4px;background:#1b382bf5;color:#ffe4a0;font-size:11px;font-weight:850;line-height:14px;pointer-events:none;white-space:nowrap}
+.tabletop .stack-fan-open .fan-tab{top:auto;bottom:2px;left:3px;right:3px;width:auto;max-width:none;background:#183c2ff5;font-size:10px}
+.tabletop .stack-fan-open .fan-tab b,.tabletop .stack-fan-open .fan-tab small{display:inline;font-size:10px;line-height:13px}
+.tabletop .stack-fan-open .fan-tab small{margin-left:4px}
+.tabletop .world-station .recipe-position{height:auto;align-self:start}
+.tabletop .world-station .recipe-card:not(.chaos-recipe){height:auto;min-height:var(--card-h,138px);max-height:none;display:flex;flex-direction:column;padding:5px 7px;overflow:visible}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) .recipe-card-heading{height:20px;flex:0 0 20px}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) h3{font-size:15px;line-height:17px;min-height:0;margin:3px 0 5px;flex:0 0 auto;overflow-wrap:anywhere}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:auto;gap:4px;flex:0 0 auto}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) li{min-height:24px;gap:3px;min-width:0}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) li>span:last-child{min-width:0}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) li b{font-size:12px;line-height:14px;overflow-wrap:anywhere}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) .requirement-icon{width:22px;height:22px;font-size:18px}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) li small{font-size:9px;line-height:10px}
+.tabletop .world-station .recipe-card:not(.chaos-recipe) .shortcut-label{flex:0 0 auto}
+.tabletop .orders-station .recipe-market{align-items:flex-start;min-height:0;overflow-y:auto}
+@media(max-height:310px){.brew-stack-count{font-size:9px;line-height:11px;padding:1px 3px}.tabletop .world-station .recipe-card:not(.chaos-recipe){padding:3px 5px}.tabletop .world-station .recipe-card:not(.chaos-recipe) h3{font-size:13px;line-height:15px;margin:2px 0 3px}.tabletop .world-station .recipe-card:not(.chaos-recipe) ol{gap:3px}.tabletop .world-station .recipe-card:not(.chaos-recipe) li{min-height:21px}.tabletop .world-station .recipe-card:not(.chaos-recipe) .requirement-icon{width:19px;height:19px;font-size:16px}.tabletop .world-station .recipe-card:not(.chaos-recipe) li b{font-size:11px;line-height:12px}}
+@media(prefers-reduced-motion:reduce){.tabletop .table-hand .table-card{transition:none}}

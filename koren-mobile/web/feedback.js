@@ -34,8 +34,8 @@ function refreshWhiteSpread(g){const p=me(),c=p.hand.find(c=>c.id===g.source?.ca
  unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>№${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');if(!animationReduced())for(const [i,card]of [...unit.querySelectorAll('.fan-card')].entries())card.animate([{transform:'translateX('+(-i*step)+'px)'},{transform:'translateX(0)'}],{duration:180,easing:'ease-out'});markLegalTargets(g.source);panInlineFan(g);
 }
 
-function updateTurnFeedback(){restoreSettledCardVisibility();const root=$('.tabletop');if(!root||!state)return;const canRespond=myResponse(),canMove=state.effectChoice?state.effectChoice.owner===state.me:isMine()&&['main','chain','post','defense'].includes(state.phase);root.dataset.input=canRespond?'response':canMove?'turn':'waiting';root.dataset.goal=state.targetPotions||3;const hint=document.querySelector(".table-status>span");if(hint){const b=current()?.brew.find(b=>b.id===state.turnData.last);hint.textContent=state.phase==="reaction"?"Саботаж "+(b?.attacks.length||0)+"/3 · "+(color(b?.card.color)?.name||""):state.phase==="chain"?"Додаткових додавань: "+state.turnData.allowance:state.phase==="defense"?"Оберіг → саботаж · Дистиляція → інгредієнт":canMove?"Доступні карти й цілі підсвічені":"Чекаємо · можна пропонувати обмін";}for(const station of document.querySelectorAll('[data-station]'))station.classList.toggle('active-seat',station.dataset.station==='brew:'+current()?.id);if(typeof document.createElement==='function')markLegalTargets(dragging?.active?dragging.source:tableSelection);}
-const renderBeforeFeedback=render;render=function(){renderBeforeFeedback();updateTurnFeedback();};
+function updateTurnFeedback(){restoreSettledCardVisibility();const root=$('.tabletop');if(!root||!state)return;const canRespond=myResponse(),canMove=state.effectChoice?state.effectChoice.owner===state.me:isMine()&&['main','chain','post','defense'].includes(state.phase);root.dataset.input=canRespond?'response':canMove?'turn':'waiting';root.dataset.goal=state.targetPotions||3;for(const el of document.querySelectorAll('.table-hand [data-card-id]')){const c=me().hand.find(c=>c.id===el.dataset.cardId);if(c){const available=playable(c);el.classList.toggle('can-play',available);el.classList.toggle('cannot-play',!!(isMine()&&canMove&&!state.effectChoice&&!available));}}const hint=document.querySelector(".table-status>span");if(hint){const b=current()?.brew.find(b=>b.id===state.turnData.last);hint.textContent=state.phase==="reaction"?"Саботаж "+(b?.attacks.length||0)+"/3 · "+(color(b?.card.color)?.name||""):state.phase==="chain"?"Додаткових додавань: "+state.turnData.allowance:state.phase==="defense"?"Оберіг → саботаж · Дистиляція → інгредієнт":canMove?"Доступні карти й цілі підсвічені":"Чекаємо · можна пропонувати обмін";}for(const station of document.querySelectorAll('[data-station]'))station.classList.toggle('active-seat',station.dataset.station==='brew:'+current()?.id);if(typeof document.createElement==='function')markLegalTargets(dragging?.active?dragging.source:tableSelection);}
+const renderBeforeFeedback=render;render=function(){closeReadingStack();renderBeforeFeedback();updateTurnFeedback();};
 document.addEventListener('change',e=>{if(e.target.matches?.('[data-goal-setting]'))act({type:'settings',targetPotions:Number(e.target.value)});});
 const animationReduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function finishAnimation(el,frames,options){const animation=el.animate(frames,options);animation.finished.catch(()=>{}).finally(()=>el.remove());}
@@ -62,3 +62,39 @@ function ingredientBurst(card,point){if(!point)return;const type=card.color,hex=
 function perkToast(event){const target=document.querySelector(`[data-zone="avatar:${event.owner}"]`)||document.querySelector(`[data-zone="fame:${event.owner}"]`);if(!target)return;const rect=target.getBoundingClientRect(),label=document.createElement('div');label.className='perk-notice';label.textContent='✦ '+event.text;Object.assign(label.style,{left:Math.max(5,Math.min(rect.x,window.innerWidth-245))+'px',top:(rect.bottom+4)+'px'});document.body.append(label);if(animationReduced())setTimeout(()=>label.remove(),1900);else finishAnimation(label,[{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'translateY(0)',offset:.1},{opacity:1,offset:.8},{opacity:0,transform:'translateY(6px)'}],{duration:2300,fill:'forwards'});target.classList.add('perk-fired');setTimeout(()=>target.classList.remove('perk-fired'),1400);}
 const motionBeforeFeedback=tableMotion;
 tableMotion=function(events,oldRects){motionBeforeFeedback(events.filter(e=>!['character','recipe','recipePlace','perk'].includes(e.type)),oldRects);if(typeof document.createElement!=='function')return;const now=tableRects();for(const event of events){if(event.type==='character'){selectionFlight(tablePortrait({character:event.character}),oldRects.get('character:'+event.character),now.get('avatar:'+event.owner),'character');}else if(['recipe','recipePlace'].includes(event.type)&&event.recipe){const actual=now.get('recipe:'+event.recipe.id),destination=visibleRect(actual)?actual:now.get('avatar:'+event.owner);selectionFlight(recipeCard(event.recipe),oldRects.get('recipe:'+event.recipe.id)||oldRects.get('hand:'+event.owner)||oldRects.get('avatar:'+event.owner),destination,'recipe');}else if(event.type==='perk')perkToast(event);else if(event.type==='move'&&(event.to.startsWith('brew:')||event.to.startsWith('attack:'))&&event.card.type==='ingredient'){scheduleIngredientArrival(event);}else if(event.type==='move'&&event.to==='discard'&&['cancel','distill'].includes(event.card.type)){const owner=event.from.startsWith('hand:')?event.from.slice(5):state.me,target=document.querySelector(`[data-zone="brew:${owner}"]`);if(target&&!animationReduced()){target.classList.add(event.card.type==='cancel'?'ward-flash':'distill-flash');setTimeout(()=>target.classList.remove('ward-flash','distill-flash'),1100);}}}};
+
+
+/* Inspect overlapping cards in place; the brew itself always keeps play order. */
+let readingStack=null;
+function stackContents(unit){
+ const p=state?.players.find(p=>unit.closest('[data-station]')?.dataset.station==='brew:'+p.id);
+ if(!p)return null;
+ const ids=unit.dataset.brewIds.split(','),cards=[];
+ for(const b of p.brew.filter(b=>ids.includes(b.id))){
+  const slot=b.slot===null?'Понад':String(b.slot+1);
+  cards.push({card:b.card,target:b.id,drop:'ingredient',label:slot,sub:'Складник'});
+  b.attacks.forEach((a,i)=>cards.push({card:a.card,target:a.id,drop:'attack',negative:true,cancelled:a.cancelled,label:slot+' · '+(i+1),sub:a.cancelled?'Скасовано':a.from}));
+ }
+ return {p,cards};
+}
+function closeReadingStack(){if(!readingStack)return;closeWhiteSpread(readingStack);readingStack=null;}
+function openReadingStack(unit,touch=false){
+ if(!unit||readingStack?.fanUnit===unit)return false;
+ closeReadingStack();
+ const contents=stackContents(unit);if(!contents||contents.cards.length<2)return false;
+ const {p,cards}=contents,grid=unit.parentElement,width=parseFloat(getComputedStyle(unit).getPropertyValue('--card-w'))||106,step=width+8,fanWidth=width+(cards.length-1)*step,col=Math.max(0,(parseInt(unit.style.gridColumn)||1)-1),cols=Math.max(col+1,parseInt(getComputedStyle(grid).getPropertyValue('--brew-cols'))||3);
+ const g={fanUnit:unit,fanGrid:grid,fanMarkup:unit.innerHTML,fanOriginalWidth:unit.style.width,fanOriginalColumns:grid.style.gridTemplateColumns};
+ readingStack=g;unit.classList.add('stack-fan-open');unit.style.width=fanWidth+'px';
+ grid.style.gridTemplateColumns=Array.from({length:cols},(_,i)=>(i===col?fanWidth:width)+'px').join(' ');
+ unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>№${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');
+ restoreSettledCardVisibility(unit);markLegalTargets(tableSelection);
+ if(touch)toast('Стопку розкрито · свайп — прокрутка · тап карти — огляд');
+ return true;
+}
+document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse'||dragging||busy||modalRoot.contains(e.target))return;const unit=e.target.closest('.table-unit[data-brew-ids]');if(unit)openReadingStack(unit);});
+document.addEventListener('pointerout',e=>{const unit=readingStack?.fanUnit;if(e.pointerType==='mouse'&&unit&&!dragging&&unit.contains(e.target)&&!unit.contains(e.relatedTarget))closeReadingStack();});
+document.addEventListener('pointerdown',e=>{if(readingStack&&!readingStack.fanUnit.contains(e.target))closeReadingStack();},{capture:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReadingStack();});
+window.addEventListener('blur',closeReadingStack);
+const inspectBeforeStackRead=inspectTable;
+inspectTable=function(el){const unit=el.closest('.table-unit[data-brew-ids]');if(!tableSelection&&unit&&!unit.classList.contains('stack-fan-open')&&openReadingStack(unit,true))return;inspectBeforeStackRead(el);};
