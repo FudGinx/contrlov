@@ -95,3 +95,15 @@
 .hex-draggable{pointer-events:auto;touch-action:none;cursor:grab}
 .hex-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);opacity:.9}
 .hex-overlay .hex-panel{max-width:100%}
+
+.hex-hand-open .hex-overlay{bottom:calc(var(--hex-hand-size,clamp(74px,24vh,172px)) + 5px)}
+.hex-hand-open .table-hand-area{position:absolute;left:10px;right:10px;bottom:4px;height:var(--hex-hand-size,clamp(74px,24vh,172px));z-index:17;background:#132c24}
+.hex-hand-open .table-hand{min-height:0;overflow:auto}
+.hex-hand-open .hex-field{width:min(100%,calc((var(--screen-h,390px) - var(--header-h,42px) - var(--phase-h,34px) - var(--hex-hand-size,clamp(74px,24vh,172px)) - 24px)*1.47))}
+.hex-payable{outline:2px solid #efda86;outline-offset:-3px}
+.hex-overlay .hex-tile.drop-legal{filter:brightness(1.2);box-shadow:inset 0 0 0 4px #ffdc7b,inset 0 0 22px #ffe192}
+.hex-result{position:absolute;z-index:8;left:12px;top:9px;background:#18382df5;color:#ffe6a3;border:1px solid #e3c886;border-radius:7px;padding:5px 9px;pointer-events:none;font-size:13px}
+.hex-result-pulse{animation:hex-result-glow 850ms ease-out}
+@keyframes hex-result-glow{0%,35%{filter:brightness(1.65)}100%{filter:brightness(1)}}
+.hex-fly-card{position:fixed;z-index:45;width:30px;height:42px;border:2px solid #f5d78b;border-radius:5px;background:#214635;display:grid;place-items:center;color:#ffe7a4;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.hex-result-pulse{animation:none}}
