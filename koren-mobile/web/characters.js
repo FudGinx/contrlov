@@ -30,6 +30,7 @@ const folkMotion=tableMotion;tableMotion=function(events,old){folkMotion(events,
 const folkInspectTable=inspectTable;inspectTable=function(el){const r=[...state.market,...state.players.flatMap(p=>p.recipes)].find(r=>r.id===el.dataset.recipeId);if(r?.chaos){inspectionSource=el.dataset.dragKind?tableGestureSource(el):null;modal(r.name,`<div class="inspect-grid"><div class="inspect-recipe">${recipeCard(r)}</div><div class="inspect-copy"><h3>Чортів казан</h3><p>Будь-які типи і будь-яка кількість. Можна завершити після першого власного інгредієнта, коли відповіді суперників завершені.</p><p><b>Очки своїх карт та ефектів + активні негативи + кількість усіх реальних інгредієнтів у котлі.</b> Мінімум 0.</p><p>Саботаж −2 дає −1 разом із бонусом за карту. Скасований саботаж дає +1 за карту. Білі карти та нейтральні замінники не рахуються.</p><p>Завершення знаходиться на самому котлі. Воно не передає хід.</p>${inspectionSource?'<button data-inspect-select>Обрати рецепт →</button>':''}</div></div>`,true);return;}folkInspectTable(el);const sealed=state.players.some(p=>p.brew.some(b=>b.sealed&&(b.card.id===el.dataset.cardId||b.attacks.some(a=>a.card.id===el.dataset.cardId))));if(sealed)modalRoot.querySelector('.inspect-copy')?.insertAdjacentHTML('beforeend','<p><b>Нульова змова:</b> числові очки цього складника й усіх його негативів — 0. Ефекти активні.</p>');};
 
 /* The map is a separate station beside the cauldrons and market. */
+let hexBludSource=null;
 let hexScoutTiles=[],hexSeedCard=null,hexMenu=null,hexSkillOpen=false,hexScouting=false;
 const hexCoordinates=[[50,50],[50,17],[69.35,33.5],[69.35,66.5],[50,83],[30.65,66.5],[30.65,33.5]];
 const hexSigns=['✧','♠','✿','♜','❧','◆','◈'];
@@ -37,6 +38,7 @@ function hexNeighbor(a,b){return a!==b&&(a===0||b===0||Math.abs(a-b)===1||Math.a
 function hexCardOptions(cards){return cards.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');}
 function hexField(){
  const map=state.hexMap,p=me(),mine=isMine(),move=mine&&state.phase==='move',choice=map.choice;
+ const perk=map.perk;
  const enabled=mine&&!map.used&&!state.effectChoice&&['main','post','defense','move'].includes(state.phase);
  const seed=choice?.kind==='seed';
  const field=map.tiles.map((t,i)=>{
@@ -58,9 +60,15 @@ function hexField(){
  else if(here&&hexSkillOpen&&enabled&&p.hex!==5&&all.length&&(p.hex!==4||attacks.length)&&(p.hex!==6||state.phase==='main'))controls='<div class="hex-options"><select id="hex-payment" aria-label="Складник">'+hexCardOptions(all)+'</select>'+(p.hex===4?'<select id="hex-attack" aria-label="Негатив">'+hexCardOptions(attacks)+'</select>':'')+'<button data-hex-action="power">Застосувати</button></div>';
  else if(here&&hexSkillOpen)controls='<p>'+(map.used?'Уміння вже використано.':p.hex===5?'Спрацьовує під час варки Комахи.':'Зараз бракує потрібної карти, цілі або фази варки.')+'</p>';
  if(!choice){
+  const skill=perk?.targets.includes(selected)
+   ?({mosskeeper:'Зібрати мохом',vodianyk:'Підземна течія',blud:'Звідси перенести'})[perk.mode]:null;
   if(hexMenu===null)controls='<p>Торкніться гекса, щоб відкрити дії.</p>';
   else if(here)controls='<div class="hex-options"><button data-hex-action="stay" '+(!move?'disabled':'')+'>Залишитися</button><button data-hex-action="skill" '+(!enabled?'disabled':'')+'>Уміння гекса</button></div>'+controls;
   else controls='<p>'+(move&&neighbor?'Перейти сюди? Ви одразу зберете урожай і доберете карту.':!neighbor?'Цей гекс не є сусіднім.':'Перехід відкриється після варки, у фазі руху.')+'</p><div class="hex-options">'+(move&&neighbor?'<button data-hex-action="go">Перейти</button>':'')+'<button class="ghost" data-hex-action="cancel">Ні</button></div>';
+ }
+ if(!choice&&hexMenu!==null){
+  if(skill)controls+='<button data-hex-action="character">'+skill+'</button>';
+  if(hexBludSource!==null&&perk?.mode==='blud'&&selected!==hexBludSource&&perk.destinations.includes(selected))controls+='<button data-hex-action="bludTo">Перенести сюди</button>';
  }
  return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><h2>'+esc(t.name)+'</h2><p>'+esc(t.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
 }
@@ -84,7 +92,7 @@ updateTableShell=function(html){
 };
 let hexMenuTurn=null;
 const previousHexRender=render;
-render=function(){const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;if(turn!==hexMenuTurn){hexMenuTurn=turn;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}if(state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice))tableView='hex';previousHexRender();};
+render=function(){const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;if(turn!==hexMenuTurn){hexMenuTurn=turn;hexBludSource=null;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}if(state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice))tableView='hex';previousHexRender();};
 const previousHexBell=phaseBell;
 phaseBell=function(){if(state.hexMap&&state.phase==='move'&&isMine())return '<button class="turn-bell" data-table-view="hex">⬡<span>Оберіть шлях</span></button>';return previousHexBell();};
 const previousHexPhase=phaseInfo;
@@ -97,7 +105,7 @@ handleFolkloreClick=function(e){
  if(busy||!state?.hexMap)return true;
  const d=button.dataset,p=me(),choice=state.hexMap.choice;
  if(d.hexAction==='rules'){
-  modal('Правила мапи','<ol class="rules-list"><li>Наприкінці ходу відкрито зробіть один крок або залишіться. Сусідні гекси з’єднані спільною стороною. Шість полян щоразу перемішуються, дуб лишається в центрі.</li><li>За вхід візьміть увесь закритий урожай і одну карту з колоди. Кілька фішок можуть стояти разом.</li><li>Наприкінці круга на гексах з місцем з’являється по карті. Якщо рівно один гравець залишився на гексі, він отримує нову карту. Інакше вона лежить закритою.</li><li>Уміння своєї поляни доступне раз за хід. На Перехресті оберіть розвідку або посів. Посіяна карта одразу є частиною урожаю.</li></ol>',true);
+  modal('Правила мапи','<ol class="rules-list"><li>Наприкінці ходу відкрито зробіть один крок або залишіться. Сусідні гекси з’єднані спільною стороною. Шість полян щоразу перемішуються, дуб лишається в центрі.</li><li>За вхід візьміть увесь закритий урожай і одну карту з колоди. Кілька фішок можуть стояти разом.</li><li>Наприкінці круга на гексах з місцем з’являється по карті. Нову карту отримує перший за чергою серед тих, хто залишився на гексі. Якщо таких немає, вона лежить закритою.</li><li>Уміння своєї поляни доступне раз за хід. На Перехресті оберіть розвідку або посів. Посіяна карта одразу є частиною урожаю.</li></ol>',true);
  }else if(d.hexCard){
   if(choice?.kind==='seed'){hexSeedCard=d.hexCard;render();}else if(choice)act({type:'hexChoose',card:d.hexCard});
  }else if(d.hexTile!==undefined){
@@ -108,6 +116,11 @@ handleFolkloreClick=function(e){
   }else if(hexScouting&&hex!==0){hexScoutTiles=hexScoutTiles.includes(hex)?hexScoutTiles.filter(i=>i!==hex):[...hexScoutTiles.slice(-1),hex];render();}
   else{hexMenu=hex;hexSkillOpen=false;render();}
  }else if(d.hexAction==='stay'&&isMine()&&state.phase==='move')act({type:'hexMove',hex:p.hex});
+ else if(d.hexAction==='character'&&isMine()&&state.hexMap.perk?.targets.includes(hexMenu)){
+  if(state.hexMap.perk.mode==='blud'){hexBludSource=hexMenu;hexMenu=null;toast('Оберіть гекс, куди перенести карту.');render();}
+  else act({type:'hexPerk',hex:hexMenu});
+ }
+ else if(d.hexAction==='bludTo'&&isMine()&&hexBludSource!==null){const hex=hexBludSource;hexBludSource=null;act({type:'hexPerk',hex,to:hexMenu});}
  else if(d.hexAction==='go'&&isMine()&&state.phase==='move'&&hexMenu!==null)act({type:'hexMove',hex:hexMenu});
  else if(d.hexAction==='cancel'){hexMenu=null;hexSkillOpen=false;render();}
  else if(d.hexAction==='skill'){hexSkillOpen=!hexSkillOpen;hexScouting=false;hexScoutTiles=[];render();}
