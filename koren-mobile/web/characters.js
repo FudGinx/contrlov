@@ -92,7 +92,23 @@ updateTableShell=function(html){
 };
 let hexMenuTurn=null;
 const previousHexRender=render;
-render=function(){const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;if(turn!==hexMenuTurn){hexMenuTurn=turn;hexBludSource=null;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}if(state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice))tableView='hex';previousHexRender();};
+let hexAutoFocus=null;
+render=function(){
+ const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;
+ if(turn!==hexMenuTurn){hexMenuTurn=turn;hexBludSource=null;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}
+ const reacts=state?.status==='playing'&&state.phase==='reaction'&&state.reactionPlayer===state.me;
+ const choosesCard=state?.effectChoice?.owner&&state.effectChoice.owner===state.me;
+ const focus=state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice)
+   ?turn+':'+(state.hexMap.choice?.kind||'move'):null;
+ if(reacts||choosesCard){
+  if(tableView==='hex'||reacts&&tableView!=='brew'){
+   tableView='brew';
+   tablePlayer=state.players[state.turn]?.id;
+  }
+ }else if(focus&&focus!==hexAutoFocus)tableView='hex';
+ hexAutoFocus=focus;
+ previousHexRender();
+};
 const previousHexBell=phaseBell;
 phaseBell=function(){if(state.hexMap&&state.phase==='move'&&isMine())return '<button class="turn-bell" data-table-view="hex">⬡<span>Оберіть шлях</span></button>';return previousHexBell();};
 const previousHexPhase=phaseInfo;
