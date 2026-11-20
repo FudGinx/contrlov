@@ -65,3 +65,22 @@
 .tabletop .orders-station .recipe-market{align-items:flex-start;min-height:0;overflow-y:auto}
 @media(max-height:310px){.brew-stack-count{font-size:9px;line-height:11px;padding:1px 3px}.tabletop .world-station .recipe-card:not(.chaos-recipe){padding:3px 5px}.tabletop .world-station .recipe-card:not(.chaos-recipe) h3{font-size:13px;line-height:15px;margin:2px 0 3px}.tabletop .world-station .recipe-card:not(.chaos-recipe) ol{gap:3px}.tabletop .world-station .recipe-card:not(.chaos-recipe) li{min-height:21px}.tabletop .world-station .recipe-card:not(.chaos-recipe) .requirement-icon{width:19px;height:19px;font-size:16px}.tabletop .world-station .recipe-card:not(.chaos-recipe) li b{font-size:11px;line-height:12px}}
 @media(prefers-reduced-motion:reduce){.tabletop .table-hand .table-card{transition:none}}
+
+.hex-station .hex-layout{display:grid;grid-template-columns:minmax(245px,1.8fr) minmax(145px,1fr);gap:10px;align-items:start;color:#f5e3a8}
+.hex-field{position:relative;aspect-ratio:1.47;width:min(100%,570px);margin:0 auto;background:radial-gradient(ellipse,#2c4b32bb,#122e22 73%);border-radius:19px}
+.hex-cell{position:absolute;left:var(--hx);top:var(--hy);transform:translate(-50%,-50%);width:25.8%;aspect-ratio:1.15;z-index:1}
+.hex-tile{position:absolute;inset:0;width:100%;height:100%;min-height:0;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background-color:#284234;background-image:linear-gradient(0deg,#08160bdd 1%,transparent 53%),url('/assets/hex-atlas.webp');background-size:100% 100%,400% 200%;background-position:center,var(--cell-x) var(--cell-y);color:#fff0ba;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;padding:0 10% 8%;text-shadow:0 1px 3px #000,0 1px 2px #000;font-size:clamp(9px,1.55vw,15px);line-height:1.04}
+.hex-tile:disabled{opacity:1;cursor:default}.hex-tile:enabled{box-shadow:inset 0 0 25px #ffef8699;cursor:pointer}.hex-tile.here,.hex-tile.scout-picked{box-shadow:inset 0 0 30px 5px #ffdd72}.hex-tile strong{text-align:center}
+.hex-tile[data-art="0"]{--cell-x:0%;--cell-y:0%}.hex-tile[data-art="1"]{--cell-x:33.333%;--cell-y:0%}.hex-tile[data-art="2"]{--cell-x:66.666%;--cell-y:0%}.hex-tile[data-art="3"]{--cell-x:100%;--cell-y:0%}.hex-tile[data-art="4"]{--cell-x:0%;--cell-y:100%}.hex-tile[data-art="5"]{--cell-x:33.333%;--cell-y:100%}.hex-tile[data-art="6"]{--cell-x:66.666%;--cell-y:100%}
+.hex-stock,.hex-crest{position:absolute;top:18%;background:#15291fef;color:#f9e3a3;border:1px solid #e2c97e;border-radius:7px;padding:2px 4px;font-size:12px}.hex-stock{right:18%}.hex-crest{left:18%}
+.hex-tokens{position:absolute;top:42%;left:8%;right:8%;display:flex;justify-content:center;pointer-events:none;z-index:4}
+.hex-token{display:grid;place-items:center;border-radius:50%;width:clamp(16px,3.05vw,34px);aspect-ratio:1;background:hsl(var(--token-hue) 53% 48%);border:2px solid #ffdf94;box-shadow:0 3px 0 #102a1d,0 4px 6px #000b;flex-shrink:0}
+.hex-token+.hex-token{margin-left:-5px}.hex-token .table-portrait{width:100%;height:100%;border:0;border-radius:50%}
+.hex-scout-peek{position:absolute;left:6%;right:6%;top:87%;font-size:10px;text-align:center;background:#102f25;color:#f7e9af;border-radius:5px;z-index:5;pointer-events:none}
+.hex-panel{padding:5px 7px;min-width:0;background:#162f27d9;border:1px solid #b39764;border-radius:10px}.hex-panel h2{font-size:15px;margin:0 0 4px}.hex-panel p{font-size:12px;line-height:1.2;margin:5px 0}.hex-panel button,.hex-panel select{min-height:28px;padding:4px 6px;font-size:12px;max-width:100%;margin:2px 0}.hex-options{display:flex;gap:3px;flex-wrap:wrap}.hex-options button.picked{outline:2px solid #fff0a0}
+@media(max-height:450px){.hex-field{width:min(100%,355px)}.hex-tile strong{font-size:10px}.hex-panel p{font-size:11px}}
+
+
+.tabletop.hex-map-open .table-hand-area,.tabletop.hex-map-open .hand-scroll-rail,.tabletop.hex-map-open .camera-scroll-rail{display:none}.tabletop.hex-map-open .table-layout{height:calc(100% - var(--header-h,42px) - var(--phase-h,34px))}.hex-station .hex-field{width:min(100%,570px,calc((var(--screen-h,390px) - var(--header-h,42px) - var(--phase-h,34px) - 25px)*1.47))}.hex-tile{border-radius:0;outline:0}.hex-tile:focus-visible{filter:brightness(1.2)}
+
+.hex-tile strong{position:absolute;top:62%;left:16%;width:68%;line-height:1.02;white-space:normal;overflow-wrap:anywhere}
