@@ -30,33 +30,38 @@ const folkMotion=tableMotion;tableMotion=function(events,old){folkMotion(events,
 const folkInspectTable=inspectTable;inspectTable=function(el){const r=[...state.market,...state.players.flatMap(p=>p.recipes)].find(r=>r.id===el.dataset.recipeId);if(r?.chaos){inspectionSource=el.dataset.dragKind?tableGestureSource(el):null;modal(r.name,`<div class="inspect-grid"><div class="inspect-recipe">${recipeCard(r)}</div><div class="inspect-copy"><h3>Чортів казан</h3><p>Будь-які типи і будь-яка кількість. Можна завершити після першого власного інгредієнта, коли відповіді суперників завершені.</p><p><b>Очки своїх карт та ефектів + активні негативи + кількість усіх реальних інгредієнтів у котлі.</b> Мінімум 0.</p><p>Саботаж −2 дає −1 разом із бонусом за карту. Скасований саботаж дає +1 за карту. Білі карти та нейтральні замінники не рахуються.</p><p>Завершення знаходиться на самому котлі. Воно не передає хід.</p>${inspectionSource?'<button data-inspect-select>Обрати рецепт →</button>':''}</div></div>`,true);return;}folkInspectTable(el);const sealed=state.players.some(p=>p.brew.some(b=>b.sealed&&(b.card.id===el.dataset.cardId||b.attacks.some(a=>a.card.id===el.dataset.cardId))));if(sealed)modalRoot.querySelector('.inspect-copy')?.insertAdjacentHTML('beforeend','<p><b>Нульова змова:</b> числові очки цього складника й усіх його негативів — 0. Ефекти активні.</p>');};
 
 /* The map is a separate station beside the cauldrons and market. */
-let hexScoutTiles=[],hexSeedCard=null;
+let hexScoutTiles=[],hexSeedCard=null,hexMenu=null,hexSkillOpen=false,hexScouting=false;
 const hexCoordinates=[[50,50],[50,17],[69.35,33.5],[69.35,66.5],[50,83],[30.65,66.5],[30.65,33.5]];
 const hexSigns=['✧','♠','✿','♜','❧','◆','◈'];
 function hexNeighbor(a,b){return a!==b&&(a===0||b===0||Math.abs(a-b)===1||Math.abs(a-b)===5);}
 function hexCardOptions(cards){return cards.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');}
 function hexField(){
  const map=state.hexMap,p=me(),mine=isMine(),move=mine&&state.phase==='move',choice=map.choice;
- const enabled=mine&&!map.used&&!state.effectChoice&&['main','post','defense'].includes(state.phase);
+ const enabled=mine&&!map.used&&!state.effectChoice&&['main','post','defense','move'].includes(state.phase);
  const seed=choice?.kind==='seed';
  const field=map.tiles.map((t,i)=>{
   const [x,y]=hexCoordinates[t.position],people=state.players.filter(q=>q.hex===i);
-  const can=seed?t.count<t.cap:move?i===p.hex||hexNeighbor(t.position,map.tiles[p.hex].position):enabled&&p.hex===0&&i!==0;
+  const can=!seed||t.count<t.cap;
   const tokens=people.map(q=>'<span class="hex-token" data-hex-token="'+esc(q.id)+'" style="--token-hue:'+(state.players.indexOf(q)*61)+'" title="'+esc(q.name)+'" aria-label="'+esc(q.name)+'">'+tablePortrait(q)+'</span>').join('');
   const scout=map.scouted[i];
   return '<div class="hex-cell" style="--hx:'+x+'%;--hy:'+y+'%"><button class="hex-tile '+(i===p.hex?'here ':'')+(hexScoutTiles.includes(i)?'scout-picked':'')+'" data-hex-tile="'+i+'" data-art="'+i+'" '+(!can?'disabled':'')+' aria-label="'+esc(t.name)+' · '+t.count+'"><span class="hex-crest">'+hexSigns[i]+'</span><span class="hex-stock">'+(t.count?'▰ '+t.count:'—')+'</span><strong>'+esc(t.name)+'</strong></button><div class="hex-tokens">'+tokens+'</div>'+(scout?'<small class="hex-scout-peek">'+esc(scout.join(', ')||'Порожньо')+'</small>':'')+'</div>';
  }).join('');
- const t=map.tiles[p.hex??0],ingredient=(p.hand||[]).filter(c=>c.type==='ingredient');
+ const selected=hexMenu??p.hex??0,t=map.tiles[selected],here=selected===p.hex,neighbor=hexNeighbor(t.position,map.tiles[p.hex].position),ingredient=(p.hand||[]).filter(c=>c.type==='ingredient');
  const type={3:'brown',4:'green',6:'purple'}[p.hex];
  const all=ingredient.filter(c=>!type||c.color===type);
  const attacks=p.brew.flatMap(b=>b.attacks.filter(a=>!a.cancelled).map(a=>({...a,name:a.card.name+' '+a.card.negative})));
  let controls='';
  if(choice)controls=seed?'<p>Оберіть карту й торкніться гекса з вільним місцем.</p>':'<p>Оберіть одну карту.</p>';
  if(choice)controls+='<div class="hex-options">'+choice.cards.map(c=>'<button data-hex-card="'+esc(c.id)+'" class="'+(hexSeedCard===c.id?'picked':'')+'">'+esc(c.name)+'</button>').join('')+'</div>';
- else if(move)controls='<p>Оберіть сусідню поляну або залишіться. За крок — карта з колоди та урожай.</p><button data-hex-action="stay">Залишитися</button>';
- else if(enabled&&p.hex===0)controls='<p>Для розвідки позначте дві поляни. Для посіву оберіть одну з двох карт.</p><div class="hex-options"><button data-hex-action="scout" '+(hexScoutTiles.length!==2?'disabled':'')+'>Розвідка '+hexScoutTiles.length+'/2</button><button data-hex-action="seed" '+(!map.tiles.some(t=>t.count<t.cap)?'disabled':'')+'>Посів</button></div>';
- else if(enabled&&p.hex!==5&&all.length&&(p.hex!==4||attacks.length)&&(p.hex!==6||state.phase==='main'))controls='<div class="hex-options"><select id="hex-payment" aria-label="Складник">'+hexCardOptions(all)+'</select>'+(p.hex===4?'<select id="hex-attack" aria-label="Негатив">'+hexCardOptions(attacks)+'</select>':'')+'<button data-hex-action="power">Застосувати</button></div>';
- else if(map.used&&mine)controls='<p>Уміння вже використано цього ходу.</p>';
+
+ else if(here&&hexSkillOpen&&enabled&&p.hex===0)controls='<div class="hex-options"><button data-hex-action="scout">'+(hexScouting?'Розвідати '+hexScoutTiles.length+'/2':'Розвідка')+'</button><button data-hex-action="seed" '+(!map.tiles.some(t=>t.count<t.cap)?'disabled':'')+'>Посів</button></div>'+(hexScouting?'<p>Позначте дві поляни на мапі.</p>':'');
+ else if(here&&hexSkillOpen&&enabled&&p.hex!==5&&all.length&&(p.hex!==4||attacks.length)&&(p.hex!==6||state.phase==='main'))controls='<div class="hex-options"><select id="hex-payment" aria-label="Складник">'+hexCardOptions(all)+'</select>'+(p.hex===4?'<select id="hex-attack" aria-label="Негатив">'+hexCardOptions(attacks)+'</select>':'')+'<button data-hex-action="power">Застосувати</button></div>';
+ else if(here&&hexSkillOpen)controls='<p>'+(map.used?'Уміння вже використано.':p.hex===5?'Спрацьовує під час варки Комахи.':'Зараз бракує потрібної карти, цілі або фази варки.')+'</p>';
+ if(!choice){
+  if(hexMenu===null)controls='<p>Торкніться гекса, щоб відкрити дії.</p>';
+  else if(here)controls='<div class="hex-options"><button data-hex-action="stay" '+(!move?'disabled':'')+'>Залишитися</button><button data-hex-action="skill" '+(!enabled?'disabled':'')+'>Уміння гекса</button></div>'+controls;
+  else controls='<p>'+(move&&neighbor?'Перейти сюди? Ви одразу зберете урожай і доберете карту.':!neighbor?'Цей гекс не є сусіднім.':'Перехід відкриється після варки, у фазі руху.')+'</p><div class="hex-options">'+(move&&neighbor?'<button data-hex-action="go">Перейти</button>':'')+'<button class="ghost" data-hex-action="cancel">Ні</button></div>';
+ }
  return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><h2>'+esc(t.name)+'</h2><p>'+esc(t.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
 }
 const previousHexShell=updateTableShell;
@@ -77,8 +82,9 @@ updateTableShell=function(html){
  }
  previousHexShell(html);
 };
+let hexMenuTurn=null;
 const previousHexRender=render;
-render=function(){if(state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice))tableView='hex';previousHexRender();};
+render=function(){const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;if(turn!==hexMenuTurn){hexMenuTurn=turn;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}if(state?.hexMap&&isMine()&&(state.phase==='move'||state.hexMap.choice))tableView='hex';previousHexRender();};
 const previousHexBell=phaseBell;
 phaseBell=function(){if(state.hexMap&&state.phase==='move'&&isMine())return '<button class="turn-bell" data-table-view="hex">⬡<span>Оберіть шлях</span></button>';return previousHexBell();};
 const previousHexPhase=phaseInfo;
@@ -99,11 +105,14 @@ handleFolkloreClick=function(e){
   if(choice?.kind==='seed'){
    if(!hexSeedCard)return (toast('Спочатку оберіть карту.'),true);
    const card=hexSeedCard;hexSeedCard=null;act({type:'hexChoose',card,hex});
-  }else if(state.phase==='move')act({type:'hexMove',hex});
-  else{hexScoutTiles=hexScoutTiles.includes(hex)?hexScoutTiles.filter(i=>i!==hex):[...hexScoutTiles.slice(-1),hex];render();}
- }else if(d.hexAction==='stay')act({type:'hexMove',hex:p.hex});
- else if(d.hexAction==='scout'){const tiles=hexScoutTiles;hexScoutTiles=[];act({type:'hexUse',mode:'scout',tiles});}
- else if(d.hexAction==='seed'){hexScoutTiles=[];hexSeedCard=null;act({type:'hexUse',mode:'seed'});}
+  }else if(hexScouting&&hex!==0){hexScoutTiles=hexScoutTiles.includes(hex)?hexScoutTiles.filter(i=>i!==hex):[...hexScoutTiles.slice(-1),hex];render();}
+  else{hexMenu=hex;hexSkillOpen=false;render();}
+ }else if(d.hexAction==='stay'&&isMine()&&state.phase==='move')act({type:'hexMove',hex:p.hex});
+ else if(d.hexAction==='go'&&isMine()&&state.phase==='move'&&hexMenu!==null)act({type:'hexMove',hex:hexMenu});
+ else if(d.hexAction==='cancel'){hexMenu=null;hexSkillOpen=false;render();}
+ else if(d.hexAction==='skill'){hexSkillOpen=!hexSkillOpen;hexScouting=false;hexScoutTiles=[];render();}
+ else if(d.hexAction==='scout'){if(!hexScouting){hexScouting=true;render();}else if(hexScoutTiles.length===2){const tiles=hexScoutTiles;hexScoutTiles=[];hexScouting=false;act({type:'hexUse',mode:'scout',tiles});}else toast('Позначте дві поляни.');}
+ else if(d.hexAction==='seed'){hexScouting=false;hexScoutTiles=[];hexSeedCard=null;act({type:'hexUse',mode:'seed'});}
  else if(d.hexAction==='power')act({type:'hexUse',card:$('#hex-payment')?.value,target:$('#hex-attack')?.value});
  return true;
 };

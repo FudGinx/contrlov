@@ -220,7 +220,7 @@ function moveHex(s,p,hex){
 }
 
 function useHex(s,p,a){
- if(!['main','post','defense'].includes(s.phase)||s.turnData.hexUsed)fail('Уміння поляни зараз недоступне.');
+ if(!['main','post','defense','move'].includes(s.phase)||s.turnData.hexUsed)fail('Уміння поляни зараз недоступне.');
  const card=p.hand.find(c=>c.id===a.card&&c.type==='ingredient');
  const bottom=cards=>s.deck.unshift(...cards);
  const reveal=(n)=>{const tray={hand:[]};draw(s,tray,n);return tray.hand;};
