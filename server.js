@@ -24,38 +24,66 @@ try{
 const letters='АБВГДКЛМНОПРСТУ'.split('');
 const hints={'кошка':{п:['пушистая','питомец','прыгает','подоконник','погладить'],м:['мурлычет','мяукает','мышеловка'],к:['когти','котёнок','корм']},'собака':{п:['пёс','поводок','прогулка','порода'],л:['лает','лапа']},'машина':{п:['поездка','пассажир','парковка','педаль']},'книга':{п:['писатель','повесть','переплёт','прочитать']},'рыба':{п:['плавник','пруд','плавать','поймать']}};
 
-// Semantic hints: article-linked concepts and contextual phrases, not arbitrary same-letter words.
+// Hints from synonym dictionaries (Wiktionary) and directly relevant Wikipedia links.
 const hintCache=new Map();
 const normalize=t=>String(t||'').toLowerCase().replace(/ё/g,'е');
-const commonStop=new Set('который которая которые этого также после перед между когда потому очень есть была были может можно такой такие только более менее однако поэтому несколько другие многие некоторые каждый такой самого самой своего время года года году часть место людей человек людей является представляет называется например используется имеют имеет через среди вместе внутри около примерно один два три первый второй большой большие'.split(' '));
+const stop=new Set('один одна одно одного одной одни другой другие каждый каждый самый самых любой многие много очень просто обычно например также более менее после перед который которая которые этого такой такое такие только первый второй третий иногда часто редко иногда почти примерно здесь там это есть было были будет имеет имеетcя является может можно должно должны слово слова статья раздел понятие термин название называется'.split(' '));
+const curated={
+ 'красота':['очарование','обаяние','облик','очаровательный','ослепительный','обворожительный','опрятность','особенность','образ'],
+ 'ракета':['космос','космонавт','корабль','кабина','космический','курс','конструкция','керосин','комета'],
+ 'обед':['кушать','кухня','котлета','кафе','каша','компот','калории','кулинария'],
+ 'кошка':['пушистая','питомец','прыгает','подоконник','погладить','мурлычет','мяукает','мышеловка','когти','котёнок','корм'],
+ 'собака':['пёс','поводок','прогулка','порода','лает','лапа'],
+ 'машина':['поездка','пассажир','парковка','педаль'],
+ 'книга':['писатель','повесть','переплёт','прочитать'],
+ 'рыба':['плавник','пруд','плавать','поймать']
+};
+const wikiFetch=async (host,query)=>{
+ const url='https://'+host+'/w/api.php?'+new URLSearchParams(query);
+ const r=await fetch(url,{signal:AbortSignal.timeout(8000),headers:{'User-Agent':'OneLetterParty/2.0 (semantic game hints)'}});
+ if(!r.ok)throw Error('Wiki HTTP '+r.status);
+ return r.json();
+};
 async function semanticHints(word,letter,refresh=false){
- const key=normalize(word)+'|'+letter.toLowerCase();
+ const key=normalize(word)+'|'+normalize(letter);
  if(!refresh&&hintCache.has(key))return hintCache.get(key);
- const initial=normalize(letter),output=[];
- const add=(phrase)=>{phrase=String(phrase||'').trim().toLowerCase();if(!phrase||phrase.length>45||phrase.length<3||!/^[а-яё]+$/u.test(phrase)||!normalize(phrase).startsWith(initial)||normalize(phrase)===normalize(word)||output.some(x=>normalize(x)===normalize(phrase)))return;output.push(phrase)};
- for(const h of hints[normalize(word)]?.[initial]||[])add(h);
- const api='https://ru.wikipedia.org/w/api.php?';
- const params=obj=>api+new URLSearchParams({action:'query',format:'json',redirects:'1',...obj});
- async function wiki(url){const r=await fetch(url,{signal:AbortSignal.timeout(7500),headers:{'User-Agent':'OneLetterParty/1.1 (semantic word game)'}});if(!r.ok)throw Error('Wiki '+r.status);return r.json()}
- const terms=new Map();
- const collect=t=>{for(const token of (String(t||'').toLowerCase().match(/[а-яё]{4,}/g)||[])){if(normalize(token).startsWith(initial)&&!commonStop.has(token)&&normalize(token)!==normalize(word))terms.set(token,(terms.get(token)||0)+1)}};
+ const initial=normalize(letter),ranked=new Map();
+ const add=(raw,score)=>{
+  const value=String(raw||'').toLowerCase().trim().replace(/ё/g,'е');
+  if(!/^[а-я]{3,}$/u.test(value)||!value.startsWith(initial)||stop.has(value)||value===normalize(word))return;
+  ranked.set(value,Math.max(score,ranked.get(value)||0));
+ };
+ for(const h of curated[normalize(word)]||[])add(h,100);
+ // Wiktionary's synonym section is lexicographic evidence rather than coincidental text.
  try{
-  const data=await wiki(params({prop:'extracts|links',explaintext:'1',exintro:'1',pllimit:'max',titles:word}));
-  const pages=Object.values(data.query?.pages||{});
-  const main=pages.find(p=>!p.missing);
-  if(main){
-   collect(main.extract||'');
-   const related=(main.links||[]).filter(p=>p.ns===0&&p.title).slice(0,100);
-   for(const p of related){const title=p.title.toLowerCase().replace(/\\s*\\([^)]*\\)/g,'').trim();if(title.startsWith(initial)&&title.split(' ').length<=3)add(title)}
-   const selected=related.slice(0,12).map(p=>p.title);
-   if(selected.length){
-    const sub=await wiki(params({prop:'extracts',explaintext:'1',exintro:'1',exchars:'650',titles:selected.join('|')}));
-    for(const page of Object.values(sub.query?.pages||{}))collect(page.extract||'');
+  const data=await wikiFetch('ru.wiktionary.org',{action:'parse',format:'json',page:word,prop:'wikitext'});
+  const raw=data.parse?.wikitext?.['*']||'';
+  const lines=raw.split('\n');
+  let active=false;
+  for(const line of lines){
+   if(/^={2,6}\s*(синонимы|близкие по значению слова)\s*={2,6}/i.test(line)){active=true;continue}
+   if(active&&/^={2,6}/.test(line))break;
+   if(active){
+    for(const match of line.matchAll(/\[\[([^\]|#]+)(?:\|[^\]]+)?\]\]/g))add(match[1],95);
    }
   }
- }catch(e){console.warn('Semantic wiki lookup failed:',e.message)}
- for(const [token] of [...terms].sort((a,b)=>b[1]-a[1]).slice(0,16))add(token);
- const result=output.slice(0,12);hintCache.set(key,result);if(hintCache.size>3000)hintCache.delete(hintCache.keys().next().value);return result;
+ }catch(e){console.warn('Wiktionary unavailable:',e.message)}
+ // Wikipedia: only directly linked concepts explicitly mentioned in the target article introduction.
+ try{
+  const data=await wikiFetch('ru.wikipedia.org',{action:'query',format:'json',redirects:'1',prop:'extracts|links',explaintext:'1',exintro:'1',pllimit:'max',titles:word});
+  const page=Object.values(data.query?.pages||{}).find(p=>!p.missing);
+  if(page){
+   const intro=normalize(page.extract||'');
+   const linked=(page.links||[]).filter(p=>p.ns===0&&p.title);
+   for(const item of linked){
+    const title=normalize(item.title.replace(/\s*\([^)]*\)/g,'').trim());
+    if(/^[а-я]{3,}$/u.test(title)&&intro.includes(title))add(title,65);
+   }
+  }
+ }catch(e){console.warn('Wikipedia unavailable:',e.message)}
+ const result=[...ranked].sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
+ hintCache.set(key,result);if(hintCache.size>3000)hintCache.delete(hintCache.keys().next().value);
+ return result;
 }
 
 const pick=a=>a[Math.floor(Math.random()*a.length)];
