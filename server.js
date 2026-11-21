@@ -44,13 +44,22 @@ const wikiFetch=async (host,query)=>{
  if(!r.ok)throw Error('Wiki HTTP '+r.status);
  return r.json();
 };
+function isAnswerDerivative(answer,hint){
+ const a=normalize(answer),h=normalize(hint);
+ if(a===h)return true;
+ // Common Russian alternation: снег / снеж-, снежинка, снегопад.
+ if(a==='снег'&&/^(снег|снеж)/.test(h))return true;
+ // Reject transparent compounds and diminutives of longer answer words.
+ if(a.length>=5&&(h.startsWith(a)&&h.length>a.length||a.startsWith(h)&&h.length>=5))return true;
+ return false;
+}
 async function semanticHints(word,letter,refresh=false,detailed=false){
  const key=normalize(word)+'|'+normalize(letter)+(detailed?'|sources':'');
  if(!refresh&&hintCache.has(key))return hintCache.get(key);
  const initial=normalize(letter),ranked=new Map();
  const add=(raw,score,source)=>{
   const value=String(raw||'').toLowerCase().trim().replace(/ё/g,'е');
-  if(!/^[а-я]{3,}$/u.test(value)||!value.startsWith(initial)||stop.has(value)||value===normalize(word))return;
+  if(!/^[а-я]{3,}$/u.test(value)||!value.startsWith(initial)||stop.has(value)||isAnswerDerivative(word,value))return;
   if(score>(ranked.get(value)?.score||0))ranked.set(value,{score,source});
  };
  for(const h of playable[normalize(word)]?.[initial]||[])add(h,110,'dictionary');
@@ -127,8 +136,8 @@ async function generateAiHints(word,letter){
   const data=await r.json();
   console.info('Groq token usage:',JSON.stringify({model,prompt_tokens:data.usage?.prompt_tokens,completion_tokens:data.usage?.completion_tokens,total_tokens:data.usage?.total_tokens,prompt_time:data.usage?.prompt_time,completion_time:data.usage?.completion_time}));
   const choice=data.choices?.[0]||{};const raw=String(choice.message?.content||'');if(!raw)console.warn('Groq empty content:',JSON.stringify({model,finish_reason:choice.finish_reason,usage:data.usage,reasoningLength:String(choice.message?.reasoning||'').length}));const match=raw.match(/\{[\s\S]*\}/);const parsed=JSON.parse(match?.[0]||'{}');
-  const clean=[...new Set((Array.isArray(parsed.hints)?parsed.hints:[]).map(x=>normalize(x).trim()))].filter(x=>/^[а-яё]{3,}$/u.test(x)&&x.startsWith(normalize(letter))&&!stop.has(x)&&x!==normalize(word)).slice(0,10);
-  console.info('Groq hint count:',clean.length,'word:',word,'letter:',letter,'responseLength:',raw.length);if(clean.length)aiCache.set(key,clean);
+  const clean=[...new Set((Array.isArray(parsed.hints)?parsed.hints:[]).map(x=>normalize(x).trim()))].filter(x=>/^[а-яё]{3,}$/u.test(x)&&x.startsWith(normalize(letter))&&!stop.has(x)&&!isAnswerDerivative(word,x)).slice(0,10);
+  console.info('Groq hint count:',clean.length,'word:',word,'letter:',letter,'responseLength:',raw.length,'sample:',raw.slice(0,160));if(clean.length)aiCache.set(key,clean);
   if(aiCache.size>1000)aiCache.delete(aiCache.keys().next().value);
   return clean;
  }catch(e){console.warn('Groq hints failed:',e.message);return []}
@@ -156,12 +165,12 @@ function hintFamily(value){
  if(hintFamilyOverrides.has(w))return hintFamilyOverrides.get(w);
  return w.replace(/(ыми|ими|ого|ему|ому|ыми|ая|яя|ое|ее|ые|ие|ый|ий|ой|ую|юю|ых|их|ам|ям|ами|ями|ов|ев|ей|а|я|ы|и|у|ю|е|о)$/u,'');
 }
-function mergeHintSources(ai,dictionary){
+function mergeHintSources(ai,dictionary,answer){
  const result=[],seen=new Set();
  for(const item of [...ai.map(word=>({word,source:'ai'})),...dictionary]){
   const w=normalize(item.word);
   const family=hintFamily(w);
-  if(!w||seen.has(w)||result.some(existing=>{
+  if(!w||isAnswerDerivative(answer,w)||seen.has(w)||result.some(existing=>{
    const other=hintFamily(existing.word);
    return family===other||(family.length>=5&&other.length>=5&&(family.startsWith(other)||other.startsWith(family)));
   }))continue;
@@ -170,7 +179,7 @@ function mergeHintSources(ai,dictionary){
  }
  return result;
 }
-s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const dictionary=await semanticHints(word,letter,false,true);const found=mergeHintSources(generated,dictionary);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
+s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const dictionary=await semanticHints(word,letter,false,true);const found=mergeHintSources(generated,dictionary,word);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
 
 s.on('finish',({winner}={},cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round||r.round.done)return reply(cb,{error:'Раунд завершён'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});if(r.players.has(winner))r.players.get(winner).score++;r.round.done=true;r.history.push({word:r.round.word,letter:r.round.letter,winner:r.players.get(winner)?.name||'Не угадали'});publish(r);reply(cb,{ok:true})});
 s.on('disconnect',()=>{const r=rooms.get(s.data?.room),p=r?.players.get(s.data.id);if(p&&p.socket===s.id){p.online=false;publish(r)}})
