@@ -106,14 +106,23 @@ async function availableGroqModel(){
  return chosen;
 }
 const aiCache=new Map();
+const aiPending=new Map();
 async function aiHints(word,letter){
  const key=normalize(word)+'|'+normalize(letter);
  if(aiCache.has(key))return aiCache.get(key);
+ if(aiPending.has(key))return aiPending.get(key);
+ const pending=generateAiHints(word,letter).finally(()=>aiPending.delete(key));
+ aiPending.set(key,pending);
+ return pending;
+}
+async function generateAiHints(word,letter){
+ const key=normalize(word)+'|'+normalize(letter);
+ if(aiCache.has(key))return aiCache.get(key);
  if(!process.env.GROQ_API_KEY)return [];
- const prompt='Ты редактор русской игры в ассоциации. Загадано существительное «'+word+'». Разрешенная первая буква подсказок: «'+letter+'». Верни строго JSON объект {"hints":["слово",...]} с 5–10 РАЗНЫМИ полезными однословными русскими подсказками. Подсказки должны помогать догадаться о загаданном слове: свойства, действия, части, окружение, близкие понятия, синонимы. Каждая начинается с указанной буквы, никаких словосочетаний, чисел, имен собственных, служебных и общих слов вроде один, другой, который. Не используй загаданное слово и однокоренные слова. Не придумывай бессмысленные связи. Если не можешь придумать хорошую подсказку, дай меньше.';
+ const prompt='Слово: '+word+'. Буква: '+letter+'. Придумай 4–7 точных подсказок для русской игры. Только ОДНО слово на букву '+letter+' в каждой подсказке. Нужны сильные прямые связи: отличительный признак, часть, действие, назначение, известная ассоциация. Не предлагай общую среду или слова, подходящие к сотням других предметов; избегай случайных ассоциаций и выдуманных слов. Никаких однокоренных слов с ответом. Лучше 3 точных, чем 7 слабых. Ответ строго JSON: {"hints":["слово"]}';
  try{
   const model=await availableGroqModel();
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+process.env.GROQ_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'Return valid JSON only. Russian language.'},{role:'user',content:prompt}],temperature:0.35,max_completion_tokens:1400,...(/gpt-oss/.test(model)?{reasoning_effort:'low'}:{})}),signal:AbortSignal.timeout(15000)});
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+process.env.GROQ_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'Return valid JSON only. Russian language.'},{role:'user',content:prompt}],temperature:0.35,max_completion_tokens:650,...(/gpt-oss/.test(model)?{reasoning_effort:'low'}:{})}),signal:AbortSignal.timeout(15000)});
   if(!r.ok){const detail=(await r.text()).slice(0,500);throw Error('Groq status '+r.status+' '+detail)}
   const data=await r.json();
   console.info('Groq token usage:',JSON.stringify({model,prompt_tokens:data.usage?.prompt_tokens,completion_tokens:data.usage?.completion_tokens,total_tokens:data.usage?.total_tokens,prompt_time:data.usage?.prompt_time,completion_time:data.usage?.completion_time}));
