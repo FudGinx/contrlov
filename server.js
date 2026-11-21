@@ -32,7 +32,7 @@ async function semanticHints(word,letter,refresh=false){
  const key=normalize(word)+'|'+letter.toLowerCase();
  if(!refresh&&hintCache.has(key))return hintCache.get(key);
  const initial=normalize(letter),output=[];
- const add=(phrase)=>{phrase=String(phrase||'').trim().toLowerCase();if(!phrase||phrase.length>45||phrase.length<3||!normalize(phrase).startsWith(initial)||normalize(phrase)===normalize(word)||output.some(x=>normalize(x)===normalize(phrase)))return;output.push(phrase)};
+ const add=(phrase)=>{phrase=String(phrase||'').trim().toLowerCase();if(!phrase||phrase.length>45||phrase.length<3||!/^[а-яё]+$/u.test(phrase)||!normalize(phrase).startsWith(initial)||normalize(phrase)===normalize(word)||output.some(x=>normalize(x)===normalize(phrase)))return;output.push(phrase)};
  for(const h of hints[normalize(word)]?.[initial]||[])add(h);
  const api='https://ru.wikipedia.org/w/api.php?';
  const params=obj=>api+new URLSearchParams({action:'query',format:'json',redirects:'1',...obj});
