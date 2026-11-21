@@ -143,3 +143,5 @@
 .hex-resource-caption{position:fixed;z-index:2101;background:#204c36;border:2px solid #e7c16e;border-radius:9px;padding:7px 10px;color:#ffe4a3;font-size:17px;font-weight:800;pointer-events:none}
 .hex-playback-active .hex-panel,.hex-playback-active .hex-tile,.hex-playback-active .hex-token,.hex-playback-active .hex-map-pile,.hex-playback-active .table-hand-area{pointer-events:none}.hex-arrival-glow{filter:brightness(1.5)!important}
 @media(max-height:300px){.hex-piles{width:49px;gap:4px}.hex-map-pile{min-height:37px;padding:2px}.hex-map-pile span{font-size:10px}.hex-map-pile b{font-size:20px}.hex-playback-status{padding:5px 8px}.hex-playback-status b{font-size:14px}.hex-playback-status span{font-size:12px}}
+/* Keep pieces readable when a very short viewport needs map scrolling. */
+.hex-overlay .hex-field{min-width:260px;min-height:177px}.hex-overlay .hex-cell:has(.hex-token){z-index:5}
