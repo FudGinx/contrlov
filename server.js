@@ -44,17 +44,17 @@ const wikiFetch=async (host,query)=>{
  if(!r.ok)throw Error('Wiki HTTP '+r.status);
  return r.json();
 };
-async function semanticHints(word,letter,refresh=false){
- const key=normalize(word)+'|'+normalize(letter);
+async function semanticHints(word,letter,refresh=false,detailed=false){
+ const key=normalize(word)+'|'+normalize(letter)+(detailed?'|sources':'');
  if(!refresh&&hintCache.has(key))return hintCache.get(key);
  const initial=normalize(letter),ranked=new Map();
- const add=(raw,score)=>{
+ const add=(raw,score,source)=>{
   const value=String(raw||'').toLowerCase().trim().replace(/ё/g,'е');
   if(!/^[а-я]{3,}$/u.test(value)||!value.startsWith(initial)||stop.has(value)||value===normalize(word))return;
-  ranked.set(value,Math.max(score,ranked.get(value)||0));
+  if(score>(ranked.get(value)?.score||0))ranked.set(value,{score,source});
  };
- for(const h of playable[normalize(word)]?.[initial]||[])add(h,110);
- for(const h of curated[normalize(word)]||[])add(h,100);
+ for(const h of playable[normalize(word)]?.[initial]||[])add(h,110,'dictionary');
+ for(const h of curated[normalize(word)]||[])add(h,100,'dictionary');
  // Wiktionary's synonym section is lexicographic evidence rather than coincidental text.
  try{
   const data=await wikiFetch('ru.wiktionary.org',{action:'parse',format:'json',page:word,prop:'wikitext'});
@@ -65,7 +65,7 @@ async function semanticHints(word,letter,refresh=false){
    if(/^={2,6}\s*(синонимы|близкие по значению слова)\s*={2,6}/i.test(line)){active=true;continue}
    if(active&&/^={2,6}/.test(line))break;
    if(active){
-    for(const match of line.matchAll(/\[\[([^\]|#]+)(?:\|[^\]]+)?\]\]/g))add(match[1],95);
+    for(const match of line.matchAll(/\[\[([^\]|#]+)(?:\|[^\]]+)?\]\]/g))add(match[1],95,'synonyms');
    }
   }
  }catch(e){console.warn('Wiktionary unavailable:',e.message)}
@@ -78,11 +78,11 @@ async function semanticHints(word,letter,refresh=false){
    const linked=(page.links||[]).filter(p=>p.ns===0&&p.title);
    for(const item of linked){
     const title=normalize(item.title.replace(/\s*\([^)]*\)/g,'').trim());
-    if(/^[а-я]{3,}$/u.test(title)&&intro.includes(title))add(title,65);
+    if(/^[а-я]{3,}$/u.test(title)&&intro.includes(title))add(title,65,'wikipedia');
    }
   }
  }catch(e){console.warn('Wikipedia unavailable:',e.message)}
- const result=[...ranked].filter(([,score])=>score>=90).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
+ const result=[...ranked].filter(([,meta])=>meta.score>=90).sort((a,b)=>b[1].score-a[1].score).slice(0,12).map(([word,meta])=>detailed?{word,source:meta.source}:word);
  hintCache.set(key,result);if(hintCache.size>3000)hintCache.delete(hintCache.keys().next().value);
  return result;
 }
@@ -119,7 +119,7 @@ let id=String(playerId||'').slice(0,80);if(!id||!r.players.has(id))id=Math.rando
 const p=r.players.get(id)||{id,name,score:0};p.name=name;p.online=true;p.socket=s.id;r.players.set(id,p);if(!r.host)r.host=id;s.data={room:r.code,id};s.join(r.code);reply(cb,{ok:true,id,code:r.code});publish(r)});
 s.on('start',({word,letter,seconds,speaker}={},cb)=>{const r=rooms.get(s.data?.room);if(!r||r.host!==s.data.id)return reply(cb,{error:'Только ведущий начинает раунд'});const typed=String(word||'').trim().toLowerCase().slice(0,70);let l=String(letter||'').toUpperCase();const options=playablePairs.filter(p=>(!typed||p.word===typed)&&(!letters.includes(l)||p.letter===l));const chosen=options.length?pick(options):null;const w=typed||chosen?.word||pick(Object.keys(playable));if(!letters.includes(l))l=chosen?.letter||pick(Object.keys(playable[w]||{})).toUpperCase();const sp=r.players.has(speaker)?speaker:pick([...r.players.keys()]);r.round={word:w,letter:l,speaker:sp,seconds:Math.max(30,Math.min(300,Number(seconds)||90)),started:Date.now(),done:false};publish(r);reply(cb,{ok:true})});
 s.on('reveal',(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});s.emit('secret',{word:r.round.word,letter:r.round.letter,hints:[],loading:false});reply(cb,{ok:true})});
-s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const found=generated.length>=3?generated:await semanticHints(word,letter,true);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
+s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const found=generated.length>=3?generated.map(word=>({word,source:'ai'})):await semanticHints(word,letter,true,true);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
 
 s.on('finish',({winner}={},cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round||r.round.done)return reply(cb,{error:'Раунд завершён'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});if(r.players.has(winner))r.players.get(winner).score++;r.round.done=true;r.history.push({word:r.round.word,letter:r.round.letter,winner:r.players.get(winner)?.name||'Не угадали'});publish(r);reply(cb,{ok:true})});
 s.on('disconnect',()=>{const r=rooms.get(s.data?.room),p=r?.players.get(s.data.id);if(p&&p.socket===s.id){p.online=false;publish(r)}})
