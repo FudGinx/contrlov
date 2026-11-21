@@ -145,7 +145,32 @@ let id=String(playerId||'').slice(0,80);if(!id||!r.players.has(id))id=Math.rando
 const p=r.players.get(id)||{id,name,score:0};p.name=name;p.online=true;p.socket=s.id;r.players.set(id,p);if(!r.host)r.host=id;s.data={room:r.code,id};s.join(r.code);reply(cb,{ok:true,id,code:r.code});publish(r)});
 s.on('start',({word,letter,seconds,speaker}={},cb)=>{const r=rooms.get(s.data?.room);if(!r||r.host!==s.data.id)return reply(cb,{error:'Только ведущий начинает раунд'});const typed=String(word||'').trim().toLowerCase().slice(0,70);let l=String(letter||'').toUpperCase();const options=playablePairs.filter(p=>(!typed||p.word===typed)&&(!letters.includes(l)||p.letter===l));const chosen=options.length?pick(options):null;const w=typed||chosen?.word||pick(Object.keys(playable));if(!letters.includes(l))l=chosen?.letter||pick(Object.keys(playable[w]||{})).toUpperCase();const sp=r.players.has(speaker)?speaker:pick([...r.players.keys()]);r.round={word:w,letter:l,speaker:sp,seconds:Math.max(30,Math.min(300,Number(seconds)||90)),started:Date.now(),done:false};publish(r);reply(cb,{ok:true})});
 s.on('reveal',(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});s.emit('secret',{word:r.round.word,letter:r.round.letter,hints:[],loading:false});reply(cb,{ok:true})});
-s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const dictionary=await semanticHints(word,letter,false,true);const found=[...generated.map(word=>({word,source:'ai'})),...dictionary.filter(h=>!generated.includes(h.word))].slice(0,10);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
+// Collapse obvious inflections and closely related hint variants without merging unrelated words.
+const hintFamilyOverrides=new Map(Object.entries({
+ 'пух':'пушистость','пушок':'пушистость','пушистый':'пушистость','пушистая':'пушистость',
+ 'котел':'котел','котелок':'котел','кастрюля':'посуда_варка',
+ 'водоем':'водоем','водоемы':'водоем'
+}));
+function hintFamily(value){
+ const w=normalize(value).replace(/[^а-я]/g,'');
+ if(hintFamilyOverrides.has(w))return hintFamilyOverrides.get(w);
+ return w.replace(/(ыми|ими|ого|ему|ому|ыми|ая|яя|ое|ее|ые|ие|ый|ий|ой|ую|юю|ых|их|ам|ям|ами|ями|ов|ев|ей|а|я|ы|и|у|ю|е|о)$/u,'');
+}
+function mergeHintSources(ai,dictionary){
+ const result=[],seen=new Set();
+ for(const item of [...ai.map(word=>({word,source:'ai'})),...dictionary]){
+  const w=normalize(item.word);
+  const family=hintFamily(w);
+  if(!w||seen.has(w)||result.some(existing=>{
+   const other=hintFamily(existing.word);
+   return family===other||(family.length>=5&&other.length>=5&&(family.startsWith(other)||other.startsWith(family)));
+  }))continue;
+  seen.add(w);result.push(item);
+  if(result.length===10)break;
+ }
+ return result;
+}
+s.on('hints',async(_,cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round)return reply(cb,{error:'Нет раунда'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});const {word,letter,started}=r.round;reply(cb,{ok:true});s.emit('hintResult',{loading:true,hints:[]});const generated=await aiHints(word,letter);const dictionary=await semanticHints(word,letter,false,true);const found=mergeHintSources(generated,dictionary);if(s.connected&&r.round?.started===started)s.emit('hintResult',{loading:false,hints:found})});
 
 s.on('finish',({winner}={},cb)=>{const r=rooms.get(s.data?.room);if(!r||!r.round||r.round.done)return reply(cb,{error:'Раунд завершён'});if(s.data.id!==r.host&&s.data.id!==r.round.speaker)return reply(cb,{error:'Недостаточно прав'});if(r.players.has(winner))r.players.get(winner).score++;r.round.done=true;r.history.push({word:r.round.word,letter:r.round.letter,winner:r.players.get(winner)?.name||'Не угадали'});publish(r);reply(cb,{ok:true})});
 s.on('disconnect',()=>{const r=rooms.get(s.data?.room),p=r?.players.get(s.data.id);if(p&&p.socket===s.id){p.online=false;publish(r)}})
