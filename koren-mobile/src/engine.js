@@ -105,7 +105,7 @@ export function botAction(s){const p=botActor(s);if(!p?.bot)return null;if(s.hex
  if(s.phase==='main'){if(s.turnData.pairPlan){const c=p.hand.find(c=>pairMatch(s,c,needed(p))&&canAdd(s,p,c));if(c)return {type:'play',card:c.id};}if(recipe(p)?.chaos&&p.brew.length>=2)return {type:'chaosFinish'};if(!p.brew.length&&p.recipes.length){const best=bestRecipe(p,p.recipes);if(best.id!==p.current)return {type:'selectRecipe',order:best.id};}if(!recipe(p)){if(p.recipes.length)return {type:'selectRecipe',order:bestRecipe(p,p.recipes).id};if(s.market.length&&!s.turnData.orderTaken)return {type:'order',order:bestRecipe(p,s.market).id};return {type:'end'};}const c=p.hand.filter(c=>canAdd(s,p,c)).sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a))[0];if(c)return {type:'play',card:c.id};if(p.brew.length&&!s.turnData.abortUsed&&((p.stallTurns||0)>=2||(!s.deck.length&&!s.discard.length)))return {type:'abort'};if(p.recipes.length<3&&s.market.length&&!s.turnData.orderTaken)return {type:'order',order:bestRecipe(p,s.market).id};return {type:'end'};}
  if(s.phase==='chain'){const c=p.hand.filter(c=>canAdd(s,p,c)).sort((a,b)=>Number(pairMatch(s,b,needed(p)))-Number(pairMatch(s,a,needed(p)))||ingredientValue(s,p,b)-ingredientValue(s,p,a))[0];return c?{type:'play',card:c.id}:{type:'stop'};}if(s.phase==='post')return recipe(p)?.chaos&&p.brew.length?{type:'chaosFinish'}:{type:'end'};return null;
 }
-export function view(s,pid,version=0){const me=s.players.find(p=>p.id===pid);if(!me)fail('Немає доступу до цієї кімнати.');return {rulesVersion:4,mapRoster:MAP_ROSTER,hexMap:s.hexes?{tiles:HEXES.map((x,i)=>({...x,position:s.hexOrder?.indexOf(i)??i,count:s.hexes[i].length,blocked:hexBlocked(s,me,i)})),skillHex:effectiveHex(s,active(s)),moves:s.phase==='move'&&me===active(s)?hexDestinations(s,me):[],targets:hexSkillTargets(s,me),shown:s.hexShow||0,start:s.turnData.startHex??active(s)?.hex,used:!!s.turnData.hexUsed,perk:hexPerk(s,me),choice:s.hexChoice?.owner===pid?{...s.hexChoice,play:s.hexChoice.kind==='roots-brew'?s.hexChoice.cards.filter(c=>canChooseBrew(s,me,c)).map(c=>c.id):[]}:null,scouted:me.hexScout||{},stats:s.hexStats||{}}:null,legal:{play:me.hand.filter(c=>canAdd(s,me,c)).map(c=>c.id),react:me.hand.filter(c=>canSabotage(s,me,c)).map(c=>c.id)},code:s.code,version,targetPotions:s.targetPotions||3,sabotageLimit:3,status:s.status,phase:s.phase,characterAction:characterActionInfo(s,me),effectChoice:s.effectChoice?{id:s.effectChoice.id,owner:s.effectChoice.owner,kind:s.effectChoice.kind,harvest:s.effectChoice.harvest,count:s.effectChoice.cards.length,play:s.effectChoice.owner===pid&&s.effectChoice.kind==='rebrew'?s.effectChoice.cards.filter(c=>canChooseBrew(s,me,c,true)).map(c=>c.id):[],cards:s.effectChoice.owner===pid?s.effectChoice.cards:undefined}:null,turn:s.turn,round:s.round,draft:s.draft,turnData:s.turnData,market:s.market,deckCount:s.deck.length,discardCount:s.discard.length,log:s.log,finalStarter:s.finalStarter,finalQueue:s.finalQueue,reactionPlayer:s.phase==='reaction'?s.players[s.reactionQueue[s.reactionIndex]]?.id:null,exchange:s.exchange||null,eventSeq:s.eventSeq||0,events:(s.events||[]).map(e=>e.type==='move'&&((e.to.startsWith('hand:')&&e.to!=='hand:'+pid&&(e.from==='deck'||e.from.startsWith('hex:')||e.from.startsWith('hex-choice:')||e.from.startsWith('choice:')))||(e.to.startsWith('hex:'))||(e.to.startsWith('hex-choice:')&&e.to!=='hex-choice:'+pid)||(e.to.startsWith('choice:')&&e.to!=='choice:'+pid&&e.from==='deck'))?{...e,card:{id:e.card.id,type:'back',name:'Карта'}}:e),discardTop:s.discard.slice(-6),trades:s.trades.filter(t=>t.from===pid||t.to===pid).map(t=>({...t})),me:pid,players:s.players.map(p=>({id:p.id,name:p.name,bot:p.bot,host:p.host,character:p.character,hex:p.hex,ownTurns:p.ownTurns||0,tradeWild:p.id===pid?p.tradeWild:undefined,whiteReturnedRound:p.whiteReturnedRound,shortcutUsed:!!recipe(p)?.potionMeta?.shortcut,shortcutRecipe:p.shortcutRecipe||null,mossSwapUsed:!!p.mossSwapUsed,handCount:p.hand.length,hand:p.id===pid?sortHand(p.hand):undefined,recipes:p.recipes,current:p.current,brewPoints:brewScore(p),pendingMultiplier:pendingMultiplier(p),starter:p.starter,brew:p.brew,score:p.score,completed:p.completed}))};}
+export function view(s,pid,version=0){const me=s.players.find(p=>p.id===pid);if(!me)fail('Немає доступу до цієї кімнати.');return {rulesVersion:4,mapRoster:MAP_ROSTER,hexMap:s.hexes?{tiles:HEXES.map((x,i)=>({...x,position:s.hexOrder?.indexOf(i)??i,count:s.hexes[i].length,blocked:hexBlocked(s,me,i)})),skillHex:effectiveHex(s,active(s)),moves:s.phase==='move'&&me===active(s)?hexDestinations(s,me):[],targets:hexSkillTargets(s,me),shown:s.hexShow||0,start:s.turnData.startHex??active(s)?.hex,used:!!s.turnData.hexUsed,perk:hexPerk(s,me),choice:s.hexChoice?.owner===pid?{...s.hexChoice,play:s.hexChoice.kind==='roots-brew'?s.hexChoice.cards.filter(c=>canChooseBrew(s,me,c)).map(c=>c.id):[]}:null,scouted:me.hexScout||{},stats:s.hexStats||{},brewReason:hexBrewReason(s,me)}:null,legal:{play:me.hand.filter(c=>canAdd(s,me,c)).map(c=>c.id),react:me.hand.filter(c=>canSabotage(s,me,c)).map(c=>c.id)},code:s.code,version,targetPotions:s.targetPotions||3,sabotageLimit:3,status:s.status,phase:s.phase,characterAction:characterActionInfo(s,me),effectChoice:s.effectChoice?{id:s.effectChoice.id,owner:s.effectChoice.owner,kind:s.effectChoice.kind,harvest:s.effectChoice.harvest,count:s.effectChoice.cards.length,play:s.effectChoice.owner===pid&&s.effectChoice.kind==='rebrew'?s.effectChoice.cards.filter(c=>canChooseBrew(s,me,c,true)).map(c=>c.id):[],cards:s.effectChoice.owner===pid?s.effectChoice.cards:undefined}:null,turn:s.turn,round:s.round,draft:s.draft,turnData:s.turnData,market:s.market,deckCount:s.deck.length,discardCount:s.discard.length,log:s.log,finalStarter:s.finalStarter,finalQueue:s.finalQueue,reactionPlayer:s.phase==='reaction'?s.players[s.reactionQueue[s.reactionIndex]]?.id:null,exchange:s.exchange||null,eventSeq:s.eventSeq||0,events:(s.events||[]).map(e=>e.type==='move'&&((e.to.startsWith('hand:')&&e.to!=='hand:'+pid&&(e.from==='deck'||e.from.startsWith('hex:')||e.from.startsWith('hex-choice:')||e.from.startsWith('choice:')))||(e.to.startsWith('hex:'))||(e.to.startsWith('hex-choice:')&&e.to!=='hex-choice:'+pid)||(e.to.startsWith('choice:')&&e.to!=='choice:'+pid&&e.from==='deck'))?{...e,card:{id:e.card.id,type:'back',name:'Карта'}}:e),discardTop:s.discard.slice(-6),trades:s.trades.filter(t=>t.from===pid||t.to===pid).map(t=>({...t})),me:pid,players:s.players.map(p=>({id:p.id,name:p.name,bot:p.bot,host:p.host,character:p.character,hex:p.hex,ownTurns:p.ownTurns||0,tradeWild:p.id===pid?p.tradeWild:undefined,whiteReturnedRound:p.whiteReturnedRound,shortcutUsed:!!recipe(p)?.potionMeta?.shortcut,shortcutRecipe:p.shortcutRecipe||null,mossSwapUsed:!!p.mossSwapUsed,handCount:p.hand.length,hand:p.id===pid?sortHand(p.hand):undefined,recipes:p.recipes,current:p.current,brewPoints:brewScore(p),pendingMultiplier:pendingMultiplier(p),starter:p.starter,brew:p.brew,score:p.score,completed:p.completed}))};}
 
 export function sortHand(hand){const order=['red','blue','brown','green','black','purple'];return [...hand].sort((a,b)=>((order.indexOf(a.color)+7)%7)-((order.indexOf(b.color)+7)%7)||(a.variant||0)-(b.variant||0)||a.name.localeCompare(b.name));}
 export function canPlayColor(s,p,c,n=needed(p)){if(!n||c?.type!=='ingredient')return false;if(s.turnData.mushroomCards?.includes(c.id)&&!s.turnData.mushroomWildUsed&&!n.extra||pairMatch(s,c,n)||!n.color||n.extra||c.color===n.color||c.effect==='brew-wild'||echoWildReady(p,c))return true;const ch=character(p);return !!(ch?.wildColor===c.color&&!s.turnData.wildUsed||ch?.mossWild&&c.color==='green'&&!potionMeta(recipe(p)).mossWildUsed||tradeWildReady(s,p,c)||mossFollowReady(s,p));}
@@ -308,29 +308,53 @@ function useHexPerk(s,p,a){
  if(perk.mode==='vodianyk'){moveHex(s,p,a.hex);return;}
  if(perk.mode==='chugaister'){p.hexLocked=true;log(s,p.name+' закриває вхід на '+HEXES[p.hex].name+'.');return;}
  if(perk.mode==='mosskeeper'){
-  p.hexPerkUsed=true;p.hand.push(...s.hexes[a.hex].splice(0));moveHex(s,p,p.hex);return;
+  const harvest=s.hexes[a.hex].splice(0);
+  p.hexPerkUsed=true;p.hand.push(...harvest);
+  hexTravelEvent(s,p,p.hex,p.hex,[p.hex],harvest.map(c=>c.id),[],{harvestHex:a.hex,mode:'mosskeeper'});
+  moveHex(s,p,p.hex);return;
  }
  const candidates=s.players.filter(q=>perk.players.includes(q.id)&&q.hex===a.hex);
  const other=candidates.find(q=>q.id===a.player)||(candidates.length===1?candidates[0]:null);
  if(!other)fail('Оберіть фішку суперника.');
+ const from=p.hex,otherFrom=other.hex;
  [p.hex,other.hex]=[other.hex,p.hex];other.hexStayed=false;
+ hexTravelEvent(s,p,from,p.hex,[from,p.hex],[],[],{mode:'swap',companion:{owner:other.id,from:otherFrom,tile:other.hex}});
  s.turnData.startHex=p.hex;s.turnData.bludUsed=true;
  log(s,p.name+' обмінюється місцями з '+other.name+'.');
+}
+function hexPath(s,p,destination){
+ if(destination===p.hex)return [p.hex];
+ if(adjacentHex(s,p.hex,destination))return [p.hex,destination];
+ const middle=HEXES.findIndex((_,i)=>adjacentHex(s,p.hex,i)&&adjacentHex(s,i,destination)&&!hexBlocked(s,p,i));
+ return middle<0?[p.hex,destination]:[p.hex,middle,destination];
+}
+function hexTravelEvent(s,p,from,tile,path,harvestIds,travelIds,extra={}){
+ const movement=Math.max(0,path.length-1)*620;
+ const harvest=harvestIds.length?600+(harvestIds.length-1)*100:220;
+ const duration=movement+180+harvest+120+(travelIds.length?600:0)+260;
+ s.animationUntil=Date.now()+duration;
+ s.ruleEvents??=[];
+ s.ruleEvents.push({type:'hexTravel',owner:p.id,from,tile,path,harvestIds,travelIds,harvest:harvestIds.length,travelDraw:travelIds.length,duration,...extra});
 }
 function moveHex(s,p,hex){
  if(s.phase!=='move'||!Number.isInteger(hex)||!hexDestinations(s,p).includes(hex))fail('Цей перехід недоступний.');
  p.hexStayed=hex===p.hex;
- if(!p.hexStayed){p.hexLocked=false;p.hex=hex;p.hand.push(...s.hexes[hex].splice(0));draw(s,p,1);}
+ if(!p.hexStayed){
+  const from=p.hex,path=hexPath(s,p,hex),harvest=s.hexes[hex].splice(0);
+  p.hexLocked=false;p.hex=hex;p.hand.push(...harvest);
+  const before=p.hand.length;draw(s,p,1);
+  hexTravelEvent(s,p,from,hex,path,harvest.map(c=>c.id),p.hand.slice(before).map(c=>c.id));
+ }
  p.hexScout={};
  log(s,p.name+(p.hexStayed?' залишається: ':' переходить: ')+HEXES[hex].name+'.');
  end(s,true);
 }
 function hexSkillTargets(s,p){
- const result={payments:[],units:[],borrow:[],cards:[],ready:false};
+ const result={payments:[],units:[],borrow:[],cards:[],ready:false,paid:!!s.turnData.oakPaid};
  if(!s.hexes||p!==active(s)||s.status!=='playing'||p.hex!==(s.turnData.startHex??p.hex)||s.turnData.hexUsed||s.effectChoice||s.hexChoice||!['main','chain','post','defense','move'].includes(s.phase))return result;
  result.ready=true;
  const hex=effectiveHex(s,p),food=p.hand.filter(c=>c.type==='ingredient');
- if(hex===0){result.payments=food.map(c=>c.id);result.borrow=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i));}
+ if(hex===0){result.payments=s.turnData.oakPaid?[]:food.map(c=>c.id);result.borrow=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i));}
  if(hex===1)result.payments=food.map(c=>c.id);
  if(hex===2)result.payments=food.filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
  if(hex===3)result.cards=s.discard.slice(-3).filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
@@ -350,9 +374,15 @@ function useHex(s,p,a){
  if(!targets.ready)fail('Уміння гекса зараз недоступне.');
  const hex=effectiveHex(s,p);
  if(hex===0){
-  if(!targets.payments.includes(a.card)||!targets.borrow.includes(a.hex))fail('Скиньте складник і оберіть сусідню поляну.');
-  s.discard.push(takeCard(p,a.card));s.turnData.borrowedHex=a.hex;
-  log(s,p.name+' запозичує вміння: '+HEXES[a.hex].name+'.');return;
+  const destination=a.hex===0?undefined:a.hex;
+  if(destination!==undefined&&!targets.borrow.includes(destination))fail('Оберіть доступне вміння поляни.');
+  if(!s.turnData.oakPaid){
+   if(!targets.payments.includes(a.card))fail('Спочатку скиньте один інгредієнт на Дуб.');
+   s.discard.push(takeCard(p,a.card));s.turnData.oakPaid=true;
+   log(s,p.name+' оплачує вміння Дуба. Оберіть поляну.');
+  }else if(a.card)fail('Уміння Дуба вже оплачено.');
+  if(destination!==undefined){s.turnData.borrowedHex=destination;log(s,p.name+' запозичує вміння: '+HEXES[destination].name+'.');}
+  return;
  }
  if(hex===1){
   if(!targets.payments.includes(a.card))fail('Оберіть складник для скиду.');
@@ -368,6 +398,7 @@ function useHex(s,p,a){
  }else if(hex===3){
   if(!s.discard.length)fail('Скид порожній.');
   s.hexChoice={owner:p.id,kind:'roots-brew',cards:s.discard.slice(-3)};
+  return;
  }else if(hex===4){
   if(!targets.units.includes(a.target))fail('Оберіть атакований складник.');
   const unit=p.brew.find(b=>b.id===a.target);unit.zeroed=true;unit.effectMuted=true;
@@ -394,7 +425,7 @@ function resolveHexChoice(s,p,a){
   if(!a.card){s.hexChoice=null;return;}
   const card=choice.cards.find(c=>c.id===a.card),index=s.discard.findIndex(c=>c.id===a.card);
   if(!card||index<0||!canChooseBrew(s,p,card))fail('Цей складник зараз недоступний.');
-  s.discard.splice(index,1);p.hand.push(card);s.hexChoice=null;play(s,p,card.id);return;
+  s.discard.splice(index,1);p.hand.push(card);s.hexChoice=null;s.turnData.hexUsed=true;play(s,p,card.id);return;
  }
  // Finish choices created by a game that was running before this update.
  const card=choice.cards.find(c=>c.id===a.card);
@@ -461,3 +492,15 @@ function echoWildReady(p,c){
 }
 
 
+
+function hexBrewReason(s,p){
+ if(p!==active(s))return 'Уміння доступне у ваш хід.';
+ if(!recipe(p))return 'Спочатку оберіть рецепт на своєму столі.';
+ if(!s.discard.length)return 'Скид порожній — переглядати нічого.';
+ const top=s.discard.slice(-3).filter(c=>c.type==='ingredient');
+ if(!top.some(c=>canChooseBrew(s,p,c))){
+  if(top.some(c=>canChooseBrew(s,p,c,true)))return 'Додавання вже витрачено. Потрібне продовження або новий хід.';
+  return 'Серед трьох верхніх карт немає складника для доступної позиції рецепта.';
+ }
+ return 'Перетягніть підсвічений складник на свій гекс або казан. Він витратить доступне додавання.';
+}

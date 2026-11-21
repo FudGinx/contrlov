@@ -45,19 +45,22 @@ function hexField(){
   const canPay=(canUseCurrentHex()||choice)&&i===p.hex;
   const people=state.players.filter(q=>q.hex===i);
   const tokens=people.map(q=>'<span class="hex-token '+(q.id===p.id&&(moving||perk?.mode==='blud')?'hex-draggable':'')+'" data-hex-token="'+esc(q.id)+'" style="--token-hue:'+(state.players.indexOf(q)*61)+'" aria-label="'+esc(q.name)+'">'+tablePortrait(q)+'</span>').join('');
-  return '<div class="hex-cell" style="--hx:'+x+'%;--hy:'+y+'%"><button class="hex-tile '+(i===p.hex?'here ':'')+(reachable?'hex-reachable ':'')+(tile.blocked?'hex-blocked':'')+'" data-hex-tile="'+i+'" data-art="'+i+'" '+(canBorrow||canPay?'data-drop="hex-payment" ':'')+' aria-label="'+esc(tile.name)+'"><span class="hex-crest">'+hexSigns[i]+'</span><span class="hex-stock">'+(tile.blocked?'ᛟ ': '')+(tile.count?'▰ '+tile.count:'—')+'</span><strong>'+esc(tile.name)+'</strong></button><div class="hex-tokens">'+tokens+'</div></div>';
+  return '<div class="hex-cell" '+(canBorrow||canPay?'data-drop="hex-payment" data-hex-destination="'+i+'" ':'')+'style="--hx:'+x+'%;--hy:'+y+'%"><button class="hex-tile '+(i===p.hex?'here ':'')+(reachable?'hex-reachable ':'')+(tile.blocked?'hex-blocked':'')+'" data-hex-tile="'+i+'" data-art="'+i+'" '+(canBorrow||canPay?'data-drop="hex-payment" ':'')+' aria-label="'+esc(tile.name)+'"><span class="hex-crest">'+hexSigns[i]+'</span><span class="hex-stock">'+(tile.blocked?'ᛟ ': '')+(tile.count?'▰ '+tile.count:'—')+'</span><strong>'+esc(tile.name)+'</strong></button><div class="hex-tokens">'+tokens+'</div></div>';
  }).join('');
  const selected=hexMenu??p.hex,shown=selected===p.hex?map.tiles[effective]:map.tiles[selected],here=selected===p.hex;
  let controls='';
  if(choice&&choice.kind!=='roots-brew'){
   controls='<p>'+(choice.kind==='seed'?'Оберіть карту й торкніться гекса для посіву.':'Завершіть вибір, розпочатий до оновлення.')+'</p><div class="hex-options">'+choice.cards.map(c=>'<button data-hex-action="legacyChoice" data-hex-card="'+esc(c.id)+'">'+esc(c.name)+'</button>').join('')+'</div>';
  }else if(choice){
-  controls='<p>Перетягніть складник зі скиду на свій гекс або казан.</p><div class="hex-choice-cards" data-zone="hex-choice:'+p.id+'">'+choice.cards.map(c=>tableCard(c,'hex-choice',p.id,choice.play?.includes(c.id)?'data-combo-ready="true"':'data-combo-unavailable="true"')).join('')+'</div><button data-hex-action="skipChoice">Пропустити</button>';
+  controls='<p class="hex-skill-status" role="status">'+esc(map.brewReason)+'</p><div class="hex-choice-cards" data-zone="hex-choice:'+p.id+'">'+choice.cards.map(c=>tableCard(c,'hex-choice',p.id,choice.play?.includes(c.id)?'data-combo-ready="true"':'data-combo-unavailable="true"')).join('')+'</div><button data-hex-action="skipChoice">Повернутися до варки</button>';
  }else if(here){
   controls='<div class="hex-options">'+(moving?'<button data-hex-action="stay">Залишитися</button>':'')+'</div>';
   if(canUseCurrentHex()){
-   if(effective===0)controls+='<p>Перетягніть складник із руки на сусідню поляну, щоб запозичити її вміння.</p>';
-   else if(effective===3)controls+='<button data-hex-action="roots" '+(!state.discardCount?'disabled':'')+'>Відкрити 3 верхні карти скиду</button>';
+   if(effective===0){
+    controls+='<p>'+(targets.paid?'Інгредієнт сплачено. Оберіть уміння поляни.':'Перетягніть будь-який інгредієнт на Дуб. Потім оберіть уміння поляни.')+'</p>';
+    if(targets.paid)controls+='<div class="hex-borrow-options">'+targets.borrow.map(i=>'<button data-hex-action="borrow" data-hex-target="'+i+'">'+hexSigns[i]+' '+esc(map.tiles[i].name)+'</button>').join('')+'</div>';
+   }
+   else if(effective===3)controls+='<p class="hex-skill-status" role="status">'+esc(map.brewReason)+'</p><button data-hex-action="roots" '+(!state.discardCount?'disabled':'')+'>Переглянути скид · '+Math.min(3,state.discardCount)+'/3</button>';
    else if(effective===4)controls+='<p>Перетягніть атакований складник на свій гекс, щоб очистити ціною його очок та ефекту.</p>';
    else controls+='<p>'+(effective===5?'Перетягніть Комаху з руки на складник нижче.':effective===6?'Перетягніть Рідину на складник з ефектом нижче.':effective===2?'Перетягніть складник із руки на свій гекс: 0 очок та продовження.':'Перетягніть складник із руки на свій гекс: пошук Грибів.')+'</p>';
    if([4,5,6].includes(effective))controls+='<div class="hex-choice-cards">'+p.brew.filter(b=>targets.units?.includes(b.id)).map(b=>'<div class="hex-unit-target" data-drop="hex-unit" data-player="'+p.id+'" data-target="'+b.id+'">'+tableCard(b.card,effective===4?'hex-unit':'',p.id)+(effective===4?'<button data-hex-action="clean" data-hex-target="'+b.id+'">Очистити</button>':'')+'</div>').join('')+'</div>';
@@ -69,7 +72,7 @@ function hexField(){
  if(perk?.mode==='blud')controls+='<div class="hex-options">'+state.players.filter(q=>perk.players?.includes(q.id)).map(q=>'<button data-hex-action="swap" data-hex-player="'+q.id+'" data-hex-target="'+q.hex+'">Обмінятися з '+esc(q.name)+'</button>').join('')+'</div>';
  if(perk?.mode==='chugaister')controls+='<button data-hex-action="lock">Закрити вхід</button>';
  if(perk?.mode==='mosskeeper'&&perk.targets.includes(selected))controls+='<button data-hex-action="character">Зібрати мохом</button>';
- return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><button class="ghost hex-close" data-table-view="brew" aria-label="Закрити мапу">✕</button><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
+ return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-piles" aria-label="Карти на мапі"><div class="hex-map-pile" data-map-zone="deck"><span>Колода</span><b>'+state.deckCount+'</b></div><div class="hex-map-pile" data-map-zone="discard" data-drop="discard"><span>Скид</span><b>'+state.discardCount+'</b></div></div><div class="hex-field">'+field+'</div><aside class="hex-panel"><button class="ghost hex-close" data-table-view="brew" aria-label="Закрити мапу">✕</button><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
 }
 const previousHexShell=updateTableShell;
 updateTableShell=function(html){
@@ -87,7 +90,7 @@ updateTableShell=function(html){
    const overlay=root.querySelector('.hex-overlay');
    if(!hexDrag)overlay.dataset.markup=markup;
   }else existing?.remove();
-  if(tableView==='hex'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  if(tableView==='hex'&&!hexPlayback&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
    for(const token of document.querySelectorAll('[data-hex-token]')){
     const from=old.get(token.dataset.hexToken),to=token.getBoundingClientRect();
     if(from&&token.animate&&(Math.abs(from.x-to.x)>5||Math.abs(from.y-to.y)>5))token.animate([{transform:'translate('+(from.x-to.x)+'px,'+(from.y-to.y)+'px)'},{transform:'translate(0,0)'}],{duration:390,easing:'ease-out'});
@@ -100,6 +103,7 @@ updateTableShell=function(html){
 let hexMenuTurn=null;
 const previousHexRender=render;
 let hexAutoFocus=null,lastHexShown=null,hexDrag=null,hexMossPayment=null,hexMotionUntil=0;
+let hexPlayback=null,hexPlaybackQueued=null;
 const applyStateBeforeHexResult=applyState;
 applyState=function(next){
  if(state?.me===next.me&&state.players.find(p=>p.id===state.me)?.hex!==next.players.find(p=>p.id===next.me)?.hex)hexMenu=null;
@@ -107,6 +111,7 @@ applyState=function(next){
  return applyStateBeforeHexResult(next);
 };
 render=function(){
+ if(hexPlayback){tableView='hex';previousHexRender();updateHexPlaybackOverlay();return;}
  const turn=state?.hexMap?state.code+':'+state.round+':'+state.turn:null;
  if(turn!==hexMenuTurn){hexMenuTurn=turn;hexMossPayment=null;hexBludSource=null;hexMenu=null;hexSkillOpen=false;hexScouting=false;hexScoutTiles=[];}
  const reacts=state?.status==='playing'&&state.phase==='reaction'&&state.reactionPlayer===state.me;
@@ -132,7 +137,7 @@ const previousHexPhase=phaseInfo;
 phaseInfo=function(){return state?.hexMap&&state.phase==='move'?[isMine()?'Оберіть шлях':'Рух суперника','Один крок або залишитися']:previousHexPhase();};
 function canUseCurrentHex(){
  const map=state?.hexMap,p=me();
- return !!(map&&p&&isMine()&&p.hex===map.start&&!map.used&&!map.choice&&!state.effectChoice&&['main','chain','post','defense','move'].includes(state.phase));
+ return !!(!hexPlayback&&map&&p&&isMine()&&p.hex===map.start&&!map.used&&!map.choice&&!state.effectChoice&&['main','chain','post','defense','move'].includes(state.phase));
 }
 function isHexPayment(c){
  return !!(canUseCurrentHex()&&c?.type==='ingredient'&&state.hexMap.targets?.payments?.includes(c.id));
@@ -144,14 +149,14 @@ legalTableTarget=function(src,target){
   if(choice.kind==='stoke')return d.drop==='discard'&&choice.cards.some(c=>c.id===src.card);
   if(choice.kind==='rebrew')return d.drop==='hand'||d.player===p.id&&['brew','ingredient'].includes(d.drop)&&choice.play?.includes(src.card);
  }
- if(src?.kind==='hex-choice')return !!(state.hexMap?.choice?.play?.includes(src.card)&&isMine()&&(d.drop==='hex-payment'&&Number(d.hexTile)===p.hex||d.player===p.id&&['brew','ingredient'].includes(d.drop)));
+ if(src?.kind==='hex-choice')return !!(state.hexMap?.choice?.play?.includes(src.card)&&isMine()&&(d.drop==='hex-payment'&&Number(d.hexTile??d.hexDestination)===p.hex||d.player===p.id&&['brew','ingredient'].includes(d.drop)));
  if(tableView==='hex'){
   if(d.drop==='hex-unit')return src?.kind==='hand'&&isHexPayment(p.hand.find(c=>c.id===src.card))&&state.hexMap.targets?.units?.includes(d.target);
   if(d.drop==='hex-payment'){
    if(src?.kind==='hex-unit')return state.hexMap.skillHex===4&&state.hexMap.targets.units.some(id=>p.brew.some(b=>b.id===id&&b.card.id===src.card));
    if(src?.kind!=='hand'||!isHexPayment(p.hand.find(c=>c.id===src.card)))return false;
-   if(state.hexMap.skillHex===0)return state.hexMap.targets.borrow.includes(Number(d.hexTile));
-   return Number(d.hexTile)===p.hex&&[1,2].includes(state.hexMap.skillHex);
+   if(state.hexMap.skillHex===0)return Number(d.hexTile??d.hexDestination)===p.hex||state.hexMap.targets.borrow.includes(Number(d.hexTile??d.hexDestination));
+   return Number(d.hexTile??d.hexDestination)===p.hex&&[1,2].includes(state.hexMap.skillHex);
   }
  }
  return tableTargetBeforeHex(src,target);
@@ -171,8 +176,9 @@ tableDrop=async function(src,target){
  if(tableView==='hex'&&['hex-payment','hex-unit'].includes(d.drop)){
   if(!legalTableTarget(src,target))return;
   if(src.kind==='hex-unit')return act({type:'hexUse',target:p.brew.find(b=>b.card.id===src.card)?.id});
+  if(state.hexMap.skillHex===0)hexMenu=p.hex;
   const flower=state.hexMap.skillHex===2;
-  await act({type:'hexUse',card:src.card,target:d.target,hex:Number(d.hexTile)});
+  await act({type:'hexUse',card:src.card,target:d.target,hex:Number(d.hexTile??d.hexDestination)});
   if(flower&&state.turnData.flowerCard===src.card){
    tableView='brew';await act({type:'play',card:src.card});
   }
@@ -193,16 +199,17 @@ handleFolkloreClick=function(e){
  const button=e.target.closest('[data-hex-tile],[data-hex-action]');
  if(!button)return previousHexClick(e);
  e.preventDefault();e.stopImmediatePropagation();
- if(busy||!state?.hexMap)return true;
+ if(busy||hexPlayback||!state?.hexMap)return true;
  const d=button.dataset,p=me();
  if(d.hexTile!==undefined){
-  if(state.hexMap.choice?.kind==='seed'&&hexSeedCard){const card=hexSeedCard;hexSeedCard=null;act({type:'hexChoose',card,hex:Number(d.hexTile)});}
+  if(state.hexMap.choice?.kind==='seed'&&hexSeedCard){const card=hexSeedCard;hexSeedCard=null;act({type:'hexChoose',card,hex:Number(d.hexTile??d.hexDestination)});}
   else{hexMenu=Number(d.hexTile);hexSkillOpen=hexMenu===p.hex;render();}
  }
  else if(d.hexAction==='rules')modal('Правила мапи','<ol class="rules-list"><li>Уміння гекса початку ходу доступне до варки, між складниками та після саботажу. Кожне вміння — раз за хід.</li><li>Після варки перетягніть фішку на доступний гекс. Урожай і одна карта за рух надходять одразу. Водяник може пройти два кроки, урожай збирає у кінцевій точці.</li><li>Якщо фішка повернулася на той самий гекс — підтвердьте залишення.</li><li>Наприкінці круга виростає по карті. Перший за чергою з тих, хто залишився, отримує її.</li><li>Чугайстер закриває вхід, доки стоїть на зовнішньому гексі. Сусіди можуть вільно піти. Блуд обмінює фішки й отримує доступ до нового вміння.</li></ol>',true);
  else if(d.hexAction==='stay'&&isMine()&&state.phase==='move')act({type:'hexMove',hex:p.hex});
  else if(d.hexAction==='go'&&isMine()&&state.hexMap.moves?.includes(hexMenu))act({type:'hexMove',hex:hexMenu});
  else if(d.hexAction==='roots')act({type:'hexUse'});
+ else if(d.hexAction==='borrow')act({type:'hexUse',hex:Number(d.hexTarget)});
  else if(d.hexAction==='clean')act({type:'hexUse',target:d.hexTarget});
  else if(d.hexAction==='skipChoice')act({type:'hexChoose'});
  else if(d.hexAction==='legacyChoice'){if(state.hexMap.choice?.kind==='seed'){hexSeedCard=d.hexCard;render();}else act({type:'hexChoose',card:d.hexCard});}
@@ -226,7 +233,7 @@ function stopHexDrag(event,cancel=false){
 }
 document.addEventListener('pointerdown',event=>{
  const token=event.target.closest('.hex-draggable');
- if(!token||event.button!==0||busy||hexDrag)return;
+ if(!token||event.button!==0||busy||hexDrag||hexPlayback)return;
  event.preventDefault();
  const ghost=token.cloneNode(true);ghost.classList.add('hex-ghost');
  ghost.style.left=event.clientX+'px';ghost.style.top=event.clientY+'px';
@@ -312,3 +319,106 @@ inspectTable=function(el){
  if(unit.echoResonance)copy?.insertAdjacentHTML('beforeend','<p><b>Відлуння скопіювало резонанс: власні та підкинуті складники цього типу дають +1.</b></p>');
 };
 
+
+const applyStateBeforeTravel=applyState;
+applyState=function(next){
+ if(hexPlayback){
+  if(next.code!==hexPlayback.next.code)cancelHexPlayback();
+  else{if(next.version>hexPlayback.next.version&&(!hexPlaybackQueued||next.version>=hexPlaybackQueued.version))hexPlaybackQueued=next;return;}
+ }
+ const travel=state?.code===next.code&&next.events?.filter(e=>e.type==='hexTravel'&&e.seq>seenTableSeq).at(-1);
+ if(travel&&state.hexMap&&typeof document.createElement==='function'){beginHexPlayback(next,travel);return;}
+ return applyStateBeforeTravel(next);
+};
+function mapPoint(hex){
+ const rect=document.querySelector('.hex-overlay [data-hex-tile="'+hex+'"]')?.getBoundingClientRect();
+ return rect?{x:rect.x+rect.width/2,y:rect.y+rect.height/2}:null;
+}
+function playbackLater(playback,callback,delay){
+ playback.timers.push(setTimeout(()=>{if(hexPlayback===playback)callback();},delay));
+}
+function updateHexPlaybackOverlay(){
+ const playback=hexPlayback,map=document.querySelector('.hex-overlay');
+ if(!playback||!map)return;
+ document.querySelector('.tabletop')?.classList.add('hex-playback-active');
+ let status=map.querySelector('.hex-playback-status');
+ if(!status){status=document.createElement('div');status.className='hex-playback-status';status.setAttribute('role','status');map.append(status);}
+ status.dataset.stage=playback.stage;
+ status.innerHTML='<b>'+esc(playback.name)+' · '+esc(playback.title)+'</b><span>'+esc(playback.detail)+'</span>';
+ for(const owner of playback.owners){const token=map.querySelector('[data-hex-token="'+owner+'"]');if(token)token.style.visibility='hidden';}
+}
+function playbackStage(playback,stage,title,detail){
+ playback.stage=stage;playback.title=title;playback.detail=detail;updateHexPlaybackOverlay();
+}
+function playbackPiece(playback,owner,path){
+ const player=playback.next.players.find(p=>p.id===owner),token=document.querySelector('.hex-overlay [data-hex-token="'+owner+'"]');
+ const rect=token?.getBoundingClientRect(),destination=mapPoint(path.at(-1));
+ if(!player||!destination)return;
+ const source=rect?{x:rect.x+rect.width/2,y:rect.y+rect.height/2}:mapPoint(path[0]);
+ if(!source)return;
+ const points=[source,...path.slice(1).map(mapPoint).filter(Boolean)];
+ const piece=document.createElement('div');piece.className='hex-travel-piece';piece.dataset.owner=owner;
+ piece.innerHTML=tablePortrait(player);document.body.append(piece);playback.nodes.push(piece);
+ const frames=points.map((point,i)=>({transform:'translate('+(point.x-26)+'px,'+(point.y-26)+'px)',offset:i/(points.length-1)}));
+ if(playback.reduced)piece.style.transform=frames.at(-1).transform;
+ else piece.animate(frames,{duration:Math.max(1,path.length-1)*620,easing:'ease-in-out',fill:'forwards'}).finished.catch(()=>{});
+}
+function playbackResources(playback,from,count,label){
+ const target=playback.event.owner===state.me?document.querySelector('.table-hand-area'):document.querySelector('[data-zone="avatar:'+playback.event.owner+'"]');
+ const rect=target?.getBoundingClientRect();
+ if(!from||!rect)return;
+ const to={x:rect.x+Math.min(rect.width/2,110),y:rect.y+rect.height/2};
+ const caption=document.createElement('div');caption.className='hex-resource-caption';caption.textContent=label;
+ Object.assign(caption.style,{left:Math.max(5,from.x-45)+'px',top:Math.max(75,from.y-30)+'px'});
+ document.body.append(caption);playback.nodes.push(caption);
+ for(let i=0;i<count&&!playback.reduced;i++){
+  const card=document.createElement('div');card.className='hex-resource-flight';card.textContent='❧';card.dataset.resourceSource=playback.stage;
+  Object.assign(card.style,{left:from.x-21+'px',top:from.y-29+'px'});document.body.append(card);playback.nodes.push(card);
+  card.animate([{transform:'translate(0,0) rotate(-8deg) scale(.8)',opacity:0},{transform:'translate(0,-12px) scale(1)',opacity:1,offset:.15},{transform:'translate('+(to.x-from.x)+'px,'+(to.y-from.y)+'px) rotate(6deg) scale(.75)',opacity:1}],{duration:600,delay:i*100,easing:'cubic-bezier(.3,.1,.2,1)',fill:'both'}).finished.then(()=>card.remove(),()=>card.remove());
+ }
+ playbackLater(playback,()=>caption.remove(),600+Math.max(0,count-1)*100);
+}
+function beginHexPlayback(next,event){
+ const actor=next.players.find(p=>p.id===event.owner);
+ if(!actor){applyStateBeforeTravel(next);return;}
+ const playback={next,event,name:actor.name,stage:'movement',title:event.mode==='swap'?'Обмін фішками':event.mode==='mosskeeper'?'Мохові пагони':'Перехід',detail:next.hexMap.tiles[event.from].name+' → '+next.hexMap.tiles[event.tile].name,owners:event.path.length>1?[event.owner,...(event.companion?[event.companion.owner]:[])]:[],timers:[],nodes:[],reduced:matchMedia('(prefers-reduced-motion: reduce)').matches};
+ hexPlayback=playback;hexPlaybackQueued=null;tableView='hex';hexMenu=null;render();
+ if(event.path.length>1)playbackPiece(playback,event.owner,event.path);
+ if(event.companion)playbackPiece(playback,event.companion.owner,[event.companion.from,event.companion.tile]);
+ const movement=Math.max(0,event.path.length-1)*620;
+ playbackLater(playback,()=>{
+  document.querySelector('.hex-overlay [data-hex-tile="'+(event.harvestHex??event.tile)+'"]')?.classList.add('hex-arrival-glow');
+  playbackStage(playback,'arrival','Прибув на поляну',next.hexMap.tiles[event.tile].name);
+ },movement);
+ const harvestStart=movement+180,harvestDuration=event.harvest?600+(event.harvest-1)*100:220;
+ playbackLater(playback,()=>{
+  playbackStage(playback,'harvest',event.harvest?'Збирає урожай · +'+event.harvest:'Урожаю немає',next.hexMap.tiles[event.harvestHex??event.tile].name);
+  if(event.harvest)playbackResources(playback,mapPoint(event.harvestHex??event.tile),event.harvest,'Урожай +'+event.harvest);
+ },harvestStart);
+ playbackLater(playback,()=>{
+  const stock=document.querySelector('.hex-overlay [data-hex-tile="'+(event.harvestHex??event.tile)+'"] .hex-stock');
+  if(stock&&event.harvest)stock.textContent='—';
+ },harvestStart+harvestDuration);
+ const travelStart=harvestStart+harvestDuration+120;
+ if(event.travelDraw)playbackLater(playback,()=>{
+  playbackStage(playback,'travel-card','Карта за рух · +'+event.travelDraw,'З колоди в руку '+actor.name);
+  const rect=document.querySelector('.hex-map-pile[data-map-zone="deck"]')?.getBoundingClientRect();
+  if(rect)playbackResources(playback,{x:rect.x+rect.width/2,y:rect.y+rect.height/2},event.travelDraw,'За крок +'+event.travelDraw);
+ },travelStart);
+ playbackLater(playback,()=>{
+  const queued=hexPlaybackQueued,ids=new Set([...event.harvestIds,...event.travelIds]);
+  const rendered={...next,events:next.events.filter(e=>e.type!=='hexTravel'&&!(e.type==='hexResult'&&e.owner===event.owner)&&!(e.type==='move'&&ids.has(e.card.id)))};
+  cancelHexPlayback();tableView=next.phase==='move'||next.hexMap.choice?'hex':'brew';tablePlayer=next.players[next.turn]?.id;
+  applyStateBeforeTravel(rendered);
+  if(queued)applyState(queued);
+ },event.duration);
+}
+function cancelHexPlayback(){
+ if(!hexPlayback)return;
+ hexPlayback.timers.forEach(clearTimeout);hexPlayback.nodes.forEach(node=>node.remove());
+ document.querySelector('.tabletop')?.classList.remove('hex-playback-active');
+ document.querySelector('.hex-playback-status')?.remove();
+ document.querySelectorAll('.hex-arrival-glow').forEach(node=>node.classList.remove('hex-arrival-glow'));
+ document.querySelectorAll('.hex-overlay [data-hex-token]').forEach(node=>node.style.visibility='');
+ hexPlayback=null;hexPlaybackQueued=null;
+}
