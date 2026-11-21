@@ -113,10 +113,10 @@ async function aiHints(word,letter){
  const prompt='Ты редактор русской игры в ассоциации. Загадано существительное «'+word+'». Разрешенная первая буква подсказок: «'+letter+'». Верни строго JSON объект {"hints":["слово",...]} с 5–10 РАЗНЫМИ полезными однословными русскими подсказками. Подсказки должны помогать догадаться о загаданном слове: свойства, действия, части, окружение, близкие понятия, синонимы. Каждая начинается с указанной буквы, никаких словосочетаний, чисел, имен собственных, служебных и общих слов вроде один, другой, который. Не используй загаданное слово и однокоренные слова. Не придумывай бессмысленные связи. Если не можешь придумать хорошую подсказку, дай меньше.';
  try{
   const model=await availableGroqModel();
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+process.env.GROQ_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'Return valid JSON only. Russian language.'},{role:'user',content:prompt}],temperature:0.35,max_tokens:450,response_format:{type:'json_object'}}),signal:AbortSignal.timeout(15000)});
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+process.env.GROQ_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'Return valid JSON only. Russian language.'},{role:'user',content:prompt}],temperature:0.35,max_tokens:450}),signal:AbortSignal.timeout(15000)});
   if(!r.ok){const detail=(await r.text()).slice(0,500);throw Error('Groq status '+r.status+' '+detail)}
   const data=await r.json();
-  const parsed=JSON.parse(data.choices?.[0]?.message?.content||'{}');
+  const raw=String(data.choices?.[0]?.message?.content||'');const match=raw.match(/\{[\s\S]*\}/);const parsed=JSON.parse(match?.[0]||'{}');
   const clean=[...new Set((Array.isArray(parsed.hints)?parsed.hints:[]).map(x=>normalize(x).trim()))].filter(x=>/^[а-яё]{3,}$/u.test(x)&&x.startsWith(normalize(letter))&&!stop.has(x)&&x!==normalize(word)).slice(0,10);
   if(clean.length)aiCache.set(key,clean);
   if(aiCache.size>1000)aiCache.delete(aiCache.keys().next().value);
