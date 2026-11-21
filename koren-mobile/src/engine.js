@@ -2,7 +2,7 @@ export const COLORS=[{id:'red',name:'Гриби',symbol:'♠',hex:'#d7755e',art:
 export const CHARACTERS=[
  {id:'mavka',name:'Мавка',title:'Моховий настил',portrait:0,art:8,mossFollow:true,text:'Раз на зілля відразу після свого Моху ❧ можна додатково викласти будь-який інгредієнт на наступну позицію незалежно від її типу. Перк витрачається лише коли ви додали цю карту.'},
  {id:'znakhar',name:'Знахар',title:'Чистий відвар',portrait:1,art:7,plainExtra:true,text:'Раз на зілля після власного складника без ефекту на +1 або +2 слави можете додати ще один за звичайними правилами.'},
- {id:'vidma',name:'Відьма',title:'Грибна отрута',portrait:2,art:6,harvest:'red',fungusSabotage:true,text:'Гриби ♠ можна підкидати як саботаж до будь-якого типу. На початку ходу замість однієї випадкової карти можна вибрати Гриб з усього скиду. Загалом добираєте 3.'},
+ {id:'vidma',name:'Відьма',title:'Грибна отрута',portrait:2,art:6,harvest:'red',fungusSabotage:true,text:'Гриби ♠ можна підкидати як саботаж до будь-якого типу. На початку ходу отримайте Гриб з усього скиду або випадкову карту. Без мапи це заміна однієї з трьох карт добору.'},
  {id:'chumak',name:'Чумак',title:'Крам із дороги',portrait:3,art:7,tradeExtra:true,text:'Раз на зілля після звичайного додавання можете додатково зварити складник, отриманий в обмін. Тип має відповідати позиції. Право діє до кінця наступного вашого ходу.'},
  {id:'vorozhka',name:'Ворожка',title:'Нульова змова',portrait:4,art:6,text:'Раз за партію при обриві рецепта з 4–5 позицій отримайте +3 слави, якщо закрили щонайменше три різні позиції справжніми складниками.'},
  {id:'travnytsia',name:'Травниця',title:'Парне настоювання',portrait:5,art:8,characterAction:'pair',text:'Раз на зілля перед варкою оберіть наступні дві позиції. Спочатку зіграйте Квіти, потім додатково Рідину. Лише один тип може не збігатися з рецептом. Звичайні ефекти працюють.'},
@@ -15,17 +15,20 @@ export const CHARACTERS=[
  {id:'mosskeeper',mapTitle:'Мохові пагони',mapText:'Раз за зілля замість кроку зберіть увесь урожай із сусіднього гекса без фішок. Ви лишаєтеся на місці й не добираєте карту за крок.',reserve:true,name:'Моховик',title:'Мох замість зілля',portrait:15,portraitSet:'new-perks-v1',art:8,harvest:'green',mossWild:true,text:'При доборі можна вибрати Мох ❧ зі скиду замість однієї випадкової карти. Одну будь-яку позицію кожного зілля можна закрити Мхом. Звичайне додавання витрачається.'},
  {id:'kharakternyk',name:'Козак-характерник',title:'Лови кулю',portrait:0,portraitSet:'folklore-v3',art:7,characterAction:'catch',text:'Раз за свій хід після відповідей скиньте інгредієнт того самого напечатаного типу, що саботаж у вашому котлі. Заберіть цю карту саботажу собі в руку. Її негатив зникає, потім карту можна варити або підкидати.'},
  {id:'perelesnyk',name:'Перелесник',title:'Чуже обличчя',portrait:1,portraitSet:'folklore-v3',art:6,characterAction:'swap',text:'У свій хід замість варки обміняйте активний котел з чужим незавершеним. У своєму потрібно хоча б 2 інгредієнти. Переходять рецепт, складники, саботаж і відмітки. Кожен котел може брати участь лише один раз.'},
- {id:'blud',mapTitle:'Збити зі стежки',mapText:'Раз за зілля перед кроком перенесіть одну закриту карту між двома сусідніми з вами гексами. Потім можете піти або лишитися.',name:'Блуд',title:'Збити зі стежки',portrait:2,portraitSet:'folklore-v3',art:6,characterAction:'extend',text:'Раз за свій хід без витрати варки можна подовжити чужий незавершений рецепт. Виберіть один із двох випадкових типів і скиньте складник цього типу. Кожен котел можна подовжити лише раз.'},
- {id:'chugaister',name:'Чугайстер',title:'Захист лісу',portrait:3,portraitSet:'folklore-v3',art:7,characterAction:'aid',text:'Раз на своє зілля скиньте складник і вимкніть один негатив у чужому котлі. Отримайте одне додаткове додавання цього ходу.'},
- {id:'vodianyk',mapTitle:'Підземна течія',mapText:'Раз за зілля перейдіть з зовнішнього гекса на несусідній зовнішній. Збираєте урожай і карту за крок тільки на кінцевому гексі.',reserve:true,name:'Водяник',title:'Господар вод',portrait:4,portraitSet:'folklore-v3',art:7,harvest:'purple',color:'purple',text:'Власні Рідини ◈ у своєму зіллі мають +1 слави. При початковому доборі можна вибрати Рідину зі скиду замість однієї випадкової карти. Саботаж не посилюється.'},
+ {id:'blud',mapTitle:'Збити зі стежки',mapText:'Раз за свій хід до вміння поляни обміняйте свою фішку з чужою. Одразу можна застосувати вміння нової поляни. Урожай залишається на гексах, бонус за крок спрацьовує лише при звичайному русі.',name:'Блуд',title:'Збити зі стежки',portrait:2,portraitSet:'folklore-v3',art:6,characterAction:'extend',text:'Раз за свій хід без витрати варки можна подовжити чужий незавершений рецепт. Виберіть один із двох випадкових типів і скиньте складник цього типу. Кожен котел можна подовжити лише раз.'},
+ {id:'chugaister',mapTitle:'Варта лісу',mapText:'Можете закрити вхід на зовнішній гекс, де стоїте. Захист діє, доки ви лишаєтеся там. Ті, хто вже поруч, можуть піти, лишитися та застосувати вміння поляни.',name:'Чугайстер',title:'Захист лісу',portrait:3,portraitSet:'folklore-v3',art:7,characterAction:'aid',text:'Раз на своє зілля скиньте складник і вимкніть один негатив у чужому котлі. Отримайте одне додаткове додавання цього ходу.'},
+ {id:'vodianyk',mapTitle:'Підземна течія',mapText:'Кожен хід можете пройти до двох кроків. Збираєте урожай кінцевого гекса й отримуєте одну карту за рух.',reserve:true,name:'Водяник',title:'Господар вод',portrait:4,portraitSet:'folklore-v3',art:7,harvest:'purple',color:'purple',text:'Власні Рідини ◈ у своєму зіллі мають +1 слави. При початковому доборі можна вибрати Рідину зі скиду замість однієї випадкової карти. Саботаж не посилюється.'},
  {id:'domovyk',name:'Домовик',title:'Під захистом хати',portrait:5,portraitSet:'folklore-v3',art:7,keepsStarter:true,text:'Після завершення зілля можете залишити чистий складник для початку наступного рецепта. Якщо його тип відповідає першій позиції, покладіть його без витрати варки та без повторного ефекту. Одну карту можна перенести лише раз.'}
 ];
+export const MAP_ROSTER=['mavka','vidma','chumak','molfar','quietbrewer','mosskeeper','kharakternyk','blud','vodianyk','chugaister'];
 const NAMES=[['Лисичка','Вогняний опеньок','Сонний мухомор','Боровик'],['Барвінок','Цвіт папороті','Нічна волошка','Сон-трава'],['Корінь мандрівника','Вузлуватий корінець','Корінь пам’яті','Дідова морква'],['Срібний мох','Мох-перелесник','Роса на лишайнику','Лісова борода'],['Крило жука','Вусик світляка','Пилок нічниці','Бурштиновий жук'],['Туман у пляшці','Жива крапля','Місячна роса','Сік калини']];
 export function shuffle(a,rng=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 let seq=0;function id(){return 'c'+(++seq).toString(36)+'-'+Math.random().toString(36).slice(2,7);}
 const NEW_NAMES=[["Червона сироїжка","Рижик","Сморчок","Печериця","Гриб-парасолька"],["Льон","Дзвоники","Цикорій","Незабудка","Ірис"],["Корінь оману","Корінь лопуха","Корінь дягелю","Корінь калгану","Корінь аїру"],["Зозулин льон","Сфагнум","Лишайник дубовий","Мох подушковий","Мох пірчастий"],["Божа корівка","Коник","Бабка","Цвіркун","Метелик"],["Березовий сік","Карпатська живиця","Чорничний настій","Квітковий нектар","Зоряний еліксир"]];
+const COMBO_EFFECTS=['rebrew','echo','stoke'];
+const COMBO_NAMES=[['Лисиччин виводок','Фіолетова рядовка','Трутовик жаркий'],['Макове повернення','Звіробійне відлуння','Ромашковий жар'],['Корінь мандрагори','Валеріановий корінець','Корінь живокосту'],['Ягель сріблястий','Мох папоротевий','Мох зозулин'],['Жук-смарагд','Бджола медоносна','Стрілка блакитна'],['Джерельна вода','Бурштинова настоянка','Калиновий сік']];
 export const INGREDIENT_EFFECTS=[{id:'sift',points:0,negative:-2},{id:'brew-wild',points:0,negative:-3},{id:'recover',points:1,negative:-2},{id:'amplify',points:0,negative:-3},{id:'resonance',points:1,negative:-3}];
-export function deck(){const a=[];COLORS.forEach((c,ci)=>NAMES[ci].forEach((n,i)=>{const copies=i===1&&['blue','green'].includes(c.id)?2:[1,3,2,1][i];for(let k=0;k<copies;k++)a.push({id:id(),type:'ingredient',name:n,color:c.id,art:c.art,variant:i,illustration:ci*4+i,points:[2,1,1,3][i],negative:-[2,1,2,3][i],effect:i===1?'extra':i===2?'draw':null});}));COLORS.forEach((c,ci)=>INGREDIENT_EFFECTS.forEach((e,i)=>a.push({id:id(),type:'ingredient',name:NEW_NAMES[ci][i],color:c.id,art:c.art,variant:4+i,illustration:ci*5+i,artSet:'new-ingredients-v1',...e,id:id(),type:'ingredient',effect:e.id})));for(const [name,color,illustration]of [['Рута','blue',6],['Мох на криниці','green',7]])a.push({id:id(),type:'ingredient',name,color,artSet:'folklore-v3',illustration,variant:9,points:1,negative:-1,effect:null});for(let i=0;i<6;i++)a.push({id:id(),type:'cancel',name:'Оберіг',art:5});for(let i=0;i<2;i++)a.push({id:id(),type:'distill',name:'Дистиляція',art:5});return shuffle(a);}
+export function deck(){const a=[];COLORS.forEach((c,ci)=>NAMES[ci].forEach((n,i)=>{const copies=i===1&&['blue','green'].includes(c.id)?2:[1,3,2,1][i];for(let k=0;k<copies;k++)a.push({id:id(),type:'ingredient',name:n,color:c.id,art:c.art,variant:i,illustration:ci*4+i,points:[2,1,1,3][i],negative:-[2,1,2,3][i],effect:i===1?'extra':i===2?'draw':null});}));COLORS.forEach((c,ci)=>INGREDIENT_EFFECTS.forEach((e,i)=>a.push({id:id(),type:'ingredient',name:NEW_NAMES[ci][i],color:c.id,art:c.art,variant:4+i,illustration:ci*5+i,artSet:'new-ingredients-v1',...e,id:id(),type:'ingredient',effect:e.id})));for(const [name,color,illustration]of [['Рута','blue',6],['Мох на криниці','green',7]])a.push({id:id(),type:'ingredient',name,color,artSet:'folklore-v3',illustration,variant:9,points:1,negative:-1,effect:null});COLORS.forEach((color,row)=>COMBO_EFFECTS.forEach((effect,column)=>a.push({id:id(),type:'ingredient',name:COMBO_NAMES[row][column],color:color.id,art:color.art,variant:10+column,illustration:row*3+column,artSet:'combo-ingredients-v1',points:0,negative:-3,effect})));for(let i=0;i<6;i++)a.push({id:id(),type:'cancel',name:'Оберіг',art:5});for(let i=0;i<2;i++)a.push({id:id(),type:'distill',name:'Дистиляція',art:5});return shuffle(a);}
 export function orders(){const rows=[['Купальська роса',['blue','purple','blue'],5],['Любисткова злагода',['blue','blue','red'],6],['Сон русалки',['purple','green','black'],5],['Полиновий оберіг',['brown','blue','brown'],6],['Мохова колиска',['green','green','brown','purple'],8],['Нічний гомін',['black','black','black'],7],['Слід характерника',['brown','green','green','red'],8],['Жар перелесника',['red','red','purple','red'],9],['Ніч папороті',['green','black','blue','brown','purple'],11],['Мед лісової пасіки',['blue','black','black','purple','purple'],12],['Відлуння Чугайстра',['brown','red','green','red','brown'],11]],a=[];for(let copy=0;copy<3;copy++)rows.forEach(([name,colors,value],i)=>a.push({id:id(),name,colors:[...colors],value,art:i%6}));a.push({id:id(),name:'Чортів казан',colors:[],value:0,chaos:true,art:5});return shuffle(a);}
 export function character(p){const c=CHARACTERS.find(c=>c.id===p.character);return c?.mapText&&Number.isInteger(p.hex)?{...c,harvest:null,mossWild:false,color:null,characterAction:null,title:c.mapTitle,text:c.mapText}:c;}
 export function makePlayer(name,token,bot=false){return {id:id(),token,name:String(name||'Мандрівник').trim().slice(0,22)||'Мандрівник',bot,host:false,character:null,hand:[],recipes:[],current:null,brew:[],score:0,completed:0};}
@@ -37,18 +40,32 @@ export function recipe(p){return p.recipes.find(r=>r.id===p.current)||null;}
 export function filled(p,slot){return p.brew.some(b=>!b.disabled&&b.slot===slot);}
 export function needed(p){const r=recipe(p);if(!r)return null;if(r.chaos)return {extra:false,color:null,slot:Array.from({length:p.brew.length+1},(_,i)=>i).find(i=>!filled(p,i))};const slot=r.colors.findIndex((_,i)=>!filled(p,i));return slot<0?{extra:true,color:null,slot:null}:{extra:false,color:r.colors[slot],slot};}
 export function full(p){const r=recipe(p);return !!r&&!r.chaos&&r.colors.every((_,i)=>filled(p,i));}
-export function brewScore(p){let n=0;for(const b of p.brew){if(b.sealed)continue;if(!b.disabled&&!b.substituted){n+=b.card.points+(character(p)?.color===b.card.color?1:0)+(b.boost||0);if(b.card.effect==='resonance'&&!b.carried)n+=Math.min(3,p.brew.filter(x=>x!==b&&!x.disabled&&!x.substituted&&x.card.type==='ingredient'&&x.card.color===b.card.color).length);}for(const a of b.attacks)if(!a.cancelled)n+=a.card.negative;}return n;}
+export function brewScore(p){
+ let total=0;
+ for(const unit of p.brew){
+  if(unit.sealed)continue;
+  if(!unit.disabled&&!unit.substituted&&!unit.zeroed){
+   total+=(unit.card.points||0)*(unit.multiplier||1)+(unit.boost||0)+(character(p)?.color===unit.card.color?1:0);
+   if((unit.card.effect==='resonance'||unit.echoResonance)&&!unit.carried&&!unit.effectMuted)total+=resonanceCount(p,unit);
+  }
+  for(const attack of unit.attacks)if(!attack.cancelled)total+=attack.card.negative;
+ }
+ return total;
+}
+function resonanceCount(p,unit){
+ return p.brew.reduce((sum,other)=>sum+Number(other!==unit&&!other.disabled&&!other.substituted&&other.card.type==='ingredient'&&other.card.color===unit.card.color)+other.attacks.filter(a=>a.card.type==='ingredient'&&a.card.color===unit.card.color).length,0);
+}
 export function draw(s,p,n){for(let i=0;i<n;i++){if(!s.deck.length&&s.discard.length){s.deck=shuffle(s.discard);s.discard=[];log(s,'Скид перемішано: колода знову жива.');}if(!s.deck.length)break;p.hand.push(s.deck.pop());}}
 function refill(s){const count=s.players.length+1;while(s.market.length<count){if(!s.orderDeck.length&&s.orderDiscard.length){s.orderDeck=shuffle(s.orderDiscard);s.orderDiscard=[];}if(!s.orderDeck.length)break;s.market.push(s.orderDeck.pop());}}
 function start(s){if(s.players.length<2)fail('Потрібні хоча б двоє учасників.');s.status='playing';s.phase='character';s.draft=0;s.players.forEach(p=>p.character=null);log(s,'Оберіть своїх травників. Персонажі не повторюються.');}
-function isCharacterAvailable(s,c){return !c.reserve||!!(s.hexes&&c.mapText);}
+function isCharacterAvailable(s,c){return s.hexes?MAP_ROSTER.includes(c.id):!c.reserve;}
 function pickCharacter(s,p,cid){const c=CHARACTERS.find(c=>c.id===cid);if(!c||!isCharacterAvailable(s,c)||s.players.some(p=>p.character===cid))fail('Цей персонаж недоступний.');p.character=cid;log(s,p.name+' обирає '+c.name+'.');s.draft++;if(s.draft>=s.players.length){s.deck=deck();if(s.hexes){s.hexOrder=[0,...shuffle([1,2,3,4,5,6])];for(const p of s.players)p.hex=0;growHexes(s);}s.orderDeck=orders();s.players.forEach(p=>{if(character(p)?.preserveDistill){const i=s.deck.findIndex(c=>c.type==='distill');if(i>=0)p.hand.push(...s.deck.splice(i,1));}draw(s,p,5-p.hand.length);});refill(s);s.draft=0;s.phase='draft';}}
-function begin(s){const p=active(s);p.ownTurns=(p.ownTurns||0)+1;s.phase='main';s.turnData={actionUsed:false,allowance:0,abilityUsed:false,abortUsed:false,last:null,startHex:p.hex};const count=(s.hexes?0:3)+(character(p)?.draw||0),harvest=character(p)?.harvest,cards=harvest?s.discard.filter(c=>c.type==='ingredient'&&c.color===harvest):[];if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:'harvest',cards,harvest,afterDraw:Math.max(0,count-1)};else draw(s,p,count);if(character(p)?.draw)perkNotice(s,p,'Крам із дороги: +1 карта');const n=needed(p);p.stallTurns=p.brew.length&&n?.color&&!p.hand.some(c=>c.color===n.color)?(p.stallTurns||0)+1:0;log(s,'Хід: '+p.name+'.');}
+function begin(s){const p=active(s);p.ownTurns=(p.ownTurns||0)+1;s.phase='main';s.turnData={actionUsed:false,allowance:0,abilityUsed:false,abortUsed:false,last:null,startHex:p.hex};const count=(s.hexes?(character(p)?.harvest?1:0):3)+(character(p)?.draw||0),harvest=character(p)?.harvest,cards=harvest?s.discard.filter(c=>c.type==='ingredient'&&c.color===harvest):[];if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:'harvest',cards,harvest,afterDraw:Math.max(0,count-1)};else draw(s,p,count);if(character(p)?.draw)perkNotice(s,p,'Крам із дороги: +1 карта');const n=needed(p);p.stallTurns=p.brew.length&&n?.color&&!p.hand.some(c=>c.color===n.color)?(p.stallTurns||0)+1:0;log(s,'Хід: '+p.name+'.');}
 function chooseOrder(s,p,orderId,isDraft=false){if(p.recipes.length>=3)fail('Можна мати лише три незавершені замовлення.');const i=s.market.findIndex(r=>r.id===orderId);if(i<0)fail('Цей рецепт уже забрали.');const [r]=s.market.splice(i,1);p.recipes.push(r);refill(s);log(s,p.name+' обирає «'+r.name+'».');if(isDraft){s.draft++;if(s.draft>=s.players.length){s.turn=0;begin(s);}}else{s.turnData.orderTaken=true;}}
 function takeCard(p,cardId){const i=p.hand.findIndex(c=>c.id===cardId);if(i<0)fail('Карти більше немає в руці.');return p.hand.splice(i,1)[0];}
-function play(s,p,cardId,options={}){const c=p.hand.find(c=>c.id===cardId),n=options.replacing||ingredientSlot(p,c),baseline=!s.turnData.actionUsed,replacement=n&&(s.turnData.replacementSlots||[]).includes(n.slot),mavka=mossFollowReady(s,p)&&baseline===false&&!options.replacing;if(!c||c.type!=='ingredient'||!n)fail('Оберіть свій інгредієнт і рецепт.');if(!options.replacing&&!canAdd(s,p,c))fail('Цей інгредієнт зараз не можна додати.');if(options.replacing&&!['main','chain'].includes(s.phase))fail('Заміна зараз недоступна.');if(!['main','chain'].includes(s.phase)&&!replacement&&!options.free)fail('Зараз не час варки.');if(!options.replacing&&!canPlayColor(s,p,c,n))fail('Потрібен інший тип інгредієнта.');const r=recipe(p),meta=potionMeta(r),tradeExtra=!baseline&&!replacement&&!options.replacing&&tradeExtraReady(s,p,c,n);const pairSecond=s.turnData.pairPlan?.first&&pairMatch(s,c,n),pairFirst=!s.turnData.pairPlan?.first&&pairMatch(s,c,n);if(pairFirst){s.turnData.pairPlan.first=true;meta.pairUsed=true;}else delete s.turnData.pairPlan;takeCard(p,c.id);if(tradeExtra)meta.tradeExtraUsed=true;if(mavka&&!options.replacing){meta.mavkaUsed=true;perkNotice(s,p,'Моховий настил: додатковий складник будь-якого типу');}else if(replacement)s.turnData.replacementSlots=s.turnData.replacementSlots.filter(x=>x!==n.slot);else if(s.phase==='chain'&&!baseline&&!options.free&&!tradeExtra&&!pairSecond)s.turnData.allowance--;if(!options.free&&!mavka)s.turnData.actionUsed=true;if(c.color!==n.color&&n.color&&!n.extra&&c.effect!=='brew-wild'&&!mavka){if(character(p)?.wildColor===c.color)s.turnData.wildUsed=true;else if(character(p)?.mossWild&&c.color==='green')meta.mossWildUsed=true;else if(tradeWildReady(s,p,c))s.turnData.tradeWildUsed=true;}const b={id:id(),card:c,slot:n.slot,extra:n.extra,disabled:false,attacks:[],playedAs:n.color||c.color};p.brew.push(b);s.turnData.last=b.id;s.turnData.mavkaSource=character(p)?.mossFollow&&c.color==='green'&&!meta.mavkaUsed?b.id:null;if(character(p)?.plainExtra&&!meta.plainExtraUsed&&!c.effect&&[1,2].includes(c.points)&&!n.extra){meta.plainExtraUsed=true;s.turnData.allowance++;perkNotice(s,p,'Чистий відвар: ще один складник');}if(s.hexes&&p.hex===5&&c.color==='black'&&!s.turnData.hexUsed){s.turnData.hexUsed=true;draw(s,p,1);}if(c.effect==='extra')s.turnData.allowance++;if(c.effect==='draw')draw(s,p,1);ingredientEffect(s,p,b);s.phase='chain';log(s,p.name+' додає «'+c.name+'».');}
-function stop(s){if(s.phase!=='chain')fail('Комбінацію ще не почато.');if(!active(s).brew.some(b=>b.id===s.turnData.last)){s.phase='post';return;}const opponents=Array.from({length:s.players.length-1},(_,i)=>(s.turn+i+1)%s.players.length),p=active(s),offset=(p.reactionWindows||0)%opponents.length;p.reactionWindows=(p.reactionWindows||0)+1;s.reactionQueue=[...opponents.slice(offset),...opponents.slice(0,offset)];s.reactionIndex=0;s.phase='reaction';}
-function react(s,p,cardId){if(s.players[s.reactionQueue[s.reactionIndex]]?.id!==p.id)fail('Зараз відповідає інший гравець.');const b=active(s).brew.find(b=>b.id===s.turnData.last);if(!b)fail('Немає цілі саботажу.');if(cardId){const c=p.hand.find(c=>c.id===cardId);if(!canSabotage(s,p,c))fail('Потрібен інгредієнт відповідного типу.');takeCard(p,c.id);b.attacks.push({id:id(),card:c,from:p.name,fromId:p.id,cancelled:false});log(s,p.name+' підкидає «'+c.name+'» ('+c.negative+').');}else log(s,p.name+' пасує.');s.reactionIndex++;if(s.reactionIndex>=s.reactionQueue.length||b.attacks.length>=3)s.phase='defense';}
+function play(s,p,cardId,options={}){const c=p.hand.find(c=>c.id===cardId),n=options.replacing||ingredientSlot(p,c),baseline=!s.turnData.actionUsed,replacement=n&&(s.turnData.replacementSlots||[]).includes(n.slot),mavka=!options.free&&mossFollowReady(s,p)&&baseline===false&&!options.replacing;if(!c||c.type!=='ingredient'||!n)fail('Оберіть свій інгредієнт і рецепт.');if(!options.replacing&&!options.free&&!canAdd(s,p,c))fail('Цей інгредієнт зараз не можна додати.');if(options.replacing&&!options.free&&!['main','chain'].includes(s.phase))fail('Заміна зараз недоступна.');if(!['main','chain'].includes(s.phase)&&!replacement&&!options.free)fail('Зараз не час варки.');if(!options.replacing&&!canPlayColor(s,p,c,n))fail('Потрібен інший тип інгредієнта.');const r=recipe(p),meta=potionMeta(r),tradeExtra=!options.free&&!baseline&&!replacement&&!options.replacing&&tradeExtraReady(s,p,c,n);const pairSecond=s.turnData.pairPlan?.first&&pairMatch(s,c,n),pairFirst=!s.turnData.pairPlan?.first&&pairMatch(s,c,n);if(pairFirst){s.turnData.pairPlan.first=true;meta.pairUsed=true;}else delete s.turnData.pairPlan;takeCard(p,c.id);if(tradeExtra)meta.tradeExtraUsed=true;if(mavka&&!options.replacing){meta.mavkaUsed=true;perkNotice(s,p,'Моховий настил: додатковий складник будь-якого типу');}else if(replacement)s.turnData.replacementSlots=s.turnData.replacementSlots.filter(x=>x!==n.slot);else if(s.phase==='chain'&&!baseline&&!options.free&&!tradeExtra&&!pairSecond)s.turnData.allowance--;if(!options.free&&!mavka)s.turnData.actionUsed=true;if(s.turnData.mushroomCards?.includes(c.id)&&c.color!==n.color)s.turnData.mushroomWildUsed=true;if(c.color!==n.color&&n.color&&!n.extra&&c.effect!=='brew-wild'&&!mavka){if(character(p)?.wildColor===c.color)s.turnData.wildUsed=true;else if(character(p)?.mossWild&&c.color==='green')meta.mossWildUsed=true;else if(tradeWildReady(s,p,c))s.turnData.tradeWildUsed=true;}const b={id:id(),card:c,slot:n.slot,extra:n.extra,disabled:false,attacks:[],playedAs:n.color||c.color};p.brew.push(b);s.turnData.last=b.id;s.turnData.mavkaSource=character(p)?.mossFollow&&c.color==='green'&&!meta.mavkaUsed?b.id:null;if(character(p)?.plainExtra&&!meta.plainExtraUsed&&!c.effect&&[1,2].includes(c.points)&&!n.extra){meta.plainExtraUsed=true;s.turnData.allowance++;perkNotice(s,p,'Чистий відвар: ще один складник');}s.phase='chain';ingredientEffect(s,p,b);log(s,p.name+' додає «'+c.name+'».');}
+function stop(s){if(s.phase!=='chain')fail('Комбінацію ще не почато.');if(!active(s).brew.some(b=>b.id===s.turnData.last)){s.phase='post';return;}if(s.turnData.answeredLast===s.turnData.last){s.phase='defense';return;}const opponents=Array.from({length:s.players.length-1},(_,i)=>(s.turn+i+1)%s.players.length),p=active(s),offset=(p.reactionWindows||0)%opponents.length;p.reactionWindows=(p.reactionWindows||0)+1;s.reactionQueue=[...opponents.slice(offset),...opponents.slice(0,offset)];s.reactionIndex=0;s.phase='reaction';}
+function react(s,p,cardId){if(s.players[s.reactionQueue[s.reactionIndex]]?.id!==p.id)fail('Зараз відповідає інший гравець.');const b=active(s).brew.find(b=>b.id===s.turnData.last);if(!b)fail('Немає цілі саботажу.');if(cardId){const c=p.hand.find(c=>c.id===cardId);if(!canSabotage(s,p,c))fail('Потрібен інгредієнт відповідного типу.');takeCard(p,c.id);b.attacks.push({id:id(),card:c,from:p.name,fromId:p.id,cancelled:false});log(s,p.name+' підкидає «'+c.name+'» ('+c.negative+').');}else log(s,p.name+' пасує.');s.reactionIndex++;if(s.reactionIndex>=s.reactionQueue.length||b.attacks.length>=3){s.phase='defense';s.turnData.answeredLast=s.turnData.last;}}
 function reserveStarter(s,p){
  const cards=p.brew.filter(b=>b.slot!==null&&b.card.type==='ingredient'&&!b.carried&&!b.disabled&&!b.attacks.length).map(b=>b.card);
  if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:'starter',cards};
@@ -61,7 +78,7 @@ function white(s,p,cardId,target){if(p.id!==active(s)?.id||!['main','chain','pos
 function ability(s,p,target){const ch=character(p);if(s.turnData.abilityUsed)fail('Здібність уже використано в цей хід.');if(ch?.ability==='extra'){if(s.phase!=='chain')fail('Спочатку додайте перший інгредієнт.');s.turnData.allowance++;}else if(ch?.ability==='cancel'){if(!['main','post','defense','chain'].includes(s.phase))fail('Зараз не можна застосувати здібність.');const a=p.brew.flatMap(b=>b.attacks).find(a=>a.id===target&&!a.cancelled);if(!a)fail('Оберіть негативний ефект.');a.cancelled=true;}else fail('У цього персонажа пасивна здібність.');s.turnData.abilityUsed=true;log(s,p.name+' використовує здібність «'+ch.title+'».');}
 function offer(s,p,a){if(s.status!=='playing'||s.phase==='draft')fail('Торгівля почнеться після вибору рецептів.');const to=s.players.find(x=>x.id===a.to&&x.id!==p.id);const card=p.hand.find(x=>x.id===a.card);if(!to||!card)fail('Оберіть гравця та свою карту.');if(s.trades.filter(t=>t.from===p.id&&t.status==='pending').length>=2)fail('Спочатку дочекайтеся відповіді на попередні пропозиції.');s.trades.push({id:id(),from:p.id,to:to.id,cardId:card.id,card:{...card},wanted:COLORS.some(c=>c.id===a.wanted)?a.wanted:'any',status:'pending'});log(s,p.name+' пропонує обмін гравцю '+to.name+'.');}
 function accept(s,p,a){if(s.status!=='playing')fail('Партія не триває.');const t=s.trades.find(t=>t.id===a.offer&&t.status==='pending'&&t.to===p.id);if(!t)fail('Пропозиція вже неактивна.');const from=s.players.find(x=>x.id===t.from);const give=p.hand.find(c=>c.id===a.card);const receive=from.hand.find(c=>c.id===t.cardId);if(!give||!receive)fail('Одна з карт уже використана.');if(t.wanted!=='any'&&give.color!==t.wanted)fail('Потрібна карта запитаного кольору.');p.hand.push(takeCard(from,receive.id));from.hand.push(takeCard(p,give.id));t.status='accepted';log(s,from.name+' та '+p.name+' обмінялися картами.');}
-function coreAction(s,pid,a){if(!a||typeof a.type!=='string')fail('Невідома дія.');const p=s.players.find(p=>p.id===pid);if(!p)fail('Гравця не знайдено.');if(a.type==='hexShow'){if(s.hexes&&p===active(s)&&s.status==='playing'&&['main','post','move','defense'].includes(s.phase))s.hexShow=(s.hexShow||0)+1;return;}if(s.hexChoice){resolveHexChoice(s,p,a);return;}if(['hexUse','hexMove','hexPerk'].includes(a.type)){if(!s.hexes||p!==active(s)||s.effectChoice)fail('Дія на мапі недоступна.');if(a.type==='hexUse')useHex(s,p,a);else if(a.type==='hexMove')moveHex(s,p,a.hex);else useHexPerk(s,p,a);return;}if(s.effectChoice){if(a.type!=='chooseEffect')fail('Спочатку завершіть вибір карти.');chooseEffect(s,p,a);return;}if(['tradeOpen','tradeBid','tradeTake','tradeDiscard','tradeRecall','tradeDecline','tradeBidDiscard'].includes(a.type)){tableTrade(s,p,a);return;}if(a.type==='discardFree'){if(s.status!=='playing'||['draft','character'].includes(s.phase)||active(s).id!==pid)fail('Скид доступний у свій хід.');s.discard.push(takeCard(p,a.card));return;}if(a.type==='offer'){if(active(s).id!==pid)fail('Відкрити обмін можна тільки у свій хід.');offer(s,p,a);return;}if(a.type==='accept'){accept(s,p,a);return;}if(a.type==='reject'){const t=s.trades.find(t=>t.id===a.offer&&t.status==='pending'&&(t.to===pid||t.from===pid));if(!t)fail('Пропозиція недоступна.');t.status='rejected';return;}
+function coreAction(s,pid,a){if(!a||typeof a.type!=='string')fail('Невідома дія.');const p=s.players.find(p=>p.id===pid);if(!p)fail('Гравця не знайдено.');if(a.type==='hexShow'){if(s.hexes&&p===active(s)&&s.status==='playing'&&['main','chain','post','move','defense'].includes(s.phase))s.hexShow=(s.hexShow||0)+1;return;}if(s.hexChoice){resolveHexChoice(s,p,a);return;}if(['hexUse','hexMove','hexPerk'].includes(a.type)){if(!s.hexes||s.status!=='playing'||p!==active(s)||s.effectChoice)fail('Дія на мапі недоступна.');if(a.type==='hexUse')useHex(s,p,a);else if(a.type==='hexMove')moveHex(s,p,a.hex);else useHexPerk(s,p,a);return;}if(s.effectChoice){if(a.type!=='chooseEffect')fail('Спочатку завершіть вибір карти.');chooseEffect(s,p,a);return;}if(['tradeOpen','tradeBid','tradeTake','tradeDiscard','tradeRecall','tradeDecline','tradeBidDiscard'].includes(a.type)){tableTrade(s,p,a);return;}if(a.type==='discardFree'){if(s.status!=='playing'||['draft','character'].includes(s.phase)||active(s).id!==pid)fail('Скид доступний у свій хід.');s.discard.push(takeCard(p,a.card));return;}if(a.type==='offer'){if(active(s).id!==pid)fail('Відкрити обмін можна тільки у свій хід.');offer(s,p,a);return;}if(a.type==='accept'){accept(s,p,a);return;}if(a.type==='reject'){const t=s.trades.find(t=>t.id===a.offer&&t.status==='pending'&&(t.to===pid||t.from===pid));if(!t)fail('Пропозиція недоступна.');t.status='rejected';return;}
  if(s.status==='lobby'){if(!p.host)fail('Це дія господаря.');if(a.type==='settings'){if(!Number.isInteger(a.targetPotions)||a.targetPotions<2||a.targetPotions>5)fail('Оберіть 2–5 зіль.');s.targetPotions=a.targetPotions;return;}if(a.type==='addBot'){if(s.players.length>=6)fail('У кімнаті шестеро.');s.players.push(makePlayer('Бот '+(s.players.filter(x=>x.bot).length+1),'',true));return;}if(a.type==='removeBot'){const i=s.players.findIndex(x=>x.bot&&x.id===a.player);if(i<0)fail('Бота не знайдено.');s.players.splice(i,1);return;}if(a.type==='start'){start(s);return;}fail('Дія недоступна у лобі.');}
  if(s.status!=='playing')fail('Партію завершено.');if(s.phase==='character'){if(s.players[s.draft]?.id!==pid||a.type!=='chooseCharacter')fail('Зараз обирає інший гравець.');pickCharacter(s,p,a.character);return;}if(s.phase==='draft'){if(s.players[s.draft]?.id!==pid||a.type!=='order')fail('Зараз обирає інший гравець.');chooseOrder(s,p,a.order,true);return;}if(s.phase==='reaction'){if(a.type!=='react')fail('Тривають відповіді.');react(s,p,a.card);return;}if(active(s).id!==pid)fail('Зараз хід іншого гравця.');
  if(a.type==='characterAction')useCharacter(s,p,a);
@@ -81,29 +98,84 @@ function coreAction(s,pid,a){if(!a||typeof a.type!=='string')fail('Невідо�
 function bestRecipe(p,recipes){return [...recipes].sort((a,b)=>{const val=r=>(p.hand.some(c=>c.color===r.colors[0])?7:0)+r.colors.reduce((n,c)=>n+(p.hand.some(h=>h.color===c)?2:0),0)-r.colors.length*.8;return val(b)-val(a);})[0];}
 export function botTrade(s){if(s.effectChoice)return null;const next=tableBotTrade(s);if(next)return next;if(s.status!=='playing')return null;const t=s.trades.find(t=>t.status==='pending'&&s.players.find(p=>p.id===t.to)?.bot);if(!t)return null;const p=s.players.find(p=>p.id===t.to),from=s.players.find(p=>p.id===t.from);const wanted=needed(p)?.color;const candidates=p.hand.filter(c=>(t.wanted==='any'||c.color===t.wanted)).sort((a,b)=>(a.color===wanted?10:0)+(a.points||0)-((b.color===wanted?10:0)+(b.points||0)));const offered=from.hand.find(c=>c.id===t.cardId);const c=candidates[0];const accept=!!c&&!!offered&&(offered.color===wanted||c.color!==wanted);return {pid:p.id,action:accept?{type:'accept',offer:t.id,card:c.id}:{type:'reject',offer:t.id}};}
 export function botActor(s){if(s.status!=='playing')return null;if(s.effectChoice)return s.players.find(p=>p.id===s.effectChoice.owner);if(['character','draft'].includes(s.phase))return s.players[s.draft];if(s.phase==='reaction')return s.players[s.reactionQueue[s.reactionIndex]];return active(s);}
-export function botAction(s){const p=botActor(s);if(!p?.bot)return null;if(s.hexChoice||s.phase==='move')return botHex(s,p);if(s.effectChoice){const cards=[...s.effectChoice.cards].sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a));return {type:'chooseEffect',choice:s.effectChoice.id,card:cards[0]?.id};}if(s.phase==='character'){const choices=CHARACTERS.filter(c=>isCharacterAvailable(s,c)&&!s.players.some(p=>p.character===c.id));return {type:'chooseCharacter',character:choices[Math.floor(Math.random()*choices.length)].id};}if(s.phase==='draft')return {type:'order',order:bestRecipe(p,s.market).id};if(s.phase==='reaction'){const c=p.hand.filter(c=>canSabotage(s,p,c)&&c.effect!=='brew-wild').sort((a,b)=>a.negative-b.negative)[0];return {type:'react',card:c?.id};}if(s.hexes&&s.phase==='main'&&!s.turnData.hexUsed){const move=botHex(s,p);if(move)return move;}const special=botCharacterAction(s,p);if(special)return special;
+export function botAction(s){const p=botActor(s);if(!p?.bot)return null;if(s.hexChoice||s.phase==='move')return botHex(s,p);if(s.effectChoice?.kind==='stoke'){const c=[...s.effectChoice.cards].sort((a,b)=>ingredientValue(s,p,a)-ingredientValue(s,p,b))[0];return {type:'chooseEffect',choice:s.effectChoice.id,card:c?.id};}if(s.effectChoice?.kind==='rebrew'){const cards=[...s.effectChoice.cards].sort((a,b)=>Number(canChooseBrew(s,p,b,true))-Number(canChooseBrew(s,p,a,true))||ingredientValue(s,p,b)-ingredientValue(s,p,a));return {type:'chooseEffect',choice:s.effectChoice.id,card:cards[0].id,play:canChooseBrew(s,p,cards[0],true)};}if(s.effectChoice){const cards=[...s.effectChoice.cards].sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a));return {type:'chooseEffect',choice:s.effectChoice.id,card:cards[0]?.id};}if(s.phase==='character'){const choices=CHARACTERS.filter(c=>isCharacterAvailable(s,c)&&!s.players.some(p=>p.character===c.id));return {type:'chooseCharacter',character:choices[Math.floor(Math.random()*choices.length)].id};}if(s.phase==='draft')return {type:'order',order:bestRecipe(p,s.market).id};if(s.phase==='reaction'){const c=p.hand.filter(c=>canSabotage(s,p,c)&&c.effect!=='brew-wild').sort((a,b)=>a.negative-b.negative)[0];return {type:'react',card:c?.id};}if(s.hexes&&['main','chain','post','defense'].includes(s.phase)){const move=botHex(s,p);if(move)return move;}const special=botCharacterAction(s,p);if(special)return special;
  const attack=p.brew.flatMap(b=>b.attacks).find(a=>!a.cancelled),guard=p.hand.find(c=>c.type==='cancel')||(character(p)?.ingredientWard&&!s.turnData.ingredientWardUsed?p.hand.filter(c=>c.type==='ingredient').sort((a,b)=>a.points-b.points)[0]:null);
  if(['main','defense'].includes(s.phase)&&attack&&guard)return {type:'white',card:guard.id,target:attack.id};
  if(['main','defense'].includes(s.phase)){const distill=p.hand.find(c=>c.type==='distill'),b=p.brew.find(b=>!b.sealed&&b.slot!==null&&b.card.type==='ingredient'&&b.attacks.some(a=>!a.cancelled)&&(character(p)?.preserveDistill&&!recipe(p)?.potionMeta?.distillPreserved||b.card.points+b.attacks.reduce((n,a)=>n+(a.cancelled?0:a.card.negative),0)<0));if(distill&&b)return {type:'white',card:distill.id,target:b.id};}if(s.phase==='defense'){const c=p.hand.filter(c=>canAdd(s,p,c)).sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a))[0];if(c)return {type:'play',card:c.id};if(recipe(p)?.chaos&&p.brew.length>=2)return {type:'chaosFinish'};return {type:'finishTurn'};}
  if(s.phase==='main'){if(s.turnData.pairPlan){const c=p.hand.find(c=>pairMatch(s,c,needed(p))&&canAdd(s,p,c));if(c)return {type:'play',card:c.id};}if(recipe(p)?.chaos&&p.brew.length>=2)return {type:'chaosFinish'};if(!p.brew.length&&p.recipes.length){const best=bestRecipe(p,p.recipes);if(best.id!==p.current)return {type:'selectRecipe',order:best.id};}if(!recipe(p)){if(p.recipes.length)return {type:'selectRecipe',order:bestRecipe(p,p.recipes).id};if(s.market.length&&!s.turnData.orderTaken)return {type:'order',order:bestRecipe(p,s.market).id};return {type:'end'};}const c=p.hand.filter(c=>canAdd(s,p,c)).sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a))[0];if(c)return {type:'play',card:c.id};if(p.brew.length&&!s.turnData.abortUsed&&((p.stallTurns||0)>=2||(!s.deck.length&&!s.discard.length)))return {type:'abort'};if(p.recipes.length<3&&s.market.length&&!s.turnData.orderTaken)return {type:'order',order:bestRecipe(p,s.market).id};return {type:'end'};}
  if(s.phase==='chain'){const c=p.hand.filter(c=>canAdd(s,p,c)).sort((a,b)=>Number(pairMatch(s,b,needed(p)))-Number(pairMatch(s,a,needed(p)))||ingredientValue(s,p,b)-ingredientValue(s,p,a))[0];return c?{type:'play',card:c.id}:{type:'stop'};}if(s.phase==='post')return recipe(p)?.chaos&&p.brew.length?{type:'chaosFinish'}:{type:'end'};return null;
 }
-export function view(s,pid,version=0){const me=s.players.find(p=>p.id===pid);if(!me)fail('Немає доступу до цієї кімнати.');return {rulesVersion:3,hexMap:s.hexes?{tiles:HEXES.map((x,i)=>({...x,position:s.hexOrder?.indexOf(i)??i,count:s.hexes[i].length})),shown:s.hexShow||0,start:s.turnData.startHex??active(s)?.hex,used:!!s.turnData.hexUsed,perk:hexPerk(s,me),choice:s.hexChoice?.owner===pid?s.hexChoice:null,scouted:me.hexScout||{},stats:s.hexStats||{}}:null,legal:{play:me.hand.filter(c=>canAdd(s,me,c)).map(c=>c.id),react:me.hand.filter(c=>canSabotage(s,me,c)).map(c=>c.id)},code:s.code,version,targetPotions:s.targetPotions||3,sabotageLimit:3,status:s.status,phase:s.phase,characterAction:characterActionInfo(s,me),effectChoice:s.effectChoice?{id:s.effectChoice.id,owner:s.effectChoice.owner,kind:s.effectChoice.kind,harvest:s.effectChoice.harvest,count:s.effectChoice.cards.length,cards:s.effectChoice.owner===pid?s.effectChoice.cards:undefined}:null,turn:s.turn,round:s.round,draft:s.draft,turnData:s.turnData,market:s.market,deckCount:s.deck.length,discardCount:s.discard.length,log:s.log,finalStarter:s.finalStarter,finalQueue:s.finalQueue,reactionPlayer:s.phase==='reaction'?s.players[s.reactionQueue[s.reactionIndex]]?.id:null,exchange:s.exchange||null,eventSeq:s.eventSeq||0,events:(s.events||[]).map(e=>e.type==='move'&&((e.to.startsWith('hand:')&&e.to!=='hand:'+pid&&(e.from==='deck'||e.from.startsWith('choice:')))||(e.to.startsWith('choice:')&&e.to!=='choice:'+pid&&e.from==='deck'))?{...e,card:{id:e.card.id,type:'back',name:'Карта'}}:e),discardTop:s.discard.slice(-6),trades:s.trades.filter(t=>t.from===pid||t.to===pid).map(t=>({...t})),me:pid,players:s.players.map(p=>({id:p.id,name:p.name,bot:p.bot,host:p.host,character:p.character,hex:p.hex,ownTurns:p.ownTurns||0,tradeWild:p.id===pid?p.tradeWild:undefined,whiteReturnedRound:p.whiteReturnedRound,shortcutUsed:!!recipe(p)?.potionMeta?.shortcut,shortcutRecipe:p.shortcutRecipe||null,mossSwapUsed:!!p.mossSwapUsed,handCount:p.hand.length,hand:p.id===pid?sortHand(p.hand):undefined,recipes:p.recipes,current:p.current,starter:p.starter,brew:p.brew,score:p.score,completed:p.completed}))};}
+export function view(s,pid,version=0){const me=s.players.find(p=>p.id===pid);if(!me)fail('Немає доступу до цієї кімнати.');return {rulesVersion:4,mapRoster:MAP_ROSTER,hexMap:s.hexes?{tiles:HEXES.map((x,i)=>({...x,position:s.hexOrder?.indexOf(i)??i,count:s.hexes[i].length,blocked:hexBlocked(s,me,i)})),skillHex:effectiveHex(s,active(s)),moves:s.phase==='move'&&me===active(s)?hexDestinations(s,me):[],targets:hexSkillTargets(s,me),shown:s.hexShow||0,start:s.turnData.startHex??active(s)?.hex,used:!!s.turnData.hexUsed,perk:hexPerk(s,me),choice:s.hexChoice?.owner===pid?{...s.hexChoice,play:s.hexChoice.kind==='roots-brew'?s.hexChoice.cards.filter(c=>canChooseBrew(s,me,c)).map(c=>c.id):[]}:null,scouted:me.hexScout||{},stats:s.hexStats||{}}:null,legal:{play:me.hand.filter(c=>canAdd(s,me,c)).map(c=>c.id),react:me.hand.filter(c=>canSabotage(s,me,c)).map(c=>c.id)},code:s.code,version,targetPotions:s.targetPotions||3,sabotageLimit:3,status:s.status,phase:s.phase,characterAction:characterActionInfo(s,me),effectChoice:s.effectChoice?{id:s.effectChoice.id,owner:s.effectChoice.owner,kind:s.effectChoice.kind,harvest:s.effectChoice.harvest,count:s.effectChoice.cards.length,play:s.effectChoice.owner===pid&&s.effectChoice.kind==='rebrew'?s.effectChoice.cards.filter(c=>canChooseBrew(s,me,c,true)).map(c=>c.id):[],cards:s.effectChoice.owner===pid?s.effectChoice.cards:undefined}:null,turn:s.turn,round:s.round,draft:s.draft,turnData:s.turnData,market:s.market,deckCount:s.deck.length,discardCount:s.discard.length,log:s.log,finalStarter:s.finalStarter,finalQueue:s.finalQueue,reactionPlayer:s.phase==='reaction'?s.players[s.reactionQueue[s.reactionIndex]]?.id:null,exchange:s.exchange||null,eventSeq:s.eventSeq||0,events:(s.events||[]).map(e=>e.type==='move'&&((e.to.startsWith('hand:')&&e.to!=='hand:'+pid&&(e.from==='deck'||e.from.startsWith('hex:')||e.from.startsWith('hex-choice:')||e.from.startsWith('choice:')))||(e.to.startsWith('hex:'))||(e.to.startsWith('hex-choice:')&&e.to!=='hex-choice:'+pid)||(e.to.startsWith('choice:')&&e.to!=='choice:'+pid&&e.from==='deck'))?{...e,card:{id:e.card.id,type:'back',name:'Карта'}}:e),discardTop:s.discard.slice(-6),trades:s.trades.filter(t=>t.from===pid||t.to===pid).map(t=>({...t})),me:pid,players:s.players.map(p=>({id:p.id,name:p.name,bot:p.bot,host:p.host,character:p.character,hex:p.hex,ownTurns:p.ownTurns||0,tradeWild:p.id===pid?p.tradeWild:undefined,whiteReturnedRound:p.whiteReturnedRound,shortcutUsed:!!recipe(p)?.potionMeta?.shortcut,shortcutRecipe:p.shortcutRecipe||null,mossSwapUsed:!!p.mossSwapUsed,handCount:p.hand.length,hand:p.id===pid?sortHand(p.hand):undefined,recipes:p.recipes,current:p.current,brewPoints:brewScore(p),pendingMultiplier:pendingMultiplier(p),starter:p.starter,brew:p.brew,score:p.score,completed:p.completed}))};}
 
 export function sortHand(hand){const order=['red','blue','brown','green','black','purple'];return [...hand].sort((a,b)=>((order.indexOf(a.color)+7)%7)-((order.indexOf(b.color)+7)%7)||(a.variant||0)-(b.variant||0)||a.name.localeCompare(b.name));}
-export function canPlayColor(s,p,c,n=needed(p)){if(!n||c?.type!=='ingredient')return false;if(s.hexes&&p.hex===6&&s.turnData.springCard===c.id&&!n.extra||pairMatch(s,c,n)||!n.color||n.extra||c.color===n.color||c.effect==='brew-wild')return true;const ch=character(p);return !!(ch?.wildColor===c.color&&!s.turnData.wildUsed||ch?.mossWild&&c.color==='green'&&!potionMeta(recipe(p)).mossWildUsed||tradeWildReady(s,p,c)||mossFollowReady(s,p));}
+export function canPlayColor(s,p,c,n=needed(p)){if(!n||c?.type!=='ingredient')return false;if(s.turnData.mushroomCards?.includes(c.id)&&!s.turnData.mushroomWildUsed&&!n.extra||pairMatch(s,c,n)||!n.color||n.extra||c.color===n.color||c.effect==='brew-wild'||echoWildReady(p,c))return true;const ch=character(p);return !!(ch?.wildColor===c.color&&!s.turnData.wildUsed||ch?.mossWild&&c.color==='green'&&!potionMeta(recipe(p)).mossWildUsed||tradeWildReady(s,p,c)||mossFollowReady(s,p));}
 function tableTrade(s,p,a){if(s.status!=='playing'||['draft','character'].includes(s.phase))fail('Спочатку оберіть персонажів і рецепти.');if(a.type==='tradeOpen'){if(active(s).id!==p.id)fail('Відкрити ярмарок можна тільки у свій хід.');if(s.exchange)fail('Ярмарок уже відкритий.');s.exchange={id:id(),owner:p.id,card:takeCard(p,a.card),bids:[],declined:[]};log(s,p.name+' відкриває ярмарок.');return;}const t=s.exchange;if(!t)fail('Ярмарок не відкритий.');if(a.type==='tradeBid'){if(t.owner===p.id)fail('Це ваша пропозиція.');if(!p.hand.some(c=>c.id===a.card))fail('Немає карти в руці.');const old=t.bids.find(b=>b.player===p.id);if(old)p.hand.push(old.card);t.bids=t.bids.filter(b=>b.player!==p.id);t.declined=t.declined.filter(x=>x!==p.id);t.bids.push({player:p.id,card:takeCard(p,a.card)});return;}if(a.type==='tradeBidDiscard'){const b=t.bids.find(b=>b.player===p.id);if(!b)fail('Немає вашої зустрічної карти.');s.discard.push(b.card);t.bids=t.bids.filter(x=>x!==b);return;}if(a.type==='tradeDecline'){if(t.owner===p.id)fail('Це ваш ярмарок.');if(!t.declined.includes(p.id))t.declined.push(p.id);return;}if(t.owner!==p.id)fail('Вибирає власник ярмарку.');if(a.type==='tradeTake'){const b=t.bids.find(b=>b.player===a.player);if(!b)fail('Зустрічну карту не знайдено.');const q=s.players.find(x=>x.id===b.player);if(a.discard)s.discard.push(b.card);else{p.hand.push(b.card);markTradeCard(p,b.card);}q.hand.push(t.card);markTradeCard(q,t.card);for(const other of t.bids)if(other!==b)s.players.find(x=>x.id===other.player).hand.push(other.card);log(s,p.name+' завершує обмін.');}else if(a.type==='tradeDiscard'){s.discard.push(t.card);for(const b of t.bids)s.players.find(x=>x.id===b.player).hand.push(b.card);}else if(a.type==='tradeRecall'){p.hand.push(t.card);for(const b of t.bids)s.players.find(x=>x.id===b.player).hand.push(b.card);}else fail('Невідома дія ярмарку.');s.exchange=null;}
-function tableBotTrade(s){if(s.effectChoice)return null;const t=s.exchange;if(!t||s.status!=='playing')return null;const owner=s.players.find(p=>p.id===t.owner);if(owner.bot&&t.bids.length)return {pid:owner.id,action:{type:'tradeTake',player:t.bids[0].player}};const p=s.players.find(p=>p.bot&&p.id!==t.owner&&!t.bids.some(b=>b.player===p.id)&&!t.declined.includes(p.id));if(!p)return null;const want=needed(p)?.color;const same=c=>c.type===t.card.type&&(c.name===t.card.name||c.type==='ingredient'&&c.color===t.card.color&&c.variant===t.card.variant);const candidates=p.hand.filter(c=>!same(c));const usefulness=c=>(c.color===want?12:0)+(c.points||0)+(c.effect==='extra'?2:0);candidates.sort((a,b)=>usefulness(a)-usefulness(b)+(t.bids.some(x=>x.card.name===a.name)?3:0)-(t.bids.some(x=>x.card.name===b.name)?3:0));const c=candidates[0],benefit=usefulness(t.card)-(c?usefulness(c):0);return {pid:p.id,action:c&&benefit>=-2?{type:'tradeBid',card:c.id}:{type:'tradeDecline'}};}
-function tableZones(s){const z=new Map(),put=(card,zone,status='')=>z.set(card.id,{card:{...card},zone,status});s.deck.forEach(c=>put(c,'deck'));s.discard.forEach(c=>put(c,'discard'));for(const p of s.players){p.hand.forEach(c=>put(c,'hand:'+p.id));if(p.starter)put(p.starter,'starter:'+p.id);for(const b of p.brew){put(b.card,'brew:'+p.id,b.disabled?'disabled':b.substituted?'substituted':JSON.stringify([b.boost||0,!!b.amplifierSpent,!!b.sealed]));b.attacks.forEach(a=>put(a.card,'attack:'+p.id,a.cancelled?'cancelled':''));}}if(s.effectChoice?.kind==='sift')s.effectChoice.cards.forEach(c=>put(c,'choice:'+s.effectChoice.owner));if(s.exchange){put(s.exchange.card,'trade:'+s.exchange.owner);s.exchange.bids.forEach(b=>put(b.card,'bid:'+b.player));}return z;}
+function tableBotTrade(s){if(s.effectChoice||s.hexChoice)return null;const t=s.exchange;if(!t||s.status!=='playing')return null;const owner=s.players.find(p=>p.id===t.owner);if(owner.bot&&t.bids.length)return {pid:owner.id,action:{type:'tradeTake',player:t.bids[0].player}};const p=s.players.find(p=>p.bot&&p.id!==t.owner&&!t.bids.some(b=>b.player===p.id)&&!t.declined.includes(p.id));if(!p)return null;const want=needed(p)?.color;const same=c=>c.type===t.card.type&&(c.name===t.card.name||c.type==='ingredient'&&c.color===t.card.color&&c.variant===t.card.variant);const candidates=p.hand.filter(c=>!same(c));const usefulness=c=>(c.color===want?12:0)+(c.points||0)+(c.effect==='extra'?2:0);candidates.sort((a,b)=>usefulness(a)-usefulness(b)+(t.bids.some(x=>x.card.name===a.name)?3:0)-(t.bids.some(x=>x.card.name===b.name)?3:0));const c=candidates[0],benefit=usefulness(t.card)-(c?usefulness(c):0);return {pid:p.id,action:c&&benefit>=-2?{type:'tradeBid',card:c.id}:{type:'tradeDecline'}};}
+function tableZones(s){const z=new Map(),put=(card,zone,status='')=>z.set(card.id,{card:{...card},zone,status});s.deck.forEach(c=>put(c,'deck'));s.discard.forEach(c=>put(c,'discard'));for(const p of s.players){p.hand.forEach(c=>put(c,'hand:'+p.id));if(p.starter)put(p.starter,'starter:'+p.id);for(const b of p.brew){put(b.card,'brew:'+p.id,b.disabled?'disabled':b.substituted?'substituted':JSON.stringify([b.boost||0,b.multiplier||1,b.amplifierCharges||0,!!b.amplifierSpent,!!b.sealed,!!b.zeroed,!!b.effectMuted]));b.attacks.forEach(a=>put(a.card,'attack:'+p.id,a.cancelled?'cancelled':''));}}if(s.effectChoice?.kind==='sift')s.effectChoice.cards.forEach(c=>put(c,'choice:'+s.effectChoice.owner));if(s.hexChoice?.held)s.hexChoice.cards.forEach(c=>put(c,'hex-choice:'+s.hexChoice.owner));for(const [hex,cards]of(s.hexes||[]).entries())cards.forEach(c=>put(c,'hex:'+hex));if(s.exchange){put(s.exchange.card,'trade:'+s.exchange.owner);s.exchange.bids.forEach(b=>put(b.card,'bid:'+b.player));}return z;}
 export function action(s,pid,a){const previousCharacters=new Map(s.players.map(p=>[p.id,p.character])),previousRecipes=new Set(s.players.flatMap(p=>p.recipes.map(r=>r.id))),previousCurrent=new Map(s.players.map(p=>[p.id,p.current]));const actor=s.players.find(p=>p.id===pid),hexAction=['hexUse','hexChoose','hexMove','hexPerk'].includes(a?.type),hexBefore=hexAction&&actor?{tile:actor.hex,hand:actor.hand.length,choice:s.hexChoice?.kind}:null;const before=tableZones(s),scores=new Map(s.players.map(p=>[p.id,p.score]));coreAction(s,pid,a);const after=tableZones(s);s.events??=[];s.eventSeq??=0;const emit=e=>s.events.push({...e,seq:++s.eventSeq,time:Date.now()});for(const [cid,c]of after){const old=before.get(cid);if(old&&old.zone!==c.zone)emit({type:'move',card:c.card,from:old.zone,to:c.zone});else if(old&&old.status!==c.status)emit({type:'status',card:c.card,zone:c.zone,status:c.status});}for(const p of s.players){const amount=p.score-(scores.get(p.id)||0);if(amount>0)emit({type:'fame',owner:p.id,amount});}for(const p of s.players){if(p.character&&p.character!==previousCharacters.get(p.id))emit({type:'character',owner:p.id,character:p.character});for(const r of p.recipes)if(!previousRecipes.has(r.id))emit({type:'recipe',owner:p.id,recipe:r});if(p.current&&p.current!==previousCurrent.get(p.id))emit({type:'recipePlace',owner:p.id,recipe:recipe(p)});}if(hexBefore){const moved=actor.hex!==hexBefore.tile;const gained=Math.max(0,actor.hand.length-hexBefore.hand+Number(a.type==='hexUse'&&hexBefore.tile===1));emit({type:'hexResult',owner:pid,from:hexBefore.tile,tile:actor.hex,moved,gained,action:a.type,mode:a.mode||hexBefore.choice||null,target:a.hex});if(a.type==='hexUse'||a.type==='hexChoose')log(s,actor.name+' · '+HEXES[hexBefore.tile].name+(gained?' · +'+gained+' карт.':'.'));}for(const notice of s.perkNotices||[])emit({type:'perk',...notice});s.perkNotices=[];for(const event of s.ruleEvents||[])emit(event);s.ruleEvents=[];s.events=s.events.slice(-90);}
 
 function ingredientEffect(s,p,b){
- const prior=p.brew.find(x=>x!==b&&!x.disabled&&!x.substituted&&x.card.effect==='amplify'&&!x.amplifierSpent);
- if(prior){prior.amplifierSpent=true;b.boost=(b.boost||0)+2;log(s,'Наступний складник отримує +2 слави.');}
- if(b.card.effect==='sift'){const tray={hand:[]};draw(s,tray,2);if(tray.hand.length===1)p.hand.push(tray.hand[0]);else if(tray.hand.length)s.effectChoice={id:id(),owner:p.id,kind:'sift',cards:tray.hand};}
- if(b.card.effect==='recover'){const cards=s.discard.slice(-5).reverse();if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:'recover',cards};else log(s,'Скид порожній: повертати нічого.');}
+ if(b.card.points>0&&!b.zeroed&&s.turnData.flowerCard!==b.card.id){
+  const sources=p.brew.filter(x=>x!==b&&!x.disabled&&!x.effectMuted&&!x.substituted&&!x.amplifierSpent&&(x.amplifierCharges||x.card.effect==='amplify'));
+  const charges=sources.reduce((sum,x)=>sum+(x.amplifierCharges||1),0);
+  if(charges){
+   b.multiplier=charges*2;sources.forEach(x=>x.amplifierSpent=true);
+   comboNotice(s,p,b,'Множник ×'+b.multiplier);
+  }
+ }
+ const flower=effectiveHex(s,p)===2&&!s.turnData.hexUsed&&s.turnData.flowerCard===b.card.id;
+ if(flower){b.zeroed=true;b.effectMuted=true;s.turnData.hexUsed=true;s.turnData.allowance++;delete s.turnData.flowerCard;comboNotice(s,p,b,'Квіти: 0 слави → продовження');return;}
+ resolveIngredientEffect(s,p,b,b.card.effect);
+}
+function comboNotice(s,p,b,text){
+ log(s,p.name+' · '+text+'.');
+ s.ruleEvents??=[];s.ruleEvents.push({type:'combo',owner:p.id,card:b.card.id,text,multiplier:b.multiplier||null});
+}
+function canChooseBrew(s,p,c,bonus=false){
+ const probe={...s,effectChoice:null,hexChoice:null};
+ if(bonus){probe.phase='chain';probe.turnData={...s.turnData,actionUsed:false};}
+ return canAdd(probe,p,c);
+}
+function resolveIngredientEffect(s,p,b,effect){
+ if(b.effectMuted||b.carried)return;
+ if(effect==='resonance'&&b.card.effect==='echo')b.echoResonance=true;
+ if(effect==='extra')s.turnData.allowance++;
+ if(effect==='draw')draw(s,p,1);
+ if(effect==='amplify'){if(b.amplifierSpent){b.amplifierSpent=false;b.amplifierCharges=0;}b.amplifierCharges=(b.amplifierCharges||0)+1;comboNotice(s,p,b,'Накопичено ×'+pendingMultiplier(p));}
+ if(effect==='sift'){const tray={hand:[]};draw(s,tray,2);if(tray.hand.length===1)p.hand.push(tray.hand[0]);else if(tray.hand.length)s.effectChoice={id:id(),owner:p.id,kind:'sift',cards:tray.hand};}
+ if(effect==='recover'||effect==='rebrew'){
+  const cards=s.discard.slice(effect==='rebrew'?-3:-5).reverse().filter(c=>effect!=='rebrew'||c.type==='ingredient');
+  if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:effect,cards};
+  else log(s,'У скиді немає доступного складника.');
+ }
+ if(effect==='echo'){
+  const index=p.brew.indexOf(b),prior=p.brew.slice(0,index).reverse().find(x=>!x.disabled&&!x.substituted);
+  if(prior?.card.effect&&prior.card.effect!=='echo'&&!prior.effectMuted&&!prior.carried){
+   comboNotice(s,p,b,'Відлуння: '+prior.card.name);
+   resolveIngredientEffect(s,p,b,prior.card.effect);
+  }else comboNotice(s,p,b,'Відлуння: немає попереднього ефекту');
+ }
+ if(effect==='stoke'){
+  const cards=p.hand.filter(c=>c.type==='ingredient');
+  if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:'stoke',cards};
+ }
+}
+function pendingMultiplier(p){
+ return 2*p.brew.filter(x=>!x.disabled&&!x.effectMuted&&!x.substituted&&!x.amplifierSpent).reduce((sum,x)=>sum+(x.amplifierCharges||(x.card.effect==='amplify'?1:0)),0);
 }
 function chooseEffect(s,p,a){const choice=s.effectChoice;if(choice.owner!==p.id||a.choice!==choice.id)fail('Цей вибір недоступний.');if(choice.kind==='harvest'&&!a.card){draw(s,p,1+(choice.afterDraw||0));s.effectChoice=null;return;}if(['starter','extend'].includes(choice.kind)&&!a.card){s.effectChoice=null;if(choice.kind==='extend')s.turnData.extendUsed=true;if(choice.endAfter)end(s);return;}
+if(choice.kind==='stoke'){
+ if(a.card){if(!choice.cards.some(c=>c.id===a.card)||!p.hand.some(c=>c.id===a.card&&c.type==='ingredient'))fail('Оберіть складник для жару.');s.discard.push(takeCard(p,a.card));s.turnData.allowance++;log(s,p.name+' розпалює казан: ще одне додавання.');}
+ s.effectChoice=null;return;
+}
+if(choice.kind==='rebrew'){
+ const card=choice.cards.find(c=>c.id===a.card),index=s.discard.findIndex(c=>c.id===a.card);
+ if(!card||index<0)fail('Складник уже недоступний.');
+ if(a.play&&!canChooseBrew(s,p,card,true))fail('Цей складник не підходить до зілля.');
+ s.discard.splice(index,1);p.hand.push(card);s.effectChoice=null;
+ if(a.play)play(s,p,card.id,{free:true});
+ return;
+}
 const card=choice.cards.find(c=>c.id===a.card);
 if(choice.kind==='starter'&&card){const i=s.discard.findIndex(c=>c.id===card.id);if(i<0)fail('Карта недоступна.');if(p.starter)s.discard.push(p.starter);p.starter=s.discard.splice(i,1)[0];s.effectChoice=null;if(choice.endAfter)end(s);return;}
 if(choice.kind==='mix'&&card){const i=s.discard.findIndex(c=>c.id===card.id);if(i<0)fail('Карта недоступна.');for(const pay of choice.payment)s.discard.push(takeCard(p,pay));p.hand.push(s.discard.splice(i,1)[0]);s.effectChoice=null;s.turnData.mixUsed=true;play(s,p,card.id);return;}
@@ -183,120 +255,148 @@ export function canAdd(s,p,c){if(active(s)?.id!==p.id||s.effectChoice||!needed(p
 export function canSabotage(s,p,c){if(c?.type!=='ingredient'||s.phase!=='reaction'||s.players[s.reactionQueue[s.reactionIndex]]?.id!==p.id)return false;const b=active(s).brew.find(b=>b.id===s.turnData.last);return !!(b&&b.attacks.length<3&&(c.color===b.card.color||character(p)?.fungusSabotage&&c.color==='red'));}
 
 export const HEXES = [
- {name:'Перехрестя під дубом',cap:2,rule:'Розвідка двох полян або посів однієї з двох верхніх карт.'},
- {name:'Грибна галявина',cap:3,rule:'Скиньте складник. Відкрийте три карти й заберіть усі Гриби.'},
- {name:'Квітучий яр',cap:2,rule:'Покладіть складник під колоду. Оберіть одну з двох верхніх карт.'},
- {name:'Корчі під кручою',cap:2,rule:'Скиньте Корінь. Візьміть складник іншого типу з п’яти верхніх карт скиду.'},
- {name:'Мохова тиша',cap:2,rule:'Скиньте Мох, щоб скасувати один негатив у своєму казані.'},
- {name:'Світлякова левада',cap:3,rule:'Після першої звареної Комахи за хід доберіть одну карту.'},
- {name:'Срібне джерело',cap:2,rule:'Оберіть Рідину. Цього ходу вона може замінити тип наступної позиції.'}
+ {name:'Перехрестя під дубом',cap:2,rule:'Скиньте складник і застосуйте вміння сусідньої поляни цього ходу.'},
+ {name:'Грибна галявина',cap:3,rule:'Скиньте складник. Відкрийте 5 карт і заберіть усі Гриби. Один із них цього ходу замінює будь-який тип.'},
+ {name:'Квітучий яр',cap:2,rule:'Оберіть складник у руці: при варці його очки стануть 0, а ефект — ще одне додавання.'},
+ {name:'Корчі під кручою',cap:2,rule:'Подивіться 3 верхні карти скиду. Одну відповідну можна зварити за доступне додавання.'},
+ {name:'Мохова тиша',cap:2,rule:'Збережіть позицію одного складника, обнуліть його очки й вимкніть ефект, щоб скасувати весь саботаж на ньому.'},
+ {name:'Світлякова левада',cap:3,rule:'Без витрати варки замініть свій складник Комахою з руки. Старий складник і саботаж у скид. Ефект нової Комахи працює.'},
+ {name:'Срібне джерело',cap:2,rule:'Скиньте Рідину, щоб повторити позитивний ефект одного складника свого казана.'}
 ];
-
+function effectiveHex(s,p){return s.hexes?(p===active(s)?s.turnData.borrowedHex??p.hex:p.hex):null;}
 function adjacentHex(s,a,b){
  const x=s.hexOrder?.indexOf(a)??a,y=s.hexOrder?.indexOf(b)??b;
  return x!==y&&(x===0||y===0||Math.abs(x-y)===1||Math.abs(x-y)===5);
 }
-
+function hexBlocked(s,p,hex){
+ return s.players.some(q=>q!==p&&q.character==='chugaister'&&q.hexLocked&&q.hex!==0&&q.hex===hex);
+}
+function hexDestinations(s,p){
+ const distance=new Map([[p.hex,0]]),queue=[p.hex],steps=p.character==='vodianyk'?2:1;
+ for(const from of queue){
+  if(distance.get(from)>=steps)continue;
+  for(let to=0;to<HEXES.length;to++){
+   if(distance.has(to)||!adjacentHex(s,from,to)||hexBlocked(s,p,to))continue;
+   distance.set(to,distance.get(from)+1);queue.push(to);
+  }
+ }
+ return [...distance.keys()];
+}
 function growHexes(s){
  for(let hex=0;hex<HEXES.length;hex++){
   if(s.hexes[hex].length>=HEXES[hex].cap||!s.deck.length&&!s.discard.length)continue;
   const growers=s.players.filter(p=>p.hex===hex&&p.hexStayed);
   if(growers.length)draw(s,growers[0],1);
-  else{const tray={hand:s.hexes[hex]};draw(s,tray,1);}
+  else draw(s,{hand:s.hexes[hex]},1);
  }
  for(const p of s.players)p.hexStayed=false;
 }
-
 function hexPerk(s,p){
- const mode=p.character;
- if(!s.hexes||p!==active(s)||s.phase!=='move'||s.effectChoice||s.hexChoice||p.hexPerkUsed||!['mosskeeper','vodianyk','blud'].includes(mode))return null;
- const tiles=HEXES.map((_,i)=>i),near=tiles.filter(i=>adjacentHex(s,p.hex,i));
- if(mode==='vodianyk')return {mode,targets:p.hex===0?[]:tiles.filter(i=>i!==0&&i!==p.hex&&!near.includes(i))};
- if(mode==='mosskeeper')return {mode,targets:near.filter(i=>s.hexes[i].length&&!s.players.some(q=>q.hex===i))};
- return {mode,targets:near.filter(i=>s.hexes[i].length&&near.some(j=>j!==i&&s.hexes[j].length<HEXES[j].cap)),destinations:near.filter(i=>s.hexes[i].length<HEXES[i].cap)};
+ if(!s.hexes||p!==active(s)||s.status!=='playing'||s.effectChoice||s.hexChoice)return null;
+ if(p.character==='mosskeeper'&&s.phase==='move'&&!p.hexPerkUsed)return {mode:'mosskeeper',targets:HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i)&&s.hexes[i].length&&!s.players.some(q=>q.hex===i))};
+ if(p.character==='vodianyk'&&s.phase==='move')return {mode:'vodianyk',targets:hexDestinations(s,p).filter(i=>i!==p.hex)};
+ if(p.character==='blud'&&['main','post','defense'].includes(s.phase)&&!s.turnData.bludUsed&&!s.turnData.hexUsed&&s.turnData.borrowedHex===undefined){
+  const players=s.players.filter(q=>q!==p&&q.hex!==p.hex&&!hexBlocked(s,p,q.hex)&&!hexBlocked(s,q,p.hex)).map(q=>q.id);
+  return {mode:'blud',targets:[...new Set(s.players.filter(q=>players.includes(q.id)).map(q=>q.hex))],players};
+ }
+ if(p.character==='chugaister'&&p.hex!==0&&['main','chain','post','defense','move'].includes(s.phase)&&!p.hexLocked)return {mode:'chugaister',targets:[p.hex]};
+ return null;
 }
 function useHexPerk(s,p,a){
  const perk=hexPerk(s,p);
  if(!perk?.targets.includes(a.hex))fail('Ціль уміння недоступна.');
- if(perk.mode==='blud'&&(a.to===a.hex||!perk.destinations.includes(a.to)))fail('Оберіть інший сусідній гекс із місцем.');
- p.hexPerkUsed=true;
- if(perk.mode==='vodianyk'){moveHex(s,p,a.hex,true);return;}
+ if(perk.mode==='vodianyk'){moveHex(s,p,a.hex);return;}
+ if(perk.mode==='chugaister'){p.hexLocked=true;log(s,p.name+' закриває вхід на '+HEXES[p.hex].name+'.');return;}
  if(perk.mode==='mosskeeper'){
-  p.hand.push(...s.hexes[a.hex].splice(0));
-  moveHex(s,p,p.hex);
-  return;
+  p.hexPerkUsed=true;p.hand.push(...s.hexes[a.hex].splice(0));moveHex(s,p,p.hex);return;
  }
- s.hexes[a.to].push(s.hexes[a.hex].pop());
- log(s,p.name+' переносить закриту карту: '+HEXES[a.hex].name+' → '+HEXES[a.to].name+'.');
+ const candidates=s.players.filter(q=>perk.players.includes(q.id)&&q.hex===a.hex);
+ const other=candidates.find(q=>q.id===a.player)||(candidates.length===1?candidates[0]:null);
+ if(!other)fail('Оберіть фішку суперника.');
+ [p.hex,other.hex]=[other.hex,p.hex];other.hexStayed=false;
+ s.turnData.startHex=p.hex;s.turnData.bludUsed=true;
+ log(s,p.name+' обмінюється місцями з '+other.name+'.');
 }
-function moveHex(s,p,hex,waterway=false){
- if(s.phase!=='move'||!Number.isInteger(hex)||!HEXES[hex]||hex!==p.hex&&!adjacentHex(s,p.hex,hex)&&!waterway)fail('Оберіть сусідній гекс або залишіться.');
+function moveHex(s,p,hex){
+ if(s.phase!=='move'||!Number.isInteger(hex)||!hexDestinations(s,p).includes(hex))fail('Цей перехід недоступний.');
  p.hexStayed=hex===p.hex;
- if(!p.hexStayed){
-  p.hex=hex;
-  p.hand.push(...s.hexes[hex].splice(0));
-  draw(s,p,1);
- }
+ if(!p.hexStayed){p.hexLocked=false;p.hex=hex;p.hand.push(...s.hexes[hex].splice(0));draw(s,p,1);}
  p.hexScout={};
  log(s,p.name+(p.hexStayed?' залишається: ':' переходить: ')+HEXES[hex].name+'.');
  end(s,true);
 }
-
+function hexSkillTargets(s,p){
+ const result={payments:[],units:[],borrow:[],cards:[],ready:false};
+ if(!s.hexes||p!==active(s)||s.status!=='playing'||p.hex!==(s.turnData.startHex??p.hex)||s.turnData.hexUsed||s.effectChoice||s.hexChoice||!['main','chain','post','defense','move'].includes(s.phase))return result;
+ result.ready=true;
+ const hex=effectiveHex(s,p),food=p.hand.filter(c=>c.type==='ingredient');
+ if(hex===0){result.payments=food.map(c=>c.id);result.borrow=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i));}
+ if(hex===1)result.payments=food.map(c=>c.id);
+ if(hex===2)result.payments=food.filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
+ if(hex===3)result.cards=s.discard.slice(-3).filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
+ if(hex===4)result.units=p.brew.filter(b=>!b.disabled&&!b.substituted&&b.attacks.some(a=>!a.cancelled)).map(b=>b.id);
+ if(hex===5){
+  result.payments=food.filter(c=>c.color==='black').map(c=>c.id);
+  result.units=p.brew.filter(b=>b.card.type==='ingredient'&&b.slot!==null&&!b.sealed&&!b.disabled).map(b=>b.id);
+ }
+ if(hex===6){
+  result.payments=food.filter(c=>c.color==='purple').map(c=>c.id);
+  result.units=p.brew.filter(b=>!b.disabled&&!b.effectMuted&&!b.carried&&['extra','draw','sift','recover','rebrew','echo','stoke','amplify'].includes(b.card.effect)).map(b=>b.id);
+ }
+ return result;
+}
 function useHex(s,p,a){
- if(p.hex!==(s.turnData.startHex??p.hex))fail('Уміння доступне лише на гексі початку ходу.');
- if(!['main','chain','post','defense','move'].includes(s.phase)||s.turnData.hexUsed)fail('Уміння поляни зараз недоступне.');
- const card=p.hand.find(c=>c.id===a.card&&c.type==='ingredient');
- const bottom=cards=>s.deck.unshift(...cards);
- const reveal=(n)=>{const tray={hand:[]};draw(s,tray,n);return tray.hand;};
- const choose=(kind,cards)=>{if(cards.length)s.hexChoice={owner:p.id,kind,cards};};
- switch(p.hex){
- case 0:
-  if(a.mode==='scout'){
-   const targets=Array.isArray(a.tiles)?[...new Set(a.tiles)]:[];
-   if(targets.length!==2||targets.some(x=>!Number.isInteger(x)||x<1||x>6))fail('Оберіть дві поляни.');
-   p.hexScout=Object.fromEntries(targets.map(i=>[i,s.hexes[i].map(c=>c.name)]));
-  }else if(a.mode==='seed'){
-   if(!HEXES.some((x,i)=>s.hexes[i].length<x.cap)||!s.deck.length&&!s.discard.length)fail('Немає місця або карт для посіву.');
-   choose('seed',reveal(2));
-  }else fail('Оберіть розвідку або посів.');
-  s.hexStats??={scout:0,seed:0};s.hexStats[a.mode]++;
-  break;
- case 1:{
-  if(!card)fail('Оберіть складник для скиду.');
-  const cards=reveal(3);
-  s.discard.push(takeCard(p,card.id));p.hand.push(...cards.filter(c=>c.color==='red'));bottom(cards.filter(c=>c.color!=='red'));
-  break;
+ const targets=hexSkillTargets(s,p);
+ if(!targets.ready)fail('Уміння гекса зараз недоступне.');
+ const hex=effectiveHex(s,p);
+ if(hex===0){
+  if(!targets.payments.includes(a.card)||!targets.borrow.includes(a.hex))fail('Скиньте складник і оберіть сусідню поляну.');
+  s.discard.push(takeCard(p,a.card));s.turnData.borrowedHex=a.hex;
+  log(s,p.name+' запозичує вміння: '+HEXES[a.hex].name+'.');return;
  }
- case 2:{
-  if(!card)fail('Оберіть складник для обміну.');
-  const cards=reveal(2);if(!cards.length)fail('Колода порожня.');
-  bottom([takeCard(p,card.id)]);choose('flowers',cards);
-  break;
- }
- case 3:{
-  const cards=s.discard.slice(-5).filter(c=>c.type==='ingredient'&&c.color!=='brown');
-  if(card?.color!=='brown'||!cards.length)fail('Потрібні Корінь і доступний складник у скиді.');
-  choose('roots',cards);s.hexChoice.payment=card.id;
-  break;
- }
- case 4:{
-  const attack=p.brew.flatMap(b=>b.attacks).find(x=>x.id===a.target&&!x.cancelled);
-  if(card?.color!=='green'||!attack)fail('Оберіть Мох і негатив у своєму казані.');
-  s.discard.push(takeCard(p,card.id));attack.cancelled=true;
-  break;
- }
- case 6:
-  if(card?.color!=='purple'||s.phase!=='main')fail('Оберіть Рідину перед варкою.');
-  s.turnData.springCard=card.id;
-  break;
- default: fail('Ця поляна спрацьовує під час варки.');
+ if(hex===1){
+  if(!targets.payments.includes(a.card))fail('Оберіть складник для скиду.');
+  s.discard.push(takeCard(p,a.card));
+  const tray={hand:[]};draw(s,tray,5);
+  const mushrooms=tray.hand.filter(c=>c.type==='ingredient'&&c.color==='red');
+  p.hand.push(...mushrooms);s.deck.unshift(...tray.hand.filter(c=>!mushrooms.includes(c)));
+  s.turnData.mushroomCards=mushrooms.map(c=>c.id);
+ }else if(hex===2){
+  if(!targets.payments.includes(a.card))fail('Оберіть доступний для варки складник.');
+  s.turnData.flowerCard=a.card;log(s,'Квітучий яр: '+p.hand.find(c=>c.id===a.card).name+' → продовження.');
+  return;
+ }else if(hex===3){
+  if(!s.discard.length)fail('Скид порожній.');
+  s.hexChoice={owner:p.id,kind:'roots-brew',cards:s.discard.slice(-3)};
+ }else if(hex===4){
+  if(!targets.units.includes(a.target))fail('Оберіть атакований складник.');
+  const unit=p.brew.find(b=>b.id===a.target);unit.zeroed=true;unit.effectMuted=true;
+  unit.attacks.forEach(attack=>attack.cancelled=true);
+ }else if(hex===5){
+  if(!targets.payments.includes(a.card)||!targets.units.includes(a.target))fail('Потрібні Комаха з руки та власний складник.');
+  const index=p.brew.findIndex(b=>b.id===a.target),old=p.brew[index],slot={slot:old.slot,extra:old.extra,color:old.playedAs||old.card.color};
+  p.brew.splice(index,1);s.discard.push(old.card,...old.attacks.map(a=>a.card));s.turnData.hexUsed=true;
+  play(s,p,a.card,{replacing:slot,free:true});return;
+ }else if(hex===6){
+  if(!targets.payments.includes(a.card)||!targets.units.includes(a.target))fail('Оберіть Рідину та складник з ефектом.');
+  const unit=p.brew.find(b=>b.id===a.target);
+  s.discard.push(takeCard(p,a.card));s.turnData.hexUsed=true;
+  if(s.phase==='post'||s.phase==='defense')s.phase='chain';
+  resolveIngredientEffect(s,p,unit,unit.card.effect);
+  comboNotice(s,p,unit,'Джерело: повтор ефекту');return;
  }
  s.turnData.hexUsed=true;
 }
-
 function resolveHexChoice(s,p,a){
  const choice=s.hexChoice;
  if(p.id!==choice.owner||a.type!=='hexChoose')fail('Спочатку завершіть вибір на мапі.');
+ if(choice.kind==='roots-brew'){
+  if(!a.card){s.hexChoice=null;return;}
+  const card=choice.cards.find(c=>c.id===a.card),index=s.discard.findIndex(c=>c.id===a.card);
+  if(!card||index<0||!canChooseBrew(s,p,card))fail('Цей складник зараз недоступний.');
+  s.discard.splice(index,1);p.hand.push(card);s.hexChoice=null;play(s,p,card.id);return;
+ }
+ // Finish choices created by a game that was running before this update.
  const card=choice.cards.find(c=>c.id===a.card);
  if(!card)fail('Оберіть карту.');
  if(choice.kind==='seed'){
@@ -304,51 +404,60 @@ function resolveHexChoice(s,p,a){
   s.hexes[a.hex].push(card);
  }else if(choice.kind==='roots'){
   const index=s.discard.findIndex(c=>c.id===card.id);
-  if(index<0)fail('Складник недоступний.');
+  if(index<0||!p.hand.some(c=>c.id===choice.payment))fail('Складник недоступний.');
   s.discard.push(takeCard(p,choice.payment));p.hand.push(s.discard.splice(index,1)[0]);
- }else p.hand.push(card);
- if(choice.kind!=='roots')s.deck.unshift(...choice.cards.filter(c=>c!==card));
+ }else if(choice.kind==='flowers')p.hand.push(card);
+ else fail('Невідомий вибір на мапі.');
+ if(choice.kind!=='roots')s.deck.unshift(...choice.cards.filter(c=>c.id!==card.id));
  s.hexChoice=null;
 }
-
 function botHex(s,p){
- const need=needed(p)?.color;
- const food=p.hand.filter(c=>c.type==='ingredient');
- const sort=(a,b)=>Number(b.color===need)-Number(a.color===need)||b.points-a.points;
+ const food=p.hand.filter(c=>c.type==='ingredient'),need=needed(p)?.color;
  if(s.hexChoice){
-  const card=[...s.hexChoice.cards].sort(sort)[0];
-  const hex=HEXES.findIndex((x,i)=>i!==p.hex&&s.hexes[i].length<x.cap);
-  return {type:'hexChoose',card:card.id,hex:hex<0?p.hex:hex};
+  const cards=[...s.hexChoice.cards].sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a));
+  return {type:'hexChoose',card:cards.find(c=>canChooseBrew(s,p,c))?.id};
  }
+ const score=hex=>s.hexes[hex].length*2+Number(hex===2&&food.length>2)*2+Number(hex===3&&s.discard.slice(-3).some(c=>canChooseBrew(s,p,c)))*2+Number(hex===6&&food.some(c=>c.color==='purple')&&p.brew.some(b=>b.card.effect))*2+Number(hex===4&&p.brew.some(b=>b.attacks.some(a=>!a.cancelled)))*3;
+ const perk=hexPerk(s,p);
  if(s.phase==='move'){
-  const neighbors=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,i,p.hex));
-  const tileScore=i=>s.hexes[i].length*3+Number(i===0)*.3+Number(i===5&&need==='black')+Number(i===6&&food.some(c=>c.color==='purple')&&!food.some(c=>c.color===need))*.9;
-  neighbors.sort((a,b)=>tileScore(b)-tileScore(a));
-  const perk=hexPerk(s,p);
-  if(perk?.targets.length){
-   const hex=[...perk.targets].sort((a,b)=>tileScore(b)-tileScore(a))[0];
-   if(perk.mode==='blud'&&s.hexes[hex].length>=2){
-    const to=perk.destinations.find(i=>i!==hex);
-    return {type:'hexPerk',hex,to};
-   }
-   if(perk.mode!=='blud'&&s.hexes[hex].length>s.hexes[neighbors[0]].length+Number(perk.mode==='mosskeeper'))return {type:'hexPerk',hex};
+  const destinations=hexDestinations(s,p).sort((a,b)=>score(b)-score(a));
+  if(perk?.mode==='mosskeeper'&&perk.targets.some(hex=>s.hexes[hex].length>=2)){
+   return {type:'hexPerk',hex:perk.targets.sort((a,b)=>s.hexes[b].length-s.hexes[a].length)[0]};
   }
-  return {type:'hexMove',hex:neighbors[0]};
+  return {type:'hexMove',hex:destinations[0]};
  }
- const excess=food.filter(c=>c.color!==need).sort((a,b)=>a.points-b.points)[0];
- if(p.hex===0&&HEXES.some((x,i)=>s.hexes[i].length<x.cap)&&(s.deck.length||s.discard.length))return {type:'hexUse',mode:'seed'};
- if(p.hex===1&&excess&&(need==='red'||food.length>4))return {type:'hexUse',card:excess.id};
- if(p.hex===2&&excess&&(s.deck.length||s.discard.length))return {type:'hexUse',card:excess.id};
- if(p.hex===3&&s.discard.slice(-5).some(c=>c.type==='ingredient'&&c.color===need&&c.color!=='brown')){
-  const root=food.find(c=>c.color==='brown');if(root)return {type:'hexUse',card:root.id};
+ if(perk?.mode==='chugaister')return {type:'hexPerk',hex:p.hex};
+ if(perk?.mode==='blud'){
+  const player=s.players.find(q=>perk.players.includes(q.id)&&score(q.hex)>score(p.hex)+2);
+  if(player)return {type:'hexPerk',hex:player.hex,player:player.id};
  }
- if(p.hex===4){
-  const moss=food.find(c=>c.color==='green'),attack=p.brew.flatMap(b=>b.attacks).find(a=>!a.cancelled);
-  if(moss&&attack)return {type:'hexUse',card:moss.id,target:attack.id};
+ const targets=hexSkillTargets(s,p);
+ if(!targets.ready)return null;
+ const hex=effectiveHex(s,p),cheap=food.filter(c=>targets.payments.includes(c.id)).sort((a,b)=>ingredientValue(s,p,a)-ingredientValue(s,p,b))[0];
+ if(hex===0&&cheap&&food.length>3){
+  const location=targets.borrow.find(i=>i===2&&food.some(c=>canChooseBrew(s,p,c))||i===3&&s.discard.slice(-3).some(c=>canChooseBrew(s,p,c))||i===4&&p.brew.some(b=>b.attacks.some(a=>!a.cancelled)));
+  if(location!==undefined)return {type:'hexUse',card:cheap.id,hex:location};
  }
- if(p.hex===6&&need&&!food.some(c=>c.color===need)){
-  const liquid=food.find(c=>c.color==='purple');if(liquid)return {type:'hexUse',card:liquid.id};
+ if(hex===1&&cheap&&(need==='red'||food.length>3))return {type:'hexUse',card:cheap.id};
+ if(hex===2&&cheap&&!s.turnData.flowerCard&&food.length>1&&needed(p)&&!needed(p).extra)return {type:'hexUse',card:cheap.id};
+ if(hex===3&&targets.cards.length)return {type:'hexUse'};
+ if(hex===4&&targets.units.length)return {type:'hexUse',target:targets.units[0]};
+ if(hex===5&&cheap){
+  const unit=p.brew.find(b=>targets.units.includes(b.id)&&b.attacks.some(a=>!a.cancelled));
+  if(unit)return {type:'hexUse',card:cheap.id,target:unit.id};
+ }
+ if(hex===6&&cheap&&targets.units.length){
+  const unit=p.brew.find(b=>targets.units.includes(b.id)&&['extra','draw','rebrew','recover'].includes(b.card.effect));
+  if(unit)return {type:'hexUse',card:cheap.id,target:unit.id};
  }
  return null;
 }
+
+
+
+function echoWildReady(p,c){
+ const prior=[...p.brew].reverse().find(b=>!b.disabled&&!b.substituted);
+ return c?.effect==='echo'&&prior?.card.effect==='brew-wild'&&!prior.effectMuted&&!prior.carried;
+}
+
 
