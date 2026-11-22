@@ -14,10 +14,10 @@ export const LESSON_STAGES={
  rootInspect:['Роздивіться карту','Натисніть на корінець. Відкриємо його зблизька та прочитаємо ефект.','action'],
  rootResult:['Ще одне додавання','Корінець: +1 слави, ↪ одне додавання. У саботажі: −1. Це ефект карти. Перк Мавки ще не витрачено.','next'],
  nectar:['Підготуйте множник','Перетягніть «Квітковий нектар» у казан. Використаємо продовження корінця.','action'],
- nectarResult:['Накопичено ×2','Нектар має 0 власних очок. Наступний власний інгредієнт із додатними очками отримає множник. Нульові підсилювачі його не витрачають.','next'],
+ nectarResult:['Накопичено ×2','Нектар має 0 власних очок. Наступний власний інгредієнт із додатними очками отримає множник.','next'],
  stopFirst:['Дайте суперникам відповісти','Натисніть «Відповіді». Ви закінчуєте комбінацію, але ще можете захищатися і рухатися.','action'],
  firstReactions:['Чужа ложка','Бот підкидає Рідину до вашого останнього інгредієнта-Рідини. Наступний суперник пасує.','auto'],
- sabotage:['Це саботаж −2','Чужа карта лежить поруч. Її позитивний ефект не працює, а −2 віднімається від зілля. Нектар і накопичений ×2 зберігаються.','next'],
+ sabotage:['Це саботаж −2','Карта саботажу замість позитивного ефекту застосовує негатив, надрукований догори дриґом унизу карти. Тут це −2 до очок зілля. Нектар і накопичений ×2 зберігаються.','next'],
  ward:['Захистіть нектар','Перетягніть Оберіг із руною ᛟ на підкинуту негативну карту. Стопка розкривається при наближенні.','action'],
  wardResult:['Негатив вимкнено','Оберіг пішов у скид. Саботаж лишився перекресленим і більше не віднімає очки. Захист не витрачає варку.','next'],
  finishFirst:['Завершіть свій хід','Натисніть «Завершити хід». Зілля ще не готове, тому воно залишиться у казані. Далі оберемо крок.','action'],
@@ -59,7 +59,7 @@ export const LESSON_STAGES={
  openOrders:['Новий рецепт','Відкрийте «Замовлення». Рецепт можна взяти раз за хід без витрати варки.','action'],
  newOrder:['Полиновий оберіг','Перетягніть підсвічений рецепт у руку або натисніть на нього. Коріння → Квіти → Коріння вже є у вашому запасі.','action'],
  newOrderResult:['Можна варити далі','Рецепт у вашій руці. Поставте його на казан і почніть з Кореня пам’яті. Квіти та ще один Корінь ви отримали з Левади.','next'],
- done:['Стежку пройдено','Ви зварили комбінацію, захистилися, підкинули саботаж, використали поляну та обмінялися. Далі — ця сама партія без підсвіток і обмежень.','next'],
+ done:['Стежку пройдено','Ви зварили комбінацію, захистилися, підкинули саботаж, використали поляну та обмінялися. Далі — вільна партія. Світлячок повернеться, коли хтось завершить третє зілля.','next'],
  free:['Вільна гра','Боти грають самостійно. Навчання можна повторити з головного меню.','free']
 };
 const GO={rootResult:'nectar',nectarResult:'stopFirst',sabotage:'ward',wardResult:'finishFirst',arrival:'botOne',botOne:'botOneRun',attackResult:'botOneEnd',turnTwo:'openMap',springInfo:'spring',springResult:'tradeInfo',tradeInfo:'offer',tradeResult:'moss',mavka:'final',finalResult:'stopFinal',negatives:'score',scoreResult:'victory',victory:'end',harvestAgain:'orderWait',newOrderResult:'done',done:'free'};
@@ -135,13 +135,36 @@ export function lessonBotStep(l){
  }
  return a;
 }
+export function lessonResultInfo(l){
+ if(l.stage!=='free'||l.s.status!=='finished')return null;
+ const players=l.s.players,me=players.find(p=>p.id===l.owner),max=Math.max(...players.map(p=>p.score)),winners=players.filter(p=>p.score===max),outcome=me.score===max?(winners.length>1?'tie':'win'):'loss';
+ const title=outcome==='win'?'Вітаю з перемогою!':outcome==='tie'?'Спільна перемога!':'Гарна пригода — і ще не остання!';
+ const support=outcome==='win'?'Твої комбінації та рішення принесли найбільше слави.':outcome==='tie'?'Ви набрали однакову найбільшу славу й ділите перемогу.':'Цього разу більше слави здобув суперник. Ти вже опанував комбінації, захист, обмін і мапу — спробуй інший маршрут або нову комбінацію наступного разу.';
+ return {key:'result',kind:'result',outcome,title,text:'Усі останні ходи завершено. Перемагає найбільша загальна слава, а не кількість зіль. '+support+' Натисни «Нова історія», щоб почати наступну пригоду.',score:me.score,winners:winners.map(p=>p.name)};
+}
+export function lessonFinaleInfo(l){
+ if(l.stage!=='free')return null;
+ const s=l.s,seen=l.finaleSeen||[];
+ if(s.status==='finished')return seen.includes('result')?null:lessonResultInfo(l);
+ if(!s.finalStarter)return null;
+ const starter=s.players.find(p=>p.id===s.finalStarter),goal=s.targetPotions||3;
+ if(!seen.includes('trigger'))return {key:'trigger',kind:'trigger',focus:starter.id,title:'Фінал розпочато',text:starter.name+' першим завершує '+goal+' зілля й отримує додаткові +5 слави. Партія ще триває: інші гравці матимуть останній шанс набрати очки.'};
+ if(!seen.includes('last-turns'))return {key:'last-turns',kind:'turns',focus:starter.id,title:'По одному останньому ходу',text:'Той, хто запустив фінал, завершує поточний хід. Потім кожен інший гравець має ще один хід у звичному порядку. Черга: '+s.finalQueue.map(id=>s.players.find(p=>p.id===id).name).join(' → ')+'. Після останнього ходу порівняємо славу.'};
+ const p=s.players[s.turn],key='turn:'+p.id;
+ if(p.id!==s.finalStarter&&s.finalQueue.includes(p.id)&&!seen.includes(key))return {key,kind:'turn',focus:p.id,title:p.id===l.owner?'Твій останній хід':'Останній хід: '+p.name,text:p.id===l.owner?'Це твій останній хід у цій партії. Використай карти, уміння й захист, щоб набрати ще слави. Після завершення цього ходу ти більше не варитимеш, але підкидати карти іншим можна як завжди, коли вони варять зілля.':p.name+' має один останній хід. Можна варити, застосовувати уміння та набирати славу. Ти можеш підкидати саботаж у відповідь за звичайними правилами.'};
+ return null;
+}
+export function lessonFinaleNext(l,key){
+ const info=lessonFinaleInfo(l);if(!info||info.key!==key)throw Error('Це пояснення вже завершено.');
+ l.finaleSeen??=[];l.finaleSeen.push(key);l.version++;
+}
 export function lessonFreeTick(l){
- if(l.stage!=='free')return false;
+ if(l.stage!=='free'||lessonFinaleInfo(l))return false;
  const trade=botTrade(l.s);if(trade){execute(l,trade.pid,trade.action);return true;}
  const actor=botActor(l.s);if(!actor?.bot)return false;
  const a=botAction(l.s);if(!a)return false;execute(l,actor.id,a);return true;
 }
-export function lessonFreeAction(l,a){if(l.stage!=='free')throw Error('Урок ще триває.');execute(l,l.owner,a);}
+export function lessonFreeAction(l,a){if(l.stage!=='free')throw Error('Урок ще триває.');if(lessonFinaleInfo(l))throw Error('Спочатку прочитай пояснення фіналу та натисни «Далі».');execute(l,l.owner,a);}
 export function restoreLesson(saved){
  if(saved?.schema!==LESSON_SCHEMA||!LESSON_STAGES[saved.stage]||saved.s?.code!=='LESSON'||saved.s.players?.[0]?.id!==saved.owner)throw Error('Цей запис уроку не підтримується.');
  lessonView(saved);return saved;

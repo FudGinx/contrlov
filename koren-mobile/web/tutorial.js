@@ -2,6 +2,7 @@
 /* The lesson runs the same authoritative engine locally, never a user's online room. */
 let lesson=null,lessonTimer=null,lessonFrame=null,lessonUntil=0,lessonFocusKey='',lessonPanelStage='';
 const lessonKey='koren-lesson-v2';
+let lessonFinaleTimer=null,lessonFinaleFocus='';
 const lessonAPI=window.KOREN_LESSON;
 function lessonFirefly(name='panel'){
  return '<svg class="lesson-firefly" viewBox="0 0 100 100" role="img" aria-label="Світлячок-провідник"><defs><radialGradient id="fly-'+name+'"><stop stop-color="#fffbd2"/><stop offset=".4" stop-color="#e5ee8b" stop-opacity=".7"/><stop offset="1" stop-color="#b3da6d" stop-opacity="0"/></radialGradient></defs><circle class="firefly-aura" cx="50" cy="60" r="39" fill="url(#fly-'+name+')"/><g class="firefly-body"><g class="firefly-wing wing-left"><path d="M46 47C8 7 7 55 43 62Z" fill="#b6d8b1" fill-opacity=".8" stroke="#edf3ba" stroke-width="1.5"/></g><g class="firefly-wing wing-right"><path d="M54 47C92 7 93 55 57 62Z" fill="#b6d8b1" fill-opacity=".8" stroke="#edf3ba" stroke-width="1.5"/></g><path d="M41 58Q50 48 59 58L61 73Q50 90 39 73Z" fill="#f5dd70" stroke="#c9ae57" stroke-width="2"/><path d="M40 65h20M41 72h18" stroke="#aa934c" stroke-width="2"/><ellipse cx="50" cy="45" rx="14" ry="16" fill="#244e3b" stroke="#cadb93" stroke-width="2"/><path d="M43 31 38 23M57 31 62 23" stroke="#dfe5a7" stroke-width="2"/><circle cx="44" cy="43" r="3" fill="#fff7c7"/><circle cx="56" cy="43" r="3" fill="#fff7c7"/><path d="M46 51Q50 54 54 51" fill="none" stroke="#c4dba3" stroke-width="1.5"/></g></svg>';
@@ -30,14 +31,49 @@ function lessonInspectPublic(el){
  const tile=el.closest('[data-hex-tile]');if(tile){const hex=state.hexMap.tiles[Number(tile.dataset.hexTile)];modal(hex.name,'<p>'+esc(hex.rule)+'</p><p>Урожай: '+hex.count+' карт.</p>');}
 }
 
+
+function lessonClearFinale(){
+ clearTimeout(lessonFinaleTimer);lessonFinaleTimer=null;
+ const box=document.getElementById('lesson-finale');if(box){box.remove();app.inert=false;}
+ document.querySelectorAll('.lesson-finale-mark').forEach(el=>el.classList.remove('lesson-finale-mark'));
+}
+function lessonResultBanner(){
+ if(state?.status!=='finished')return;
+ const info=lessonAPI.lessonResultInfo(lesson||{stage:'free',owner:state.me,s:state});
+ if(!info||document.getElementById('lesson-result-message'))return;
+ const title=app.querySelector('.lobby h1');
+ title?.insertAdjacentHTML('afterend','<section id="lesson-result-message" class="lesson-result-message '+info.outcome+'" aria-label="Підсумки пригоди">'+lessonFirefly('result')+'<div><h2>'+esc(info.title)+'</h2><p>'+esc(info.text)+'</p></div></section>');
+ app.querySelector('.form-actions [data-act="home"]')?.classList.add('story-invite');
+}
+const lessonBaseResults=results;
+results=function(){lessonBaseResults();lessonResultBanner();};
+function lessonFinaleOverlay(){
+ clearTimeout(lessonFinaleTimer);lessonFinaleTimer=null;
+ const info=lesson&&lessonAPI.lessonFinaleInfo(lesson);
+ if(!info){lessonClearFinale();return;}
+ clearTimeout(lessonTimer);lessonTimer=null;
+ if(lessonBlocked()||dragging||hexDrag){lessonFinaleTimer=setTimeout(()=>{if(lesson?.stage==='free')render();},120);return;}
+ let overlay=document.getElementById('lesson-finale');
+ if(!overlay){closeModal();tableSelection=null;selected=null;overlay=document.createElement('div');overlay.id='lesson-finale';overlay.innerHTML='<section class="lesson-finale-panel" role="dialog" aria-modal="true" aria-labelledby="lesson-finale-title"></section>';document.body.append(overlay);}
+ app.inert=true;overlay.dataset.key=info.key;
+ const panel=overlay.querySelector('.lesson-finale-panel');
+ if(panel.dataset.key!==info.key){
+  panel.dataset.key=info.key;
+  panel.innerHTML='<div class="lesson-guide-heading">'+lessonFirefly('finale')+'<span>Світлячок · фінал історії</span></div><h2 id="lesson-finale-title">'+esc(info.title)+'</h2><p>'+esc(info.text)+'</p><footer>'+(info.kind==='result'?'<button data-lesson-story>Нова історія</button><button class="ghost" data-lesson-finale-next>Переглянути підсумки</button>':'<button data-lesson-finale-next>Далі</button>')+'</footer>';
+  panel.querySelector('button')?.focus({preventScroll:true});
+ }
+ document.querySelectorAll('.lesson-finale-mark').forEach(el=>el.classList.remove('lesson-finale-mark'));
+ if(info.focus)[...document.querySelectorAll('[data-zone]')].find(el=>el.dataset.zone==='avatar:'+info.focus)?.classList.add('lesson-finale-mark');
+}
+
 const lessonBaseHome=home,lessonBaseRender=render,lessonBaseAct=act,lessonBasePoll=poll;
 function lessonSave(){if(lesson)try{storage.setItem(lessonKey,JSON.stringify(lesson));}catch{}}
 function lessonGuided(){return !!lesson&&lesson.stage!=='free';}
 function lessonBlocked(){return busy||!!hexPlayback||Date.now()<lessonUntil;}
-function lessonRemove(){clearTimeout(lessonTimer);cancelAnimationFrame(lessonFrame);lessonTimer=lessonFrame=null;document.getElementById('lesson-overlay')?.remove();document.getElementById('lesson-showcase')?.remove();document.getElementById('lesson-explore')?.remove();app.inert=false;document.body.classList.remove('lesson-active');}
+function lessonRemove(){lessonClearFinale();clearTimeout(lessonTimer);cancelAnimationFrame(lessonFrame);lessonTimer=lessonFrame=null;document.getElementById('lesson-overlay')?.remove();document.getElementById('lesson-showcase')?.remove();document.getElementById('lesson-explore')?.remove();app.inert=false;document.body.classList.remove('lesson-active');}
 home=function(){if(lesson){lessonSave();lesson=null;lessonRemove();}lessonBaseHome();const actions=app.querySelector('.hero-actions');actions?.insertAdjacentHTML('beforeend','<button class="lesson-launch" data-lesson-start><span aria-hidden="true">✧</span> Навчання</button>');};
 function startLesson(resume=false){
- clearTimeout(pollTimer);if(hexPlayback)cancelHexPlayback();closeModal();lessonRemove();
+ clearTimeout(pollTimer);if(hexPlayback)cancelHexPlayback();closeModal();lessonRemove();lessonFinaleFocus='';
  try{lesson=resume?lessonAPI.restoreLesson(JSON.parse(storage.getItem(lessonKey))):lessonAPI.createLesson(storage.getItem('koren-name')||'Травниця');}catch{lesson=lessonAPI.createLesson();}
  state=null;seenTableRoom=null;seenTableSeq=0;tableSelection=null;selected=null;busy=false;lessonUntil=0;lessonFocusKey='';lessonPanelStage='';
  lessonPush();
@@ -56,6 +92,7 @@ function lessonDelay(a){
 }
 function lessonSchedule(){
  clearTimeout(lessonTimer);if(!lesson||lesson.exploring)return;
+ if(lesson.stage==='free'&&(lessonAPI.lessonFinaleInfo(lesson)||lesson.s.status==='finished'))return;
  const auto=lessonAPI.lessonInfo(lesson).mode==='auto',free=lesson.stage==='free';
  if(!auto&&!free)return;
  lessonTimer=setTimeout(()=>{
@@ -182,6 +219,8 @@ function lessonPosition(){
 }
 
 render=function(){
+ const finale=lesson&&lessonAPI.lessonFinaleInfo(lesson);
+ if(finale?.focus&&!hexPlayback&&lessonFinaleFocus!==finale.key){lessonFinaleFocus=finale.key;tableView='brew';tablePlayer=finale.focus;}
  if(lesson?.exploring){lessonBaseRender();lessonExploreBar();return;}
  if(lesson&&['bots','goal'].includes(lesson.stage)){lessonRemove();lessonSetup();return;}
  if(lessonGuided()){
@@ -190,7 +229,7 @@ render=function(){
   else if(lesson.stage==='newOrder')tableView='orders';
   else if(!['openMap','openBrew','openOrders'].includes(lesson.stage)&&!hexPlayback){tableView='brew';tablePlayer=lesson.stage==='orderWait'?lesson.s.players[lesson.s.turn].id:lesson.stage.startsWith('botOne')||lesson.stage==='attackBot'||lesson.stage==='attackResult'?lesson.s.players[1].id:lesson.stage.startsWith('botTwo')||lesson.stage==='passBot'?lesson.s.players[2].id:lesson.owner;}
  }
- lessonBaseRender();if(lesson){document.querySelector('[data-act="invite"]')?.remove();}if(lessonGuided())lessonOverlay();
+ lessonBaseRender();if(lesson){document.querySelector('[data-act="invite"]')?.remove();}if(lessonGuided())lessonOverlay();else if(lesson?.stage==='free')lessonFinaleOverlay();
 };
 const lessonBaseInspect=inspectTable;inspectTable=function(el){if(lesson?.exploring){lessonInspectPublic(el);return;}if(lessonGuided()){if(el.dataset.dragKind){tableSelection=tableGestureSource(el);selected=tableSelection.kind==='hand'?tableSelection.card:null;render();}return;}return lessonBaseInspect(el);};
 const lessonBaseTile=tile;tile=function(r,clickable=true){return lessonGuided()?recipeCard(r,null,'order'):lessonBaseTile(r,clickable);};
@@ -211,6 +250,20 @@ function lessonGuard(e){
  if(!lesson)return;
  if(e.type==='click'&&el.closest('[data-lesson-exit]')){stop();home();return;}
  if(e.type==='click'&&el.closest('[data-lesson-retry]')){stop();lessonPanelStage='';lessonPush();return;}
+ if(lesson.stage==='free'&&lessonAPI.lessonFinaleInfo(lesson)){
+  if(el.closest('#lesson-finale')){
+   if(e.type==='click'&&el.closest('[data-lesson-finale-next],[data-lesson-story]')){
+    stop();if(lessonBlocked())return;
+    const info=lessonAPI.lessonFinaleInfo(lesson);lessonAPI.lessonFinaleNext(lesson,info.key);lessonClearFinale();lessonSave();
+    if(el.closest('[data-lesson-story]'))home();else{render();lessonSchedule();}return;
+   }
+   if(e.type==='keydown'&&e.key==='Tab'){
+    const buttons=[...document.querySelectorAll('#lesson-finale button')],i=buttons.indexOf(document.activeElement);stop();buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();return;
+   }
+   if(['wheel','pointerdown','pointermove','pointerup','pointercancel'].includes(e.type)||e.type==='keydown'&&['Enter',' '].includes(e.key))return;
+  }
+  stop();return;
+ }
  if(lesson.stage==='free')return;
  if(lesson.exploring){
   if(e.type==='click'&&el.closest('[data-lesson-continue]')){stop();lesson.exploring=false;document.getElementById('lesson-explore')?.remove();lessonNextUI(true);return;}

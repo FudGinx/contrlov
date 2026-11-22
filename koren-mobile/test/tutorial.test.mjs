@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createLesson,lessonNext,lessonAction,lessonBotStep,lessonExpected,lessonNavigate,lessonView,restoreLesson,lessonFreeTick} from '../src/tutorial.js';
+import {createLesson,lessonNext,lessonAction,lessonBotStep,lessonExpected,lessonNavigate,lessonView,restoreLesson,lessonFreeTick,lessonFinaleInfo,lessonFinaleNext} from '../src/tutorial.js';
 import {botActor,botAction,action} from '../src/engine.js';
 function drive(l,until){let guard=0;while(l.stage!==until&&guard++<120){
  const a=lessonExpected(l);
@@ -52,6 +52,7 @@ test('inspecting the first ingredient does not mutate the game state',()=>{
 test('free play after the lesson reaches the three-potion final without tutorial locks',()=>{
  const l=drive(createLesson(),'free'),s=l.s;let steps=0;
  while(s.status==='playing'&&steps++<3000){
+  const note=lessonFinaleInfo(l);if(note){lessonFinaleNext(l,note.key);continue;}
   if(lessonFreeTick(l))continue;
   const p=botActor(s);assert.equal(p.id,l.owner);
   p.bot=true;const a=botAction(s);p.bot=false;

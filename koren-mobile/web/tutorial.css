@@ -15,3 +15,18 @@
 @media(max-height:330px){.lesson-guide-heading{margin-top:4px}.lesson-guide-heading>.lesson-firefly{width:32px;height:32px;flex-basis:32px}#lesson-showcase .ingredient-art,#lesson-showcase .white-art{min-height:0}#lesson-showcase .table-card>strong{font-size:11px;line-height:12px;min-height:24px}#lesson-showcase .table-effect{min-height:20px}#lesson-showcase .table-negative{min-height:19px}#lesson-explore{top:66px;padding:6px;width:58vw;gap:6px}#lesson-explore>svg{display:none}}
 @media(prefers-reduced-motion:reduce){.firefly-body,.firefly-wing,.firefly-aura{animation:none}}
 @media(max-height:450px){.lesson-panel{padding:9px 12px}.lesson-panel p{font-size:14px;line-height:1.3;margin:7px 0 9px}.lesson-panel h2{font-size:20px;margin:7px 0}.lesson-guide-heading{margin:4px 0}.lesson-guide-heading>.lesson-firefly{width:32px;height:32px;flex-basis:32px}.lesson-panel .lesson-inspected-effect{padding:6px}.lesson-action-hint{font-size:12px;padding:6px}.lesson-panel button{font-size:15px}.lesson-progress{font-size:11px}}
+
+/* Finale explanations pause the lesson, then return to the same final turns. */
+#lesson-finale{position:fixed;inset:0;z-index:6200;display:grid;place-items:center;padding:12px;background:#06181138}
+.lesson-finale-panel{width:min(460px,100%);max-height:calc(100dvh - 24px);overflow:auto;padding:16px 20px;border:2px solid #d9b978;border-radius:16px;background:linear-gradient(145deg,#244d3c,#102f29);color:#fff0cb;box-shadow:0 12px 45px #0008;scrollbar-gutter:stable}
+.lesson-finale-panel h2{font:700 clamp(22px,3vh,30px)/1.12 Georgia,serif;margin:10px 0}
+.lesson-finale-panel p{font-size:16px;line-height:1.4;margin:10px 0 16px}
+.lesson-finale-panel footer{position:sticky;bottom:-16px;display:flex;gap:8px;background:#14382d;padding:8px 0 2px}
+.lesson-finale-panel button{flex:1;min-height:44px;font-size:16px}
+.lesson-finale-mark{outline:3px solid #ffe29a;outline-offset:-3px;box-shadow:0 0 20px #ffe29188}
+.lesson-result-message{display:flex;gap:16px;align-items:center;padding:16px 18px;margin:18px 0;border:1px solid #b8a16c;border-radius:12px;background:#214334;color:#f8e7bb}
+.lesson-result-message>.lesson-firefly{flex:0 0 66px;width:66px;height:66px}
+.lesson-result-message h2{font:700 24px/1.2 Georgia,serif;margin:0 0 7px;color:#ffe0a0}
+.lesson-result-message p{font-size:16px;line-height:1.4;margin:0}
+.story-invite{box-shadow:0 0 0 3px #f4d68433,0 0 22px #e9c76b33}
+@media(max-height:450px){.lesson-finale-panel{padding:10px 14px}.lesson-finale-panel h2{font-size:21px;margin:6px 0}.lesson-finale-panel p{font-size:14px;line-height:1.3;margin:7px 0 10px}.lesson-finale-panel footer{bottom:-10px}.lesson-result-message{padding:12px;gap:10px}.lesson-result-message>.lesson-firefly{flex-basis:42px;width:42px;height:42px}.lesson-result-message h2{font-size:21px}}
