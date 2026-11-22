@@ -15,10 +15,10 @@ function legalTableTarget(src,target){if(!state||!target||!src)return false;cons
  if(c.type==='ingredient'){if(myResponse())return c.color===current().brew.find(b=>b.id===state.turnData.last)?.card.color&&d.player===current().id&&(k==='brew'||k==='ingredient'&&d.target===state.turnData.last);return own&&['brew','ingredient'].includes(k)&&playable(c);}
  if(!isMine()||!['main','chain','post','defense'].includes(state.phase)||!own)return false;
  if(c.type==='cancel')return k==='attack'&&p.brew.some(b=>b.attacks.some(a=>a.id===d.target&&!a.cancelled));
- if(c.type==='distill')return k==='ingredient'&&p.brew.some(b=>b.id===d.target&&b.slot!==null&&b.card.type!=='essence');return false;
+ if(c.type==='distill')return k==='ingredient'&&p.brew.some(b=>b.id===d.target&&b.card.type==='ingredient');return false;
 }
 const previousPlayableFeedback=playable;
-playable=function(c){if(!previousPlayableFeedback(c))return false;if(c.type==='cancel')return me().brew.some(b=>b.attacks.some(a=>!a.cancelled));if(c.type==='distill')return me().brew.some(b=>b.slot!==null&&b.card.type!=='essence');return true;};
+playable=function(c){if(!previousPlayableFeedback(c))return false;if(c.type==='cancel')return me().brew.some(b=>b.attacks.some(a=>!a.cancelled));if(c.type==='distill')return me().brew.some(b=>b.card.type==='ingredient');return true;};
 function markLegalTargets(source=null){if(!state||state.status!=='playing')return;const p=me(),sources=source?[source]:[...p.hand.map(c=>({kind:'hand',card:c.id})),...p.recipes.filter(r=>r.id!==p.current).map(r=>({kind:'recipe',order:r.id})),...state.market.map(r=>({kind:'order',order:r.id}))];if(state.effectChoice?.owner===p.id)sources.push({kind:'effect-choice'});if(state.exchange?.owner===p.id){sources.push({kind:'bid'});sources.push({kind:'offer'});}for(const el of document.querySelectorAll('[data-drop]')){const valid=sources.some(src=>legalTableTarget(src,el));el.classList.toggle('field-available',valid);el.classList.toggle('drop-legal',!!source&&valid);el.classList.toggle('drop-illegal',!!source&&!valid);}}
 function restoreSettledCardVisibility(root=document){const now=Date.now();for(const el of root.querySelectorAll('[data-card-id]')){if(el.style?.visibility!=='hidden')continue;const stack=el.closest('[data-stack-ids]'),ids=stack?stack.dataset.stackIds.split(','):[el.dataset.cardId];if(!ids.some(id=>(arrivingTableCards.get(id)||0)>now))el.style.visibility='';}}
 function closeWhiteSpread(g){if(!g?.fanUnit)return;clearTimeout(g.fanPanTimer);g.fanUnit.innerHTML=g.fanMarkup;g.fanUnit.style.width=g.fanOriginalWidth;g.fanUnit.classList.remove('stack-fan-open');g.fanGrid.style.gridTemplateColumns=g.fanOriginalColumns;restoreSettledCardVisibility(g.fanUnit);g.fanUnit=null;g.fanGrid=null;}
@@ -26,12 +26,12 @@ function panInlineFan(g){if(dragging!==g||!g.fanUnit)return;const r=g.fanGrid.ge
 function refreshWhiteSpread(g){const p=me(),c=p.hand.find(c=>c.id===g.source?.card),ward=c?.type==='cancel'||c?.type==='ingredient'&&(ch(p)?.ingredientWard&&!state.turnData.ingredientWardUsed||state.characterAction?.mode==='catch'&&state.characterAction.ready),distill=c?.type==='distill',moss=state.characterAction?.ready&&(state.characterAction.mode==='insect'&&c?.color==='black'||state.characterAction.mode==='seal'&&g.source?.kind==='character-perk');if(!(ward||distill||moss)||!isMine()||!['main','chain','post','defense'].includes(state.phase)){closeWhiteSpread(g);return;}
  if(g.fanUnit){const r=g.fanUnit.getBoundingClientRect();if(g.x>=r.left-12&&g.x<=r.right+12&&g.y>=r.top-8&&g.y<=r.top+(parseFloat(getComputedStyle(g.fanUnit).getPropertyValue('--card-h'))||146)+10)return;closeWhiteSpread(g);}
  const under=document.elementFromPoint(g.x,g.y),unit=under?.closest('.table-unit[data-brew-ids]');if(!unit||unit.closest('[data-station]')?.dataset.station!=='brew:'+p.id)return;
- const members=unit.dataset.brewIds.split(',').map(id=>p.brew.find(b=>b.id===id)).filter(Boolean),cards=[];if(ward&&members.length)cards.push({card:members[0].card,target:members[0].id,drop:'ingredient',label:members[0].slot===null?'Понад':String(members[0].slot+1),sub:'Інгр.'});
- for(const b of members){if(ward){for(const a of b.attacks)cards.push({card:a.card,target:a.id,drop:'attack',negative:true,cancelled:a.cancelled,label:b.slot===null?'Понад':String(b.slot+1),sub:a.cancelled?'Скас.':a.from});}else if((moss?state.characterAction.targetIds.includes(b.id):b.card.type==='ingredient'&&b.slot!==null)){const penalty=b.attacks.reduce((sum,a)=>sum+(a.cancelled?0:a.card.negative),0);cards.push({card:b.card,target:b.id,drop:'ingredient',label:b.slot===null?'Понад':String(b.slot+1),sub:penalty?String(penalty):'0'});}}
+ const members=unit.dataset.brewIds.split(',').map(id=>p.brew.find(b=>b.id===id)).filter(Boolean),cards=[];if(ward&&members.length)cards.push({card:members[0].card,target:members[0].id,drop:'ingredient',label:members[0].slot===null?'Поза рецептом':'Позиція '+(members[0].slot+1),sub:''});
+ for(const b of members){if(ward){for(const a of b.attacks)cards.push({card:a.card,target:a.id,drop:'attack',negative:true,cancelled:a.cancelled,label:'Саботаж',sub:a.cancelled?'Скасовано':a.from});}else if((moss?state.characterAction.targetIds.includes(b.id):b.card.type==='ingredient')){const penalty=b.attacks.reduce((sum,a)=>sum+(a.cancelled?0:a.card.negative),0);cards.push({card:b.card,target:b.id,drop:'ingredient',label:b.slot===null?'Поза рецептом':'Позиція '+(b.slot+1),sub:penalty?String(penalty):'0'});}}
  if(!cards.length||ward&&!cards.some(c=>c.drop==='attack'&&!c.cancelled))return;
  const grid=unit.parentElement,style=getComputedStyle(unit),width=parseFloat(style.getPropertyValue('--card-w'))||106,step=Math.min(width-8,g.touch?48:36),fanWidth=width+(cards.length-1)*step,col=Math.max(0,(parseInt(unit.style.gridColumn)||1)-1),cols=Math.max(col+1,parseInt(getComputedStyle(grid).getPropertyValue('--brew-cols'))||3);
  g.fanUnit=unit;g.fanGrid=grid;g.fanMarkup=unit.innerHTML;g.fanOriginalWidth=unit.style.width;g.fanOriginalColumns=grid.style.gridTemplateColumns;unit.classList.add('stack-fan-open');unit.style.width=fanWidth+'px';grid.style.gridTemplateColumns=Array.from({length:cols},(_,i)=>(i===col?fanWidth:width)+'px').join(' ');
- unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>№${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');if(!animationReduced())for(const [i,card]of [...unit.querySelectorAll('.fan-card')].entries())card.animate([{transform:'translateX('+(-i*step)+'px)'},{transform:'translateX(0)'}],{duration:180,easing:'ease-out'});markLegalTargets(g.source);panInlineFan(g);
+ unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');if(!animationReduced())for(const [i,card]of [...unit.querySelectorAll('.fan-card')].entries())card.animate([{transform:'translateX('+(-i*step)+'px)'},{transform:'translateX(0)'}],{duration:180,easing:'ease-out'});markLegalTargets(g.source);panInlineFan(g);
 }
 
 function updateTurnFeedback(){restoreSettledCardVisibility();const root=$('.tabletop');if(!root||!state)return;const canRespond=myResponse(),canMove=state.effectChoice?state.effectChoice.owner===state.me:isMine()&&['main','chain','post','defense'].includes(state.phase);root.dataset.input=canRespond?'response':canMove?'turn':'waiting';root.dataset.goal=state.targetPotions||3;for(const el of document.querySelectorAll('.table-hand [data-card-id]')){const c=me().hand.find(c=>c.id===el.dataset.cardId);if(c){const available=playable(c);el.classList.toggle('can-play',available);el.classList.toggle('cannot-play',!!(isMine()&&canMove&&!state.effectChoice&&!available));}}const hint=document.querySelector(".table-status>span");if(hint){const b=current()?.brew.find(b=>b.id===state.turnData.last);hint.textContent=state.phase==="reaction"?"Саботаж "+(b?.attacks.length||0)+"/3 · "+(color(b?.card.color)?.name||""):state.phase==="chain"?"Додаткових додавань: "+state.turnData.allowance:state.phase==="defense"?"Оберіг → саботаж · Дистиляція → інгредієнт":canMove?"Доступні карти й цілі підсвічені":"Чекаємо · можна пропонувати обмін";}for(const station of document.querySelectorAll('[data-station]'))station.classList.toggle('active-seat',station.dataset.station==='brew:'+current()?.id);if(typeof document.createElement==='function')markLegalTargets(dragging?.active?dragging.source:tableSelection);}
@@ -71,9 +71,9 @@ function stackContents(unit){
  if(!p)return null;
  const ids=unit.dataset.brewIds.split(','),cards=[];
  for(const b of p.brew.filter(b=>ids.includes(b.id))){
-  const slot=b.slot===null?'Понад':String(b.slot+1);
-  cards.push({card:b.card,target:b.id,drop:'ingredient',label:slot,sub:'Складник'});
-  b.attacks.forEach((a,i)=>cards.push({card:a.card,target:a.id,drop:'attack',negative:true,cancelled:a.cancelled,label:slot+' · '+(i+1),sub:a.cancelled?'Скасовано':a.from}));
+  const slot=b.slot===null?'Поза рецептом':'Позиція '+(b.slot+1);
+  cards.push({card:b.card,target:b.id,drop:'ingredient',label:slot,sub:''});
+  b.attacks.forEach((a,i)=>cards.push({card:a.card,target:a.id,drop:'attack',negative:true,cancelled:a.cancelled,label:'Саботаж',sub:a.cancelled?'Скасовано':a.from}));
  }
  return {p,cards};
 }
@@ -86,7 +86,7 @@ function openReadingStack(unit,touch=false){
  const g={fanUnit:unit,fanGrid:grid,fanMarkup:unit.innerHTML,fanOriginalWidth:unit.style.width,fanOriginalColumns:grid.style.gridTemplateColumns};
  readingStack=g;unit.classList.add('stack-fan-open');unit.style.width=fanWidth+'px';
  grid.style.gridTemplateColumns=Array.from({length:cols},(_,i)=>(i===col?fanWidth:width)+'px').join(' ');
- unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>№${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');
+ unit.innerHTML=cards.map((x,i)=>`<div class="fan-card ${x.cancelled?'cancelled':''}" style="left:${i*step}px;z-index:${20+i};--fan-step:${step}px">${tableCard(x.card,'','',`data-drop="${x.drop}" data-target="${x.target}" data-player="${p.id}"`,x.negative)}<span class="fan-tab"><b>${esc(x.label)}</b><small>${esc(x.sub)}</small></span></div>`).join('');
  restoreSettledCardVisibility(unit);markLegalTargets(tableSelection);
  if(touch)toast('Стопку розкрито · свайп — прокрутка · тап карти — огляд');
  return true;
@@ -97,4 +97,13 @@ document.addEventListener('pointerdown',e=>{if(readingStack&&!readingStack.fanUn
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReadingStack();});
 window.addEventListener('blur',closeReadingStack);
 const inspectBeforeStackRead=inspectTable;
-inspectTable=function(el){const unit=el.closest('.table-unit[data-brew-ids]');if(!tableSelection&&unit&&!unit.classList.contains('stack-fan-open')&&openReadingStack(unit,true))return;inspectBeforeStackRead(el);};
+inspectTable=function(el){const unit=el.closest('.table-unit[data-brew-ids]');if(!tableSelection&&unit&&!unit.classList.contains('stack-fan-open')&&openReadingStack(unit,true))return;inspectBeforeStackRead(el);
+ const owner=state?.players.find(p=>p.brew.some(b=>b.card.id===el.dataset.cardId)),b=owner?.brew.find(b=>b.card.id===el.dataset.cardId);
+ if(!b)return;
+ let note=b.slot===null?'Додаткова карта поза рецептом: не закриває позицію, але її очки, ефект і прикріплений саботаж враховуються.':'Позиція '+(b.slot+1)+' · '+(color(b.playedAs)?.name||color(b.card.color)?.name)+'.';
+ if(b.placementReason&&b.slot!==null)note+=' '+b.placementReason+'.';
+ else if(b.card.effect==='brew-wild')note+=' Універсальний складник замінює будь-який тип.';
+ if(b.echoSource)note+=' Відлуння повторило «'+b.echoSource.name+'», навіть якщо цю карту додали попереднього ходу.';
+ else if(b.card.effect==='echo')note+=' Відлуння повторює ефект попереднього власного складника в цьому казані, зокрема з попереднього ходу.';
+ modalRoot.querySelector('.inspect-copy')?.insertAdjacentHTML('beforeend','<p class="inspect-placement-note"><b>У цьому зіллі</b><br>'+esc(note)+'</p>');
+};

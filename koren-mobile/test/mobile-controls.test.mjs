@@ -19,3 +19,23 @@ test('map fitting updates actual board and piece dimensions after the station is
  layout.clientWidth=460;station.clientHeight=280;vm.runInContext('fitHexMap()',b.context);
  assert.ok(parseFloat(field.style.width)<large);assert.equal(parseFloat(field.style.height),280);assert.equal(parseFloat(props.get('--hex-token-size')),26);
 });
+
+
+test('a distillation in hand highlights and targets a beyond-recipe ingredient',async()=>{
+ const b=boot(),s=b.context.__state,me=s.players[0];
+ s.phase='defense';me.hand=[{id:'distill-extra',type:'distill'}];
+ me.brew=[{id:'over-unit',card:{id:'over-card',type:'ingredient',color:'red',points:1},slot:null,extra:true,attacks:[]}];
+ b.context.__target={dataset:{drop:'ingredient',target:'over-unit',player:me.id}};
+ vm.runInContext('state=__state',b.context);
+ assert.equal(vm.runInContext('playable(state.players[0].hand[0])',b.context),true);
+ assert.equal(vm.runInContext("legalTableTarget({kind:'hand',card:'distill-extra'},__target)",b.context),true);
+ await vm.runInContext("tableDrop({kind:'hand',card:'distill-extra'},__target)",b.context);
+ assert.equal(b.context.__lastMove.type,'white');assert.equal(b.context.__lastMove.target,'over-unit');
+});
+test('expanded stacks distinguish extra ingredients from named sabotage instead of numbering beyond-recipe slots',()=>{
+ const b=boot(),s=b.context.__state,me=s.players[0];
+ me.brew=[{id:'over-unit',card:{id:'own-extra',type:'ingredient'},slot:null,extra:true,attacks:[{id:'bad',card:{id:'bad-card'},from:'Бот 1',cancelled:false}]}];
+ b.context.__unit={dataset:{brewIds:'over-unit'},closest(){return {dataset:{station:'brew:'+me.id}};}};
+ vm.runInContext('state=__state',b.context);const cards=vm.runInContext('stackContents(__unit).cards',b.context);
+ assert.equal(cards[0].label,'Поза рецептом');assert.equal(cards[1].label,'Саботаж');assert.equal(cards[1].sub,'Бот 1');
+});
