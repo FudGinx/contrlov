@@ -155,3 +155,18 @@
 .hex-station .hex-layout{grid-template-columns:minmax(280px,1.8fr) minmax(180px,1fr);align-items:start;min-height:100%}.hex-station .hex-field{width:min(100%,650px);min-width:280px;min-height:190px;max-width:none}.hex-station .hex-panel{position:relative;max-width:100%;overflow:auto}.hex-station .hex-tokens{top:32%;left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:132px;flex-wrap:wrap;gap:2px}.hex-station .hex-token{width:clamp(36px,10.5vh,48px);min-width:36px;border-width:3px}.hex-station .hex-token+.hex-token{margin-left:0}
 .tabletop[data-current-view="hex"] .table-hand-area{background:#132c24}.tabletop[data-current-view="hex"] .table-camera{overscroll-behavior:contain}
 @media(max-height:330px){.tabletop .table-layout{grid-template-columns:50px minmax(0,1fr) 92px}.tabletop .table-controls{gap:4px}.tabletop .table-controls>*{min-height:44px!important}.tabletop .table-controls small{font-size:13px}.tabletop .table-controls .table-portrait{width:30px;height:30px}}
+
+/* Fit the real seven-hex footprint, including labels and pieces, to its table station. */
+.tabletop .hex-station{min-height:0}
+.hex-station .hex-layout{flex:1;height:100%;min-height:0;align-items:stretch}
+.hex-station .hex-field{width:100%;height:auto;min-width:0;min-height:0;max-width:none;aspect-ratio:.9622504486;align-self:center;justify-self:center;border-radius:0;background:none;container-type:inline-size}
+.hex-station .hex-cell{width:40%;aspect-ratio:1.1547005384}
+.hex-station .hex-panel{align-self:stretch;min-height:0;max-height:100%;padding:10px 18px 10px 10px}
+.hex-station .hex-panel h2{font-size:clamp(16px,2.3vh,23px);line-height:1.15}
+.hex-station .hex-panel p{font-size:clamp(14px,1.8vh,18px);line-height:1.3}
+.hex-station .hex-panel button{min-height:44px;font-size:14px}
+.hex-station .hex-tile strong{font-size:var(--hex-label-size,14px)}
+.hex-station .hex-stock,.hex-station .hex-crest{font-size:var(--hex-counter-size,12px)}
+.hex-station .hex-token{width:var(--hex-token-size,36px);min-width:0}
+.hex-station .hex-cell:has(.hex-token){z-index:5}
+@media(max-height:330px){.hex-station .hex-panel{padding:6px 14px 6px 6px}.hex-station .hex-panel h2{font-size:16px}.hex-station .hex-panel p{font-size:14px}}

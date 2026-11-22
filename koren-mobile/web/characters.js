@@ -32,7 +32,7 @@ const folkInspectTable=inspectTable;inspectTable=function(el){const r=[...state.
 /* The map is a separate station beside the cauldrons and market. */
 let hexBludSource=null;
 let hexScoutTiles=[],hexSeedCard=null,hexMenu=null,hexSkillOpen=false,hexScouting=false;
-const hexCoordinates=[[50,50],[50,17],[69.35,33.5],[69.35,66.5],[50,83],[30.65,66.5],[30.65,33.5]];
+const hexCoordinates=HEX_GRID.centers;
 const hexSigns=['✧','♠','✿','♜','❧','◆','◈'];
 function hexNeighbor(a,b){return a!==b&&(a===0||b===0||Math.abs(a-b)===1||Math.abs(a-b)===5);}
 function hexCardOptions(cards){return cards.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');}
@@ -74,6 +74,20 @@ function hexField(){
  if(perk?.mode==='mosskeeper'&&perk.targets.includes(selected))controls+='<button data-hex-action="character">Зібрати мохом</button>';
  return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
 }
+function fitHexMap(){
+ const station=document.querySelector('.hex-station'),layout=station?.querySelector('.hex-layout'),field=layout?.querySelector('.hex-field');
+ if(!layout||!field)return;
+ const style=getComputedStyle(station),height=station.clientHeight-(parseFloat(style.paddingTop)||0)-(parseFloat(style.paddingBottom)||0);
+ const size=hexMapLayout(layout.clientWidth,height);
+ layout.style.gridTemplateColumns='minmax(0,1fr) '+size.panelWidth+'px';
+ layout.style.gap=size.gap+'px';
+ field.style.width=size.boardWidth+'px';field.style.height=size.boardHeight+'px';
+ field.style.setProperty('--hex-token-size',size.tokenSize+'px');
+ field.style.setProperty('--hex-label-size',size.labelSize+'px');
+ field.style.setProperty('--hex-counter-size',size.counterSize+'px');
+}
+const layoutBeforeHexFit=layoutSpatialTable;
+layoutSpatialTable=function(){layoutBeforeHexFit();fitHexMap();};
 const previousHexShell=updateTableShell;
 updateTableShell=function(html){
  if(state?.hexMap&&state.status==='playing'){
@@ -219,6 +233,7 @@ document.addEventListener('pointerdown',event=>{
  if(!token||event.button!==0||busy||hexDrag||hexPlayback)return;
  event.preventDefault();
  const ghost=token.cloneNode(true);ghost.classList.add('hex-ghost');
+ const tokenRect=token.getBoundingClientRect();ghost.style.setProperty('width',tokenRect.width+'px','important');ghost.style.height=tokenRect.height+'px';
  ghost.style.left=event.clientX+'px';ghost.style.top=event.clientY+'px';
  document.body.append(ghost);token.setPointerCapture(event.pointerId);
  hexDrag={ghost,pointer:event.pointerId,x:event.clientX,y:event.clientY,moved:false};
