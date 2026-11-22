@@ -72,33 +72,16 @@ function hexField(){
  if(perk?.mode==='blud')controls+='<div class="hex-options">'+state.players.filter(q=>perk.players?.includes(q.id)).map(q=>'<button data-hex-action="swap" data-hex-player="'+q.id+'" data-hex-target="'+q.hex+'">Обмінятися з '+esc(q.name)+'</button>').join('')+'</div>';
  if(perk?.mode==='chugaister')controls+='<button data-hex-action="lock">Закрити вхід</button>';
  if(perk?.mode==='mosskeeper'&&perk.targets.includes(selected))controls+='<button data-hex-action="character">Зібрати мохом</button>';
- return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-piles" aria-label="Карти на мапі"><div class="hex-map-pile" data-map-zone="deck"><span>Колода</span><b>'+state.deckCount+'</b></div><div class="hex-map-pile" data-map-zone="discard" data-drop="discard"><span>Скид</span><b>'+state.discardCount+'</b></div></div><div class="hex-field">'+field+'</div><aside class="hex-panel"><button class="ghost hex-close" data-table-view="brew" aria-label="Закрити мапу">✕</button><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
+ return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
 }
 const previousHexShell=updateTableShell;
 updateTableShell=function(html){
  if(state?.hexMap&&state.status==='playing'){
-  const old=new Map([...document.querySelectorAll('[data-hex-token]')].map(el=>[el.dataset.hexToken,el.getBoundingClientRect()]));
-  html=html.replace('</nav>', '<button class="'+(tableView==='hex'?'chosen':'')+'" data-table-view="hex">Мапа</button></nav>');
-  previousHexShell(html);
-  const root=$('.tabletop');
-  root?.classList.toggle('hex-hand-open',tableView==='hex');
-  const existing=root?.querySelector('.hex-overlay');
-  if(tableView==='hex'&&root){
-   const markup=hexField();
-   if(!existing)root.insertAdjacentHTML('beforeend','<div class="hex-overlay">'+markup+'</div>');
-   else if(existing.dataset.markup!==markup&&!hexDrag)existing.innerHTML=markup;
-   const overlay=root.querySelector('.hex-overlay');
-   if(!hexDrag)overlay.dataset.markup=markup;
-  }else existing?.remove();
-  if(tableView==='hex'&&!hexPlayback&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
-   for(const token of document.querySelectorAll('[data-hex-token]')){
-    const from=old.get(token.dataset.hexToken),to=token.getBoundingClientRect();
-    if(from&&token.animate&&(Math.abs(from.x-to.x)>5||Math.abs(from.y-to.y)>5))token.animate([{transform:'translate('+(from.x-to.x)+'px,'+(from.y-to.y)+'px)'},{transform:'translate(0,0)'}],{duration:390,easing:'ease-out'});
-   }
-  }
-  return;
+  html=html.replace('</nav>','<button class="'+(tableView==='hex'?'chosen':'')+'" data-table-view="hex">Мапа</button></nav>');
+  html=html.replace('<div class="table-world">','<div class="table-world">'+hexField());
  }
  previousHexShell(html);
+ const root=$('.tabletop');if(root){root.dataset.currentView=tableView;root.classList.remove('hex-hand-open','hex-map-open');}
 };
 let hexMenuTurn=null;
 const previousHexRender=render;
@@ -132,7 +115,7 @@ render=function(){
  previousHexRender();
 };
 const previousHexBell=phaseBell;
-phaseBell=function(){if(state.hexMap&&state.phase==='defense'&&isMine()&&canUseCurrentHex())return '<button class="ghost small" data-table-view="hex">⬡ Захист на мапі</button>'+previousHexBell();if(state.hexMap&&state.phase==='move'&&isMine())return '<button class="turn-bell" data-table-view="hex">⬡<span>Оберіть шлях</span></button>';return previousHexBell();};
+phaseBell=function(){if(state.hexMap&&state.phase==='move'&&isMine())return '<button class="turn-bell" data-table-view="hex">⬡<span>Оберіть шлях</span></button>';return previousHexBell();};
 const previousHexPhase=phaseInfo;
 phaseInfo=function(){return state?.hexMap&&state.phase==='move'?[isMine()?'Оберіть шлях':'Рух суперника','Один крок або залишитися']:previousHexPhase();};
 function canUseCurrentHex(){
@@ -225,7 +208,7 @@ function stopHexDrag(event,cancel=false){
  if(cancel)return;
  if(!drag.moved){hexMenu=me().hex;hexSkillOpen=true;render();return;}
  const hit=document.elementFromPoint(event.clientX,event.clientY),token=hit?.closest('[data-hex-token]');const tile=hit?.closest('.hex-cell')?.querySelector('[data-hex-tile]')||hit?.closest('[data-hex-tile]');
- if(!tile||!tile.closest('.hex-overlay')||!isMine())return;if(state.hexMap.perk?.mode==='blud'&&state.phase!=='move'){const other=token?.dataset.hexToken||state.players.find(q=>q.id!==state.me&&q.hex===Number(tile.dataset.hexTile))?.id;if(other)return act({type:'hexPerk',hex:Number(tile.dataset.hexTile),player:other});return;}
+ if(!tile||!tile.closest('.hex-station')||!isMine())return;if(state.hexMap.perk?.mode==='blud'&&state.phase!=='move'){const other=token?.dataset.hexToken||state.players.find(q=>q.id!==state.me&&q.hex===Number(tile.dataset.hexTile))?.id;if(other)return act({type:'hexPerk',hex:Number(tile.dataset.hexTile),player:other});return;}
  const hex=Number(tile.dataset.hexTile),p=me();
  if(hex===p.hex){hexMenu=hex;hexSkillOpen=false;render();return;}
  const map=state.hexMap;
@@ -254,7 +237,7 @@ tableMotion=function(events,oldRects){
  previousHexMotion(events,oldRects);
  for(const [index,event] of events.filter(e=>e.type==='hexResult').entries()){
   setTimeout(()=>{
-   const map=$('.hex-overlay'),tile=map?.querySelector('[data-hex-tile="'+(event.action==='hexPerk'&&!event.moved?event.target:event.tile)+'"]');
+   const map=$('.hex-station'),tile=map?.querySelector('[data-hex-tile="'+(event.action==='hexPerk'&&!event.moved?event.target:event.tile)+'"]');
    if(!tile)return;
    const player=state?.players.find(p=>p.id===event.owner);
    const label=event.moved?'Перехід':event.action==='hexMove'?'Залишається':event.action==='hexPerk'?'Уміння персонажа':event.mode==='scout'?'Розвідка':event.mode==='seed'?'Посів':'Уміння гекса';
@@ -331,14 +314,14 @@ applyState=function(next){
  return applyStateBeforeTravel(next);
 };
 function mapPoint(hex){
- const rect=document.querySelector('.hex-overlay [data-hex-tile="'+hex+'"]')?.getBoundingClientRect();
+ const rect=document.querySelector('.hex-station [data-hex-tile="'+hex+'"]')?.getBoundingClientRect();
  return rect?{x:rect.x+rect.width/2,y:rect.y+rect.height/2}:null;
 }
 function playbackLater(playback,callback,delay){
  playback.timers.push(setTimeout(()=>{if(hexPlayback===playback)callback();},delay));
 }
 function updateHexPlaybackOverlay(){
- const playback=hexPlayback,map=document.querySelector('.hex-overlay');
+ const playback=hexPlayback,map=document.querySelector('.hex-station');
  if(!playback||!map)return;
  document.querySelector('.tabletop')?.classList.add('hex-playback-active');
  let status=map.querySelector('.hex-playback-status');
@@ -351,7 +334,7 @@ function playbackStage(playback,stage,title,detail){
  playback.stage=stage;playback.title=title;playback.detail=detail;updateHexPlaybackOverlay();
 }
 function playbackPiece(playback,owner,path){
- const player=playback.next.players.find(p=>p.id===owner),token=document.querySelector('.hex-overlay [data-hex-token="'+owner+'"]');
+ const player=playback.next.players.find(p=>p.id===owner),token=document.querySelector('.hex-station [data-hex-token="'+owner+'"]');
  const rect=token?.getBoundingClientRect(),destination=mapPoint(path.at(-1));
  if(!player||!destination)return;
  const source=rect?{x:rect.x+rect.width/2,y:rect.y+rect.height/2}:mapPoint(path[0]);
@@ -387,7 +370,7 @@ function beginHexPlayback(next,event){
  if(event.companion)playbackPiece(playback,event.companion.owner,[event.companion.from,event.companion.tile]);
  const movement=Math.max(0,event.path.length-1)*620;
  playbackLater(playback,()=>{
-  document.querySelector('.hex-overlay [data-hex-tile="'+(event.harvestHex??event.tile)+'"]')?.classList.add('hex-arrival-glow');
+  document.querySelector('.hex-station [data-hex-tile="'+(event.harvestHex??event.tile)+'"]')?.classList.add('hex-arrival-glow');
   playbackStage(playback,'arrival','Прибув на поляну',next.hexMap.tiles[event.tile].name);
  },movement);
  const harvestStart=movement+180,harvestDuration=event.harvest?600+(event.harvest-1)*100:220;
@@ -396,7 +379,7 @@ function beginHexPlayback(next,event){
   if(event.harvest)playbackResources(playback,mapPoint(event.harvestHex??event.tile),event.harvest,'Урожай +'+event.harvest);
  },harvestStart);
  playbackLater(playback,()=>{
-  const stock=document.querySelector('.hex-overlay [data-hex-tile="'+(event.harvestHex??event.tile)+'"] .hex-stock');
+  const stock=document.querySelector('.hex-station [data-hex-tile="'+(event.harvestHex??event.tile)+'"] .hex-stock');
   if(stock&&event.harvest)stock.textContent='—';
  },harvestStart+harvestDuration);
  const travelStart=harvestStart+harvestDuration+120;
@@ -419,6 +402,6 @@ function cancelHexPlayback(){
  document.querySelector('.tabletop')?.classList.remove('hex-playback-active');
  document.querySelector('.hex-playback-status')?.remove();
  document.querySelectorAll('.hex-arrival-glow').forEach(node=>node.classList.remove('hex-arrival-glow'));
- document.querySelectorAll('.hex-overlay [data-hex-token]').forEach(node=>node.style.visibility='');
+ document.querySelectorAll('.hex-station [data-hex-token]').forEach(node=>node.style.visibility='');
  hexPlayback=null;hexPlaybackQueued=null;
 }

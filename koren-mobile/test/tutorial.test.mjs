@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createLesson,lessonNext,lessonAction,lessonBotStep,lessonExpected,lessonNavigate,lessonView,restoreLesson,lessonFreeTick} from '../src/tutorial.js';
+import {botActor,botAction,action} from '../src/engine.js';
 function drive(l,until){let guard=0;while(l.stage!==until&&guard++<120){
  const a=lessonExpected(l);
  if(a)lessonAction(l,a);
  else if(l.stage==='openMap')lessonNavigate(l,'hex');
+ else if(l.stage==='openOrders')lessonNavigate(l,'orders');
  else if(l.stage==='openBrew')lessonNavigate(l,'brew');
- else if(['characters','draftBots','firstReactions','botOneRun','botOneEnd','botTwoRun','botTwoEnd','bids','finalReactions'].includes(l.stage))lessonBotStep(l);
+ else if(['characters','draftBots','firstReactions','botOneRun','botOneEnd','botTwoRun','botTwoEnd','bids','finalReactions','orderWait'].includes(l.stage))lessonBotStep(l);
  else lessonNext(l);
  }assert.equal(l.stage,until);return l;}
 test('tutorial follows the real engine through x2, spring x4, moss x6 and 22 fame',()=>{
@@ -24,7 +26,7 @@ test('tutorial follows the real engine through x2, spring x4, moss x6 and 22 fam
  drive(l,'finalResult');assert.equal(p.brew.at(-1).multiplier,6);assert.equal(p.brew.at(-1).card.points,3);assert.equal(p.recipes[0].potionMeta.mavkaUsed,true);
  drive(l,'negatives');assert.deepEqual(p.brew.at(-1).attacks.map(a=>a.card.negative),[-3,-2]);assert.equal(lessonView(l).players[0].brewPoints,14);
  drive(l,'scoreResult');assert.equal(p.score,22);assert.equal(p.completed,1);assert.equal(p.brew.length,0);assert.equal(l.s.finalStarter,null);
- drive(l,'free');assert.equal(l.s.targetPotions,3);assert.equal(l.s.players.length,3);assert.equal(l.s.players[1].bot,true);assert.equal(lessonFreeTick(l),true);
+ drive(l,'free');assert.equal(l.s.targetPotions,3);assert.equal(l.s.players.length,3);assert.equal(l.s.players[1].bot,true);assert.equal(lessonFreeTick(l),false);assert.equal(l.s.turn,0);assert.ok(p.recipes.some(r=>r.id===l.ids.nextRecipe));assert.ok(p.hand.some(c=>c.id===l.ids.nextFlower));assert.ok(p.hand.some(c=>c.id===l.ids.nextRoot));
 });
 test('lesson rejects skipped steps, wrong cards, extra actions and incorrect trades without changing state',()=>{
  const l=drive(createLesson(),'root'),before=JSON.stringify(l);
@@ -41,5 +43,19 @@ test('persisted bot cursor resumes without repeating or duplicating cards',()=>{
 test('lesson accepts the normal UI payloads for spring, trade and post-score turn ending',()=>{
  const l=drive(createLesson(),'spring');lessonAction(l,{...lessonExpected(l),hex:NaN});assert.equal(l.stage,'springResult');
  drive(l,'take');lessonAction(l,{...lessonExpected(l),discard:false});assert.equal(l.stage,'tradeResult');
- drive(l,'end');lessonAction(l,{type:'end'});assert.equal(l.stage,'stay');
+ drive(l,'end');lessonAction(l,{type:'end'});assert.equal(l.stage,'finalMove');
+});
+test('inspecting the first ingredient does not mutate the game state',()=>{
+ const l=drive(createLesson(),'rootInspect'),before=JSON.stringify(l.s);
+ lessonAction(l,lessonExpected(l));assert.equal(l.stage,'rootResult');assert.equal(JSON.stringify(l.s),before);
+});
+test('free play after the lesson reaches the three-potion final without tutorial locks',()=>{
+ const l=drive(createLesson(),'free'),s=l.s;let steps=0;
+ while(s.status==='playing'&&steps++<3000){
+  if(lessonFreeTick(l))continue;
+  const p=botActor(s);assert.equal(p.id,l.owner);
+  p.bot=true;const a=botAction(s);p.bot=false;
+  assert.ok(a,'human has a legal next action');action(s,p.id,a);
+ }
+ assert.equal(s.status,'finished');assert.ok(s.players.some(p=>p.completed>=3));assert.ok(steps<3000);
 });
