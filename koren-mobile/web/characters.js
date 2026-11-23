@@ -38,7 +38,7 @@ function hexNeighbor(a,b){return a!==b&&(a===0||b===0||Math.abs(a-b)===1||Math.a
 function hexCardOptions(cards){return cards.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');}
 function hexField(){
  const map=state.hexMap,p=me(),mine=isMine(),moving=mine&&state.phase==='move',choice=map.choice;
- const perk=map.perk,targets=map.targets||{},effective=map.skillHex??p.hex;
+ const perk=map.perk,targets=map.targets||{},effective=mine?(map.skillHex??p.hex):p.hex;
  const field=map.tiles.map((tile,i)=>{
   const [x,y]=hexCoordinates[tile.position],reachable=moving&&(map.moves||[]).includes(i);
   const canBorrow=canUseCurrentHex()&&targets.borrow?.includes(i);
