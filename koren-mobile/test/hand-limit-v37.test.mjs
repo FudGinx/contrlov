@@ -13,3 +13,9 @@ test('bots discard down to the limit',()=>{
  action(s,p.id,{type:'finishTurn'});let g=0;while(s.phase==='discard'&&g++<10){const a=botAction(s);action(s,p.id,a);}
  assert.equal(p.hand.length,HAND_LIMIT);assert.equal(s.turn,1);
 });
+test('hand limit is a room setting 10–15; tutorial keeps the old rules',async()=>{
+ const{s,p}=room(false);s.status='lobby';s.phase='lobby';action(s,p.id,{type:'settings',handLimit:13});assert.equal(s.handLimit,13);
+ assert.throws(()=>action(s,p.id,{type:'settings',handLimit:16}));s.status='playing';s.phase='post';
+ p.hand=Array.from({length:13},card);action(s,p.id,{type:'finishTurn'});assert.equal(s.turn,1);
+ const {createLesson}=await import('../src/tutorial.js');const l=createLesson();assert.equal(l.s.legacy,true);
+});

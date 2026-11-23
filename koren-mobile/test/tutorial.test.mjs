@@ -11,7 +11,7 @@ function drive(l,until){let guard=0;while(l.stage!==until&&guard++<120){
  else if(['characters','draftBots','firstReactions','botOneRun','botOneEnd','botTwoRun','botTwoEnd','bids','finalReactions','orderWait'].includes(l.stage))lessonBotStep(l);
  else lessonNext(l);
  }assert.equal(l.stage,until);return l;}
-test('tutorial follows the real engine through x2, spring x4, moss x6 and 24 fame (incl. clean potion +2)',()=>{
+test('tutorial follows the real engine through x2, spring x4, moss x6 and 22 fame',()=>{
  const l=drive(createLesson(),'rootResult'),p=l.s.players[0];
  assert.equal(p.character,'mavka');assert.equal(p.brew[0].card.color,'brown');assert.equal(l.s.turnData.allowance,1);assert.equal(p.recipes[0].potionMeta.mavkaUsed,undefined);
  drive(l,'nectarResult');assert.equal(lessonView(l).players[0].pendingMultiplier,2);
@@ -25,7 +25,7 @@ test('tutorial follows the real engine through x2, spring x4, moss x6 and 24 fam
  drive(l,'mavka');assert.equal(lessonView(l).players[0].pendingMultiplier,6);assert.equal(p.recipes[0].potionMeta.mavkaUsed,undefined);
  drive(l,'finalResult');assert.equal(p.brew.at(-1).multiplier,6);assert.equal(p.brew.at(-1).card.points,3);assert.equal(p.recipes[0].potionMeta.mavkaUsed,true);
  drive(l,'negatives');assert.deepEqual(p.brew.at(-1).attacks.map(a=>a.card.negative),[-3,-2]);assert.equal(lessonView(l).players[0].brewPoints,14);
- drive(l,'scoreResult');assert.equal(p.score,24);assert.equal(p.completed,1);assert.equal(p.brew.length,0);assert.equal(l.s.finalStarter,null);
+ drive(l,'scoreResult');assert.equal(p.score,22);assert.equal(p.completed,1);assert.equal(p.brew.length,0);assert.equal(l.s.finalStarter,null);
  drive(l,'free');assert.equal(l.s.targetPotions,3);assert.equal(l.s.players.length,3);assert.equal(l.s.players[1].bot,true);assert.equal(lessonFreeTick(l),false);assert.equal(l.s.turn,0);assert.ok(p.recipes.some(r=>r.id===l.ids.nextRecipe));assert.ok(p.hand.some(c=>c.id===l.ids.nextFlower));assert.ok(p.hand.some(c=>c.id===l.ids.nextRoot));
 });
 test('lesson rejects skipped steps, wrong cards, extra actions and incorrect trades without changing state',()=>{
