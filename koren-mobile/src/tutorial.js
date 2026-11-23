@@ -50,7 +50,7 @@ export const LESSON_STAGES={
  finalReactions:['Суперники підкидають','Кожен додає по одному Грибу. Оберіг ви вже використали.','auto'],
  negatives:['Мінуси не множаться','На Боровику лежать −2 і −3. Вони віднімуть 5 від загальної слави, а не помножаться на ×6. Власні 18 очок Боровика залишаються.','next'],
  score:['Здайте готове зілля','Натисніть «Здати зілля». Порахуємо славу та звільнимо казан.','action'],
- scoreResult:['Ви отримали 22 слави','Корінець +1, Боровик 18, рецепт +8, саботаж −2 −3. Разом 22. Підсилювачі мають 0 власних очок. Подивіться, як слава летить до вашого лічильника.','next'],
+ scoreResult:['Ви отримали 24 слави','Корінець +1, Боровик 18, рецепт +8, Чисте зілля +2 (усі позиції своїм типом), саботаж −2 −3. Разом 24. Підсилювачі мають 0 власних очок. Подивіться, як слава летить до вашого лічильника.','next'],
  victory:['Як перемогти','У вас 1 із 3 готових зіль. Перший, хто завершить третє, отримає +5 слави й запустить останні ходи інших. Переможе найбільша загальна слава.','next'],
  end:['Передайте хід','Натисніть «Завершити хід». Після варки можна зробити крок або лишитися.','action'],
  finalMove:['Зберіть наступний урожай','Перетягніть фішку до Світлякової левади. Там є карти для наступного зілля.','action'],
@@ -64,7 +64,7 @@ export const LESSON_STAGES={
 };
 const GO={rootResult:'nectar',nectarResult:'stopFirst',sabotage:'ward',wardResult:'finishFirst',arrival:'botOne',botOne:'botOneRun',attackResult:'botOneEnd',turnTwo:'openMap',springInfo:'spring',springResult:'tradeInfo',tradeInfo:'offer',tradeResult:'moss',mavka:'final',finalResult:'stopFinal',negatives:'score',scoreResult:'victory',victory:'end',harvestAgain:'orderWait',newOrderResult:'done',done:'free'};
 export function createLesson(name='Травниця'){
- const p=makePlayer(name,'lesson-owner'),s=makeRoom('LESSON',p,{hexes:true,targetPotions:3});
+ const p=makePlayer(name,'lesson-owner'),s=makeRoom('LESSON',p,{hexes:true,targetPotions:3,fullDeck:true});
  action(s,p.id,{type:'addBot'});action(s,p.id,{type:'addBot'});action(s,p.id,{type:'start'});
  return {schema:LESSON_SCHEMA,s,owner:p.id,stage:'bots',version:1,cursor:0,ids:{},created:Date.now()};
 }

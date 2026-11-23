@@ -18,16 +18,16 @@ function secondTurn(f){
  assert.equal(s.turn,0);assert.equal(s.phase,'main');
 }
 function combo(f){secondTurn(f);const{s,p,echo,extra,draw}=f;for(const c of [echo,extra,draw])action(s,p.id,{type:'play',card:c.id});}
-test('Mavka screenshot: echo copies the previous-turn Sphagnum, then the perk and printed extra finish the chain',()=>{
+test('Mavka: after echo copies the previous-turn Sphagnum, the perk adds one more card only of the matching slot type',()=>{
  const f=fixture(),{s,p,plain,echo,extra,draw}=f;secondTurn(f);
- assert.equal(s.turnData.mavkaSource,undefined);assert.equal(canAdd(s,p,plain),false);assert.equal(canAdd(s,p,echo),true);
- action(s,p.id,{type:'play',card:echo.id});assert.equal(p.brew[1].playedAs,'blue');assert.equal(p.recipes[0].potionMeta?.mavkaUsed,undefined);assert.ok(p.brew[1].placementReason.includes('Сфагнум'));assert.equal(p.brew[1].echoSource.name,'Сфагнум');
- assert.equal(canAdd(s,p,extra),true);action(s,p.id,{type:'play',card:extra.id});
- assert.equal(p.brew[2].playedAs,'red');assert.ok(p.brew[2].placementReason.includes('Мавка'));assert.equal(p.recipes[0].potionMeta.mavkaUsed,true);assert.equal(s.turnData.allowance,1);
- action(s,p.id,{type:'play',card:draw.id});assert.equal(p.brew[3].slot,null);assert.equal(full(p),true);assert.equal(canAdd(s,p,plain),false);
+ assert.equal(canAdd(s,p,echo),true);action(s,p.id,{type:'play',card:echo.id});assert.equal(p.brew[1].playedAs,'blue');assert.equal(p.brew[1].echoSource.name,'Сфагнум');
+ assert.equal(canAdd(s,p,extra),false,'green moss no longer fills the red slot');
+ const red={...plain,id:'red-plain',color:'red',name:'Червона'};p.hand.push(red);
+ assert.equal(canAdd(s,p,red),true);action(s,p.id,{type:'play',card:red.id});
+ assert.ok(p.brew[2].placementReason?.includes('Мавка')||p.recipes[0].potionMeta.mavkaUsed);assert.equal(full(p),true);
 });
 test('distillation removes the extra last ingredient and both sabotage cards, with one same-turn replacement',()=>{
- const f=fixture(),{s,p,d1,plain,draw,q,z}=f;combo(f);responses(s,true);const last=p.brew.at(-1),bad=last.attacks.map(a=>a.card.id);
+ const f=fixture(),{s,p,d1,plain,draw,q,z}=f;p.recipes[0].colors=['blue','blue','green'];combo(f);responses(s,true);const last=p.brew.at(-1),bad=last.attacks.map(a=>a.card.id);
  assert.equal(last.slot,null);assert.equal(last.attacks.length,2);
  action(s,p.id,{type:'white',card:d1.id,target:last.id});assert.equal(p.brew.length,3);assert.equal(full(p),true);
  for(const id of [d1.id,draw.id,...bad])assert.ok(s.discard.some(c=>c.id===id));

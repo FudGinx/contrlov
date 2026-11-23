@@ -19,11 +19,11 @@ function unit(card,slot=0,attacks=[]){return {id:'unit-'+(++serial),card,slot,pl
 function attack(color='red',cancelled=false){return {id:'attack-'+(++serial),card:ingredient(null,color),cancelled};}
 
 test('combo catalog adds six distinct illustrated cards for each selected effect',()=>{
- const cards=deck().filter(c=>c.artSet==='combo-ingredients-v1');
+ const cards=deck(true).filter(c=>c.artSet==='combo-ingredients-v1');
  assert.equal(cards.length,18);assert.equal(new Set(cards.map(c=>c.name)).size,18);
  assert.equal(new Set(cards.map(c=>c.illustration)).size,18);
  for(const effect of ['rebrew','echo','stoke'])assert.equal(cards.filter(c=>c.effect===effect).length,6);
- assert.equal(MAP_ROSTER.length,10);
+ assert.equal(MAP_ROSTER.length,11);assert.ok(MAP_ROSTER.includes('dyer'));
 });
 test('rebrew exposes only ingredients within the actual top three discard cards',()=>{
  const {s,p}=fixture(),source=ingredient('rebrew'),old=ingredient(),white={id:'white',type:'cancel'};
@@ -111,21 +111,21 @@ test('roots plays from top three using the ordinary action and starts printed ef
  assert.equal(p.brew[0].card.id,a.id);assert.equal(s.turnData.actionUsed,true);assert.equal(s.turnData.allowance,1);
  assert.equal(s.turnData.hexUsed,true);
 });
-test('flower replaces points and effect with continuation while preserving pending amplification',()=>{
+test('flower keeps points, replaces the effect with continuation and preserves pending amplification',()=>{
  const{s,p}=fixture(2,['red','red','red']);
  p.brew=[unit(ingredient('amplify','red',0))];
  const a=ingredient('draw','red',3),b=ingredient(null,'red',2);p.hand=[a,b];
  action(s,p.id,{type:'hexUse',card:a.id});action(s,p.id,{type:'play',card:a.id});
- assert.equal(p.brew.at(-1).zeroed,true);assert.equal(s.turnData.allowance,1);
+ assert.ok(!p.brew.at(-1).zeroed);assert.equal(p.brew.at(-1).effectMuted,true);assert.equal(s.turnData.allowance,1);
  action(s,p.id,{type:'play',card:b.id});
- assert.equal(p.brew.at(-1).multiplier,2);assert.equal(brewScore(p),4);
+ assert.equal(p.brew.at(-1).multiplier,2);assert.equal(brewScore(p),7);
 });
 test('moss cleans a full ingredient before final scoring and keeps its slot',()=>{
  const{s,p}=fixture(4,['red']);s.phase='defense';s.turnData.actionUsed=true;
  const b=unit(ingredient('resonance','red',3),0,[attack(),attack()]);
  p.brew=[b];action(s,p.id,{type:'hexUse',target:b.id});
  assert.equal(brewScore(p),0);assert.equal(b.card.effect,'resonance');assert.ok(b.attacks.every(a=>a.cancelled));
- action(s,p.id,{type:'finishTurn'});assert.equal(p.score,8);assert.equal(p.completed,1);
+ action(s,p.id,{type:'finishTurn'});assert.equal(p.score,8+2,'recipe + clean potion bonus');assert.equal(p.completed,1);
 });
 test('fireflies replaces any ingredient with an insect and starts its effect without consuming the ordinary action',()=>{
  const{s,p}=fixture(5,['red','blue']),old=unit(ingredient(null,'red'),0,[attack()]);
@@ -141,13 +141,30 @@ test('spring replays an amplifier with one fresh charge and offers continuation 
  assert.equal(s.turnData.allowance,1);assert.equal(s.phase,'chain');
  action(s,p.id,{type:'stop'});assert.equal(s.phase,'defense');
 });
-test('witch retains universal mushroom sabotage and a discard mushroom draw on the map',()=>{
+test('witch on the map swaps her travel card for a discard mushroom at the start of her next turn',()=>{
  const{s,p,q}=fixture(1);p.character='vidma';q.hex=0;
- const mushroom=ingredient(null,'red');s.discard=[mushroom];s.deck=Array.from({length:12},()=>ingredient());
- s.turn=1;s.phase='post';action(s,q.id,{type:'end'});action(s,q.id,{type:'hexMove',hex:1});
+ const mushroom=ingredient(null,'red');s.discard=[mushroom];s.deck=Array.from({length:12},()=>ingredient(null,'blue'));
+ s.hexes[0]=[];s.phase='post';action(s,p.id,{type:'end'});
+ const before=p.hand.length;action(s,p.id,{type:'hexMove',hex:0});
+ assert.equal(p.hand.length,before,'no travel draw yet: it is replaced by the witch choice');
+ assert.equal(s.turn,1);action(s,q.id,{type:'end'});action(s,q.id,{type:'hexMove',hex:q.hex===1?2:1});
  assert.equal(s.turn,0);assert.equal(s.effectChoice.kind,'harvest');
  action(s,p.id,{type:'chooseEffect',choice:s.effectChoice.id,card:mushroom.id});
- assert.ok(p.hand.some(c=>c.id===mushroom.id));
+ assert.ok(p.hand.some(c=>c.id===mushroom.id));assert.equal(p.hand.length,before+1,'exactly one card per move, like everyone else');
+});
+test('witch on the map gets no start-of-turn card when she did not move',()=>{
+ const{s,p,q}=fixture(1);p.character='vidma';q.hex=0;
+ const mushroom=ingredient(null,'red');s.discard=[mushroom];s.deck=Array.from({length:12},()=>ingredient(null,'blue'));
+ s.phase='post';action(s,p.id,{type:'end'});const before=p.hand.length;action(s,p.id,{type:'hexMove',hex:1});
+ action(s,q.id,{type:'end'});action(s,q.id,{type:'hexMove',hex:q.hex===2?3:2});
+ assert.equal(s.turn,0);assert.ok(!s.effectChoice);assert.ok(!p.hand.some(c=>c.id===mushroom.id));
+});
+test('witch on the map without a discard mushroom takes an ordinary random card for her move',()=>{
+ const{s,p,q}=fixture(1);p.character='vidma';q.hex=0;
+ s.discard=[ingredient(null,'green')];s.deck=Array.from({length:12},()=>ingredient(null,'blue'));
+ s.hexes[0]=[];s.phase='post';action(s,p.id,{type:'end'});const before=p.hand.length;action(s,p.id,{type:'hexMove',hex:0});
+ action(s,q.id,{type:'end'});action(s,q.id,{type:'hexMove',hex:q.hex===1?2:1});
+ assert.equal(s.turn,0);assert.ok(!s.effectChoice);assert.equal(p.hand.length,before+1);
 });
 test('blud swaps physical chips and can immediately use the destination ability once per turn',()=>{
  const{s,p,q}=fixture(1);p.character='blud';q.hex=3;s.discard=[ingredient('extra')];
@@ -155,11 +172,11 @@ test('blud swaps physical chips and can immediately use the destination ability 
  assert.equal(p.hex,3);assert.equal(q.hex,1);assert.equal(s.turnData.startHex,3);
  action(s,p.id,{type:'hexUse'});assert.equal(s.hexChoice.kind,'roots-brew');
 });
-test('water movement reaches two steps with one draw and ignores intermediate harvest',()=>{
+test('water movement reaches two steps with one draw and harvests every hex on the path',()=>{
  const{s,p}=fixture(1);p.character='vodianyk';s.phase='move';
  s.hexes[0]=[ingredient()];s.hexes[4]=[ingredient()];s.deck=[ingredient()];
  action(s,p.id,{type:'hexMove',hex:4});
- assert.equal(p.hex,4);assert.equal(p.hand.length,2);assert.equal(s.hexes[0].length,1);
+ assert.equal(p.hex,4);assert.equal(p.hand.length,3);assert.equal(s.hexes[0].length,0);
 });
 test('chugaister blocks incoming movement, allows a co-occupant to leave and releases on departure',()=>{
  const{s,p,q}=fixture(1);p.character='chugaister';q.hex=1;
