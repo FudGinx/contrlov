@@ -179,6 +179,9 @@
 .recipe-position .pot-total{display:flex;flex-direction:column;align-items:flex-start;gap:2px;justify-content:center;margin:8px 0 0;width:auto;padding:4px 10px;border-radius:10px;background:rgba(40,30,20,.72);color:#f6ecd2;font:600 13px/1.3 system-ui,sans-serif;width:max-content;max-width:100%}
 .pot-total b{color:#fff}
 .pot-total .clean-hit{font-style:normal;color:#ffe07a;margin-left:4px}
+.pot-total .clean-line{color:#ffe07a;font-size:12px}
+.pot-total .clean-line.lost{color:#e9a08f}
+.recipe-card-heading .clean-badge.lost{background:#6b5a4a;color:#e8d8c8}
 .recipe-card-heading .clean-badge{margin-left:auto;padding:1px 6px;border-radius:999px;background:#f3e2a6;color:#5b4512;font:700 11px/1.4 system-ui,sans-serif;cursor:help}
 .oak-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:600 12px/1.3 system-ui,sans-serif;margin:4px 0}
 .oak-steps b{padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.08);opacity:.7}

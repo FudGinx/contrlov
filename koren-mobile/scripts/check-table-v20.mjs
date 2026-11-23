@@ -6,7 +6,7 @@ export function verifyTableUI({tabletop,feedback,css,engine}){
  for(const [name,source]of Object.entries({tabletop,feedback}))try{new Function(source);}catch(e){throw Error(name+': '+e.message);}
  const colors=new Function(engine.split('\n')[0].replace('export ', '')+';return COLORS;')();
  const color=id=>colors.find(c=>c.id===id),esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const names=['cardStackKey','groupIdentical','stackMarkup','handStacks','tableBrew','groupBrewCards','recipeCard','unitScoreTag','potTotalTag'];
+ const names=['cardStackKey','groupIdentical','stackMarkup','handStacks','tableBrew','groupBrewCards','recipeCard','unitScoreTag','potTotalTag','cleanBadge'];
  const functions=names.map(name=>tabletop.split('\n').find(l=>l.startsWith('function '+name+'('))).join('\n');
  const state={me:'me',phase:'main',turnData:{},players:[]};
  const api=new Function('state','color','esc','tableCard','rec','hasSlot','isMine','need',functions+';return {handStacks,tableBrew,groupBrewCards,recipeCard};')(state,color,esc,(c,kind,owner,extra)=>'<div data-card-id="'+c.id+'" '+(extra||'')+'></div>',p=>p.recipe,(p,i)=>p.brew.some(b=>b.slot===i),()=>true,()=>undefined);
