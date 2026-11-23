@@ -52,7 +52,7 @@ function hexField(){
  if(choice&&choice.kind!=='roots-brew'){
   controls='<p>'+(choice.kind==='seed'?'Оберіть карту й торкніться гекса для посіву.':'Завершіть вибір, розпочатий до оновлення.')+'</p><div class="hex-options">'+choice.cards.map(c=>'<button data-hex-action="legacyChoice" data-hex-card="'+esc(c.id)+'">'+esc(c.name)+'</button>').join('')+'</div>';
  }else if(choice){
-  controls='<p class="hex-skill-status" role="status">'+esc(map.brewReason)+'</p><div class="hex-choice-cards" data-zone="hex-choice:'+p.id+'">'+choice.cards.map(c=>tableCard(c,'hex-choice',p.id,choice.play?.includes(c.id)?'data-combo-ready="true"':'data-combo-unavailable="true"')).join('')+'</div>'+(!choice.play?.length&&rec(p)?'<p>Жодна не підходить до рецепта — одну можна забрати в руку.</p><div class="hex-options">'+choice.cards.map(c=>'<button data-hex-action="legacyChoice" data-hex-card="'+esc(c.id)+'">У руку: '+esc(c.name)+'</button>').join('')+'</div>':'')+'<button data-hex-action="skipChoice">'+(rec(p)?'Відмовитися (вміння гекса витрачено)':'Повернутися до варки')+'</button>';
+  controls='<p class="hex-skill-status" role="status">'+esc(map.brewReason)+'</p><div class="hex-choice-cards" data-zone="hex-choice:'+p.id+'">'+choice.cards.map(c=>tableCard(c,'hex-choice',p.id,choice.play?.includes(c.id)?'data-combo-ready="true"':!choice.play?.length&&rec(p)?'data-keep-ready="true"':'data-combo-unavailable="true"')).join('')+'</div>'+(!choice.play?.length&&rec(p)?'<p>Жодна не підходить до рецепта — перетягніть одну карту в руку.</p><div class="hex-keep-zone" data-drop="hand" data-player="'+p.id+'" role="button" tabindex="0" aria-label="Забрати карту в руку">У руку ↓</div>':'')+'<button data-hex-action="skipChoice">'+(rec(p)?'Відмовитися (вміння гекса витрачено)':'Повернутися до варки')+'</button>';
  }else if(here){
   controls='<div class="hex-options">'+(moving?'<button data-hex-action="stay">Залишитися</button>':'')+'</div>';
   if(canUseCurrentHex()){
@@ -146,7 +146,8 @@ legalTableTarget=function(src,target){
   if(choice.kind==='stoke')return d.drop==='discard'&&choice.cards.some(c=>c.id===src.card);
   if(choice.kind==='rebrew')return d.drop==='hand'||d.player===p.id&&['brew','ingredient'].includes(d.drop)&&choice.play?.includes(src.card);
  }
- if(src?.kind==='hex-choice')return !!(state.hexMap?.choice?.play?.includes(src.card)&&isMine()&&(d.drop==='hex-payment'&&Number(d.hexTile??d.hexDestination)===p.hex||d.player===p.id&&['brew','ingredient'].includes(d.drop)));
+ if(src?.kind==='hex-choice'&&!state.hexMap?.choice?.play?.length)return !!(isMine()&&d.drop==='hand'&&state.hexMap?.choice?.cards?.some(c=>c.id===src.card));
+  if(src?.kind==='hex-choice')return !!(state.hexMap?.choice?.play?.includes(src.card)&&isMine()&&(d.drop==='hex-payment'&&Number(d.hexTile??d.hexDestination)===p.hex||d.player===p.id&&['brew','ingredient'].includes(d.drop)));
  if(tableView==='hex'){
   if(d.drop==='hex-unit')return src?.kind==='hand'&&isHexPayment(p.hand.find(c=>c.id===src.card))&&state.hexMap.targets?.units?.includes(d.target);
   if(d.drop==='hex-payment'){
