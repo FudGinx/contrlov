@@ -20,7 +20,7 @@ export const CHARACTERS=[
  {id:'vodianyk',mapTitle:'Підземна течія',mapText:'Кожен хід можете пройти до двох кроків. Збираєте урожай усіх гексів на шляху й отримуєте одну карту за рух.',reserve:true,name:'Водяник',title:'Господар вод',portrait:4,portraitSet:'folklore-v3',art:7,harvest:'purple',color:'purple',text:'Власні Рідини ◈ у своєму зіллі мають +1 слави. При початковому доборі можна вибрати Рідину зі скиду замість однієї випадкової карти. Саботаж не посилюється.'},
  {id:'domovyk',name:'Домовик',title:'Під захистом хати',portrait:5,portraitSet:'folklore-v3',art:7,keepsStarter:true,text:'Після завершення зілля можете залишити чистий складник для початку наступного рецепта. Якщо його тип відповідає першій позиції, покладіть його без витрати варки та без повторного ефекту. Одну карту можна перенести лише раз.'}
 ];
-export const MAP_ROSTER=['mavka','dyer','vidma','chumak','molfar','quietbrewer','mosskeeper','kharakternyk','blud','vodianyk','chugaister'];
+export const MAP_ROSTER=['mavka','dyer','znakhar','vidma','chumak','molfar','quietbrewer','mosskeeper','kharakternyk','blud','vodianyk','chugaister'];
 const NAMES=[['Лисичка','Вогняний опеньок','Сонний мухомор','Боровик'],['Барвінок','Цвіт папороті','Нічна волошка','Сон-трава'],['Корінь мандрівника','Вузлуватий корінець','Корінь пам’яті','Дідова морква'],['Срібний мох','Мох-перелесник','Роса на лишайнику','Лісова борода'],['Крило жука','Вусик світляка','Пилок нічниці','Бурштиновий жук'],['Туман у пляшці','Жива крапля','Місячна роса','Сік калини']];
 export function shuffle(a,rng=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 let seq=0;function id(){return 'c'+(++seq).toString(36)+'-'+Math.random().toString(36).slice(2,7);}

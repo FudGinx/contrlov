@@ -23,7 +23,7 @@ test('combo catalog adds six distinct illustrated cards for each selected effect
  assert.equal(cards.length,18);assert.equal(new Set(cards.map(c=>c.name)).size,18);
  assert.equal(new Set(cards.map(c=>c.illustration)).size,18);
  for(const effect of ['rebrew','echo','stoke'])assert.equal(cards.filter(c=>c.effect===effect).length,6);
- assert.equal(MAP_ROSTER.length,11);assert.ok(MAP_ROSTER.includes('dyer'));
+ assert.equal(MAP_ROSTER.length,12);assert.ok(MAP_ROSTER.includes('znakhar'));assert.ok(MAP_ROSTER.includes('dyer'));
 });
 test('rebrew exposes only ingredients within the actual top three discard cards',()=>{
  const {s,p}=fixture(),source=ingredient('rebrew'),old=ingredient(),white={id:'white',type:'cancel'};
