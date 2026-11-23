@@ -86,7 +86,8 @@ export function unitScores(p){
 }
 export function potPreview(p){const r=recipe(p),now=brewScore(p),done=full(p)||!!r?.chaos&&p.brew.length>0,clean=full(p)&&cleanPotion(p);return {now,full:done,clean,cleanBonus:CLEAN_BONUS,reward:done?recipeReward(p):0,onClose:Math.max(0,now+(done?recipeReward(p):0)+(clean?CLEAN_BONUS:0))};}
 function resonanceCount(p,unit){
- return p.brew.reduce((sum,other)=>sum+Number(other!==unit&&!other.disabled&&!other.substituted&&other.card.type==='ingredient'&&other.card.color===unit.card.color)+other.attacks.filter(a=>a.card.type==='ingredient'&&a.card.color===unit.card.color).length,0);
+ const color=unit.card.effect==='echo'&&unit.echoSource?.color||unit.card.color;
+ return p.brew.reduce((sum,other)=>sum+Number(other!==unit&&!other.disabled&&!other.substituted&&other.card.type==='ingredient'&&other.card.color===color)+other.attacks.filter(a=>a.card.type==='ingredient'&&a.card.color===color).length,0);
 }
 export function draw(s,p,n){for(let i=0;i<n;i++){if(!s.deck.length&&s.discard.length){s.deck=shuffle(s.discard);s.discard=[];log(s,'Скид перемішано: колода знову жива.');}if(!s.deck.length)break;p.hand.push(s.deck.pop());}}
 function refill(s){const count=s.players.length+1;while(s.market.length<count){if(!s.orderDeck.length&&s.orderDiscard.length){s.orderDeck=shuffle(s.orderDiscard);s.orderDiscard=[];}if(!s.orderDeck.length)break;s.market.push(s.orderDeck.pop());}}
@@ -248,7 +249,7 @@ function resolveIngredientEffect(s,p,b,effect){
  if(effect==='echo'){
   const index=p.brew.indexOf(b),prior=p.brew.slice(0,index).reverse().find(x=>!x.disabled&&!x.substituted);
   if(prior?.card.effect&&prior.card.effect!=='echo'&&!prior.effectMuted&&!prior.carried){
-   b.echoSource={id:prior.card.id,name:prior.card.name,effect:prior.card.effect};
+   b.echoSource={id:prior.card.id,name:prior.card.name,effect:prior.card.effect,color:prior.card.color};
    comboNotice(s,p,b,'Відлуння: '+prior.card.name);
    resolveIngredientEffect(s,p,b,prior.card.effect);
   }else comboNotice(s,p,b,'Відлуння: немає попереднього ефекту');

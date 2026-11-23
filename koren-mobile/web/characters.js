@@ -314,7 +314,7 @@ inspectTable=function(el){
  const copy=modalRoot.querySelector('.inspect-copy');
  if(unit.multiplier)copy?.insertAdjacentHTML('beforeend','<p><b>Підсилено ×'+unit.multiplier+': '+unit.card.points+' × '+unit.multiplier+' = '+unit.card.points*unit.multiplier+' слави.</b></p>');
  if(unit.zeroed)copy?.insertAdjacentHTML('beforeend','<p><b>Очки цього складника обнулено вмінням поляни.</b></p>');
- if(unit.echoResonance)copy?.insertAdjacentHTML('beforeend','<p><b>Відлуння скопіювало резонанс: власні та підкинуті складники цього типу дають +1.</b></p>');
+ if(unit.echoResonance)copy?.insertAdjacentHTML('beforeend','<p><b>Відлуння скопіювало резонанс: кожен власний і підкинутий складник того ж типу, що «'+(unit.echoSource?.name||'попередня карта')+'», дає ще +1.</b></p>');
 };
 
 
