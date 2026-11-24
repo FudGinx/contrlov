@@ -1,0 +1,32 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {action,makeRoom,makePlayer,view,brewScore,potPreview} from '../src/engine.js';
+let n=0;const card=(color='red',points=1,effect=null)=>({id:'b'+(++n),type:'ingredient',name:color+n,color,points,negative:-2,effect});
+function fx(hex){const p=makePlayer('A','a'),q=makePlayer('B','b'),s=makeRoom('HB',p,{hexes:true});s.players.push(q);s.status='playing';s.phase='main';p.character='mavka';q.character='molfar';
+ s.hexSide=['A','B','B','B','B','B','B'];p.hex=hex;q.hex=0;s.turnData={actionUsed:false,allowance:0,startHex:hex};p.recipes=[{id:'r',name:'R',value:8,colors:['red','blue','green','brown']}];p.current='r';s.hexes=s.hexes.map(()=>[]);return{s,p,q};}
+const pick=(s,p,id)=>action(s,p.id,{type:'hexChoose',pick:id});
+test('B tiles are shown with their own name, rule and icons',()=>{const{s,p}=fx(1);const t=view(s,p.id).hexMap.tiles;assert.equal(t[1].name,'Грибниця');assert.equal(t[1].side,'B');assert.ok(t[1].icons);assert.equal(t[0].side,'A');});
+test('Hrybnytsia: discard two, take any harvest card',()=>{const{s,p}=fx(1);const h=card('blue',3);s.hexes[5]=[h];const a=card(),b=card();p.hand=[a,b];
+ action(s,p.id,{type:'hexUse'});pick(s,p,h.id);pick(s,p,a.id);pick(s,p,b.id);assert.deepEqual(p.hand.map(c=>c.id),[h.id]);assert.equal(s.hexes[5].length,0);assert.equal(s.turnData.hexUsed,true);});
+test('Vinky: a pair of one type gives +2, the last place gets +3',()=>{const{s,p,q}=fx(2);p.hand=[card('red'),card('red'),card('blue')];q.score=5;
+ action(s,p.id,{type:'hexUse'});const opts=s.hexChoice.options.map(o=>o.id);assert.equal(opts.length,2);pick(s,p,opts[0]);pick(s,p,s.hexChoice.options[0].id);assert.equal(p.score,3);});
+test('Spletene korinnia: next ingredient closes its slot and the next one',()=>{const{s,p}=fx(3);const pay=card('green'),r=card('red',2);p.hand=[pay,r];
+ action(s,p.id,{type:'hexUse'});pick(s,p,pay.id);action(s,p.id,{type:'play',card:r.id});assert.equal(p.brew.length,2);assert.equal(p.brew[1].slot,1);assert.equal(potPreview(p).cleanBroken.slot,1);});
+test('Mokhova skhovanka: arriving takes the top card, and one more if it is Moss',()=>{const{s,p}=fx(0);s.phase='move';s.hexOrder=[0,1,2,3,4,5,6];const moss=card('green'),extra=card('red'),travel=card('blue');s.deck=[extra,moss,travel];p.hand=[];
+ action(s,p.id,{type:'hexMove',hex:4});assert.equal(p.hex,4);assert.deepEqual(p.hand.map(c=>c.id).sort(),[travel.id,moss.id,extra.id].sort());});
+test('Mokhova skhovanka gives one card when it is not Moss, and nothing for staying',()=>{const{s,p}=fx(0);s.phase='move';const a=card('red'),travel=card('blue');s.deck=[a,travel];p.hand=[];
+ action(s,p.id,{type:'hexMove',hex:4});assert.equal(p.hand.length,2);const t=view(s,p.id).hexMap.tiles[4];assert.equal(t.name,'Мохова схованка');});
+test('Oak cannot borrow the passive Mokhova skhovanka',()=>{const{s,p}=fx(0);p.hand=[card()];const t=view(s,p.id).hexMap.targets;assert.ok(!t.borrow.includes(4));});
+test('Murashnyk: moves one sabotage onto an opponent last ingredient',()=>{const{s,p,q}=fx(5);const bad={id:'att',card:card('red',0),cancelled:false};p.brew=[{id:'u1',card:card(),slot:0,attacks:[bad],playedAs:'red'}];q.brew=[{id:'u2',card:card('blue'),slot:0,attacks:[],playedAs:'blue'}];
+ action(s,p.id,{type:'hexUse'});pick(s,p,'u1');pick(s,p,q.id);assert.equal(p.brew[0].attacks.length,0);assert.equal(q.brew[0].attacks.length,1);});
+test('Vidbyttia: last ingredient gets its printed points again, no multiplier',()=>{const{s,p}=fx(6);const top=card('red',3);p.brew=[{id:'u1',card:top,slot:0,attacks:[],playedAs:'red',multiplier:2}];const liq=card('purple',0);p.hand=[liq];
+ const before=brewScore(p);action(s,p.id,{type:'hexUse'});pick(s,p,liq.id);assert.equal(brewScore(p)-before,3);});
+test('cancelling a B choice keeps the hand and the skill',()=>{const{s,p}=fx(6);p.brew=[{id:'u1',card:card('red',3),slot:0,attacks:[],playedAs:'red'}];const liq=card('purple',0);p.hand=[liq];
+ action(s,p.id,{type:'hexUse'});action(s,p.id,{type:'hexChoose'});assert.equal(p.hand.length,1);assert.equal(!!s.turnData.hexUsed,false);});
+test('room setting chooses old/new sides at the start',()=>{const p=makePlayer('A','a'),s=makeRoom('HS',p,{hexes:true,hexSides:'new'});action(s,p.id,{type:'addBot'});action(s,p.id,{type:'start'});
+ while(s.phase==='character'){const q=s.players[s.draft];action(s,q.id,{type:'chooseCharacter',character:['mavka','molfar'][s.draft]});}
+ assert.deepEqual(s.hexSide,['A','B','B','B','B','B','B']);});
+test('Mosskeeper on the map: Moss in a Moss slot closes every Moss slot and the potion stays clean',()=>{const p=makePlayer('A','a'),q=makePlayer('B','b'),s=makeRoom('MK',p,{hexes:true});s.players.push(q);s.status='playing';s.phase='main';p.character='mosskeeper';q.character='molfar';p.hex=1;q.hex=0;s.turnData={actionUsed:false,allowance:0,startHex:1};
+ p.recipes=[{id:'r',name:'R',value:8,colors:['green','red','green','green']}];p.current='r';const m=card('green',2);p.hand=[m];
+ action(s,p.id,{type:'play',card:m.id});assert.equal(p.brew.filter(b=>b.mossFill).length,2);assert.equal(potPreview(p).cleanPossible,true);});
+test('bot fallback can finish a pending flip-side choice without crashing',async()=>{const {botAction}=await import('../src/engine.js');const{s,p,q}=fx(2);p.bot=true;p.hand=[card('red'),card('red')];q.score=5;
+ action(s,p.id,{type:'hexUse'});s.turnData.planSteps=99;for(let i=0;i<3&&s.hexChoice;i++){const a=botAction(s);action(s,p.id,a);}assert.equal(s.hexChoice,null);assert.equal(p.score,3);});
