@@ -643,6 +643,7 @@ function resolveHexChoice(s,p,a){
 }
 function botHex(s,p){
  const food=p.hand.filter(c=>c.type==='ingredient'),need=needed(p)?.color;
+ if(s.hexChoice?.kind==='b'){const ch=s.hexChoice,val=o=>o.kind==='card'?ingredientValue(s,p,o.card):(s.players.find(q=>q.id===o.id)?.score||0);const best=[...ch.options].sort((x,y)=>(ch.step==='take'||ch.step==='player'?val(y)-val(x):val(x)-val(y)))[0];return {type:'hexChoose',pick:best?.id};}
  if(s.hexChoice){
   const cards=[...s.hexChoice.cards].sort((a,b)=>ingredientValue(s,p,b)-ingredientValue(s,p,a));
   return {type:'hexChoose',card:cards.find(c=>canChooseBrew(s,p,c))?.id};

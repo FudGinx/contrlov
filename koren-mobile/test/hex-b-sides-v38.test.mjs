@@ -28,3 +28,5 @@ test('room setting chooses old/new sides at the start',()=>{const p=makePlayer('
 test('Mosskeeper on the map: Moss in a Moss slot closes every Moss slot and the potion stays clean',()=>{const p=makePlayer('A','a'),q=makePlayer('B','b'),s=makeRoom('MK',p,{hexes:true});s.players.push(q);s.status='playing';s.phase='main';p.character='mosskeeper';q.character='molfar';p.hex=1;q.hex=0;s.turnData={actionUsed:false,allowance:0,startHex:1};
  p.recipes=[{id:'r',name:'R',value:8,colors:['green','red','green','green']}];p.current='r';const m=card('green',2);p.hand=[m];
  action(s,p.id,{type:'play',card:m.id});assert.equal(p.brew.filter(b=>b.mossFill).length,2);assert.equal(potPreview(p).cleanPossible,true);});
+test('bot fallback can finish a pending flip-side choice without crashing',async()=>{const {botAction}=await import('../src/engine.js');const{s,p,q}=fx(2);p.bot=true;p.hand=[card('red'),card('red')];q.score=5;
+ action(s,p.id,{type:'hexUse'});s.turnData.planSteps=99;for(let i=0;i<3&&s.hexChoice;i++){const a=botAction(s);action(s,p.id,a);}assert.equal(s.hexChoice,null);assert.equal(p.score,3);});
