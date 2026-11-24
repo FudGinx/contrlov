@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {action,makeRoom,makePlayer,brewScore,cleanPotion,startHand,SABOTAGE_PER_TURN,view} from '../src/engine.js';
 let n=0;const ing=(color='red',points=1,effect=null)=>({id:'v37-'+(++n),type:'ingredient',name:color,color,points,negative:-2,effect});
 function room(size=2,colors=['red']){const p=makePlayer('A','a'),s=makeRoom('V37',p);for(let i=1;i<size;i++)s.players.push(makePlayer('B'+i,'b'+i));s.status='playing';s.phase='main';s.turn=0;s.turnData={actionUsed:false,allowance:0};s.players.forEach(x=>x.character='domovyk');p.recipes=[{id:'r',name:'R',value:6,colors}];p.current='r';return{s,p};}
-test('starting hands by seat are 4 / 5 / 6 / 7, capped at 10',()=>{assert.deepEqual([0,1,2,3,7].map(startHand),[4,5,6,7,10]);
+test('starting hands by seat are 4 / 5 / 6 / 7, capped at 10',()=>{assert.deepEqual([0,1,2,3,7].map(i=>startHand(i,false)),[4,5,6,7,10]);
  const p=makePlayer('A','a'),s=makeRoom('X',p);for(let i=0;i<3;i++)action(s,p.id,{type:'addBot'});action(s,p.id,{type:'start'});
  while(s.phase==='character')action(s,s.players[s.draft].id,{type:'chooseCharacter',character:['molfar','dyer','domovyk','blud'][s.draft]});
  assert.deepEqual(s.players.map(x=>x.hand.length),[4,5,6,7]);});
