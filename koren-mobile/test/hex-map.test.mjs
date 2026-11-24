@@ -31,7 +31,7 @@ test('oak borrows one adjacent location with a visible ingredient payment',()=>{
    const actor=botActor(s),move=botAction(s);assert.ok(move);action(s,actor.id,move);
    if(s.phase==='character')continue;
    const total=s.deck.length+s.discard.length+s.hexes.flat().length+s.players.reduce((n,p)=>n+p.hand.length+Number(!!p.starter)+p.brew.reduce((n,b)=>n+Number(b.card.type!=='essence')+b.attacks.length,0),0)+(s.effectChoice?.kind==='sift'?s.effectChoice.cards.length:0)+(['flowers','seed'].includes(s.hexChoice?.kind)?s.hexChoice.cards.length:0)+(s.exchange?1+s.exchange.bids.length:0);
-   assert.equal(total,98);
+   assert.equal(total,101);
   }
   assert.equal(s.status,'finished');
  }

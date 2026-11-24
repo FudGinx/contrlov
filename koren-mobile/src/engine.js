@@ -12,7 +12,7 @@ export const CHARACTERS=[
  {id:'apiarist',name:'Пасічник',title:'Оновити рій',portrait:12,portraitSet:'new-perks-v1',art:7,harvest:'black',characterAction:'insect',text:'При доборі можете вибрати Комаху зі скиду замість однієї випадкової карти. Раз на зілля перед варкою без витрати дії замініть свою Комаху іншою з руки. Старий складник і саботаж ідуть у скид. Нова карта запускає ефект і звичайні відповіді.'},
  {id:'quietbrewer',name:'Тиховар',title:'На ложку менше',portrait:13,portraitSet:'new-perks-v1',art:6,characterAction:'shortcut',text:'У кожному рецепті з 4–5 позицій можете пропустити останню та отримати повну нагороду.'},
  {id:'barterer',name:'Міняйло',title:'Два за один',portrait:14,portraitSet:'new-perks-v1',art:7,characterAction:'mix',text:'Замість варки скиньте два складники одного типу та відразу зваріть відповідний складник із п’яти верхніх карт скиду. Вибір відкривається до оплати.'},
- {id:'mosskeeper',mapTitle:'Мохові пагони',mapText:'Раз за зілля замість кроку зберіть увесь урожай із сусіднього гекса без фішок. Ви лишаєтеся на місці й не добираєте карту за крок.',reserve:true,name:'Моховик',title:'Мох замість зілля',portrait:15,portraitSet:'new-perks-v1',art:8,harvest:'green',mossWild:true,text:'При доборі можна вибрати Мох ❧ зі скиду замість однієї випадкової карти. Одну будь-яку позицію кожного зілля можна закрити Мхом. Звичайне додавання витрачається.'},
+ {id:'mosskeeper',mapTitle:'Мохові пагони',mapText:'Раз за зілля замість кроку зберіть увесь урожай із сусіднього гекса без фішок. Ви лишаєтеся на місці й не добираєте карту за крок. Мох ❧ у позиції Мху закриває одразу всі позиції Мху рецепта — зілля лишається чистим.',reserve:true,name:'Моховик',title:'Мох замість зілля',portrait:15,portraitSet:'new-perks-v1',art:8,harvest:'green',mossWild:true,text:'При доборі можна вибрати Мох ❧ зі скиду замість однієї випадкової карти. Одну будь-яку позицію кожного зілля можна закрити Мхом. Звичайне додавання витрачається.'},
  {id:'kharakternyk',name:'Козак-характерник',title:'Лови кулю',portrait:0,portraitSet:'folklore-v3',art:7,characterAction:'catch',text:'Раз за свій хід після відповідей скиньте інгредієнт того самого надрукованого типу, що саботаж у вашому котлі. Цей саботаж іде у скид — його негатив зникає.'},
  {id:'perelesnyk',name:'Перелесник',title:'Чуже обличчя',portrait:1,portraitSet:'folklore-v3',art:6,characterAction:'swap',text:'У свій хід замість варки обміняйте активний котел з чужим незавершеним. У своєму потрібно хоча б 2 інгредієнти. Переходять рецепт, складники, саботаж і відмітки. Кожен котел може брати участь лише один раз.'},
  {id:'blud',mapTitle:'Збити зі стежки',mapText:'Раз за свій хід до вміння поляни поміняйте місцями свій гекс із сусіднім (крім Дуба). Фішки лишаються на місцях, урожай їде разом із гексом. Одразу можна застосувати вміння нової поляни.',name:'Блуд',title:'Збити зі стежки',portrait:2,portraitSet:'folklore-v3',art:6,characterAction:'extend',text:'Раз за свій хід без витрати варки можна подовжити чужий незавершений рецепт. Виберіть один із двох випадкових типів і скиньте складник цього типу. Кожен котел можна подовжити лише раз.'},
@@ -36,7 +36,7 @@ export const HAND_LIMITS=[10,11,12,13,14,15];
 function handLimitOf(n){n=Number(n);return HAND_LIMITS.includes(n)?n:HAND_LIMIT;}
 function sabCap(s){return s.legacy?LEGACY_SABOTAGE:SABOTAGE_PER_TURN;}
 function roomHandLimit(s){return s.legacy?Infinity:handLimitOf(s.handLimit);}
-export function cleanPotion(p){const r=recipe(p);if(!r||r.chaos)return false;return r.colors.every((color,slot)=>p.brew.some(b=>b.slot===slot&&!b.disabled&&!b.substituted&&b.card.type==='ingredient'&&b.card.color===color&&(!b.playedAs||b.playedAs===color)));}
+export function cleanPotion(p){const r=recipe(p);if(!r||r.chaos)return false;return r.colors.every((color,slot)=>p.brew.some(b=>b.slot===slot&&(b.mossFill||!b.disabled&&!b.substituted&&b.card.type==='ingredient'&&b.card.color===color&&(!b.playedAs||b.playedAs===color))));}
 export const COPY_PLAN={p3:9,p2:3,p1:3,draw:12,sift:9,recover:11,extra:9,stoke:5,rebrew:2,'brew-wild':2,echo:8,amplify:6,resonance:11};
 const COPY_KEEP=['red','green','blue','brown','purple','black'];
 function copyKey(c){return c.type!=='ingredient'?null:c.effect||('p'+c.points);}
@@ -51,7 +51,7 @@ function applyCopyPlan(cards){
  }
  return out;
 }
-export function deck(full=false){const a=[];COLORS.forEach((c,ci)=>NAMES[ci].forEach((n,i)=>{const copies=i===1&&['blue','green'].includes(c.id)?2:[1,3,2,1][i];for(let k=0;k<copies;k++)a.push({id:id(),type:'ingredient',name:n,color:c.id,art:c.art,variant:i,illustration:ci*4+i,points:[2,1,1,3][i],negative:-[2,1,2,3][i],effect:i===1?'extra':i===2?'draw':null});}));COLORS.forEach((c,ci)=>INGREDIENT_EFFECTS.forEach((e,i)=>a.push({id:id(),type:'ingredient',name:NEW_NAMES[ci][i],color:c.id,art:c.art,variant:4+i,illustration:ci*5+i,artSet:'new-ingredients-v1',...e,id:id(),type:'ingredient',effect:e.id})));for(const [name,color,illustration]of [['Рута','blue',6],['Мох на криниці','green',7]])a.push({id:id(),type:'ingredient',name,color,artSet:'folklore-v3',illustration,variant:9,points:1,negative:-1,effect:null});COLORS.forEach((color,row)=>COMBO_EFFECTS.forEach((effect,column)=>a.push({id:id(),type:'ingredient',name:COMBO_NAMES[row][column],color:color.id,art:color.art,variant:10+column,illustration:row*3+column,artSet:'combo-ingredients-v1',points:0,negative:-3,effect})));for(let i=0;i<6;i++)a.push({id:id(),type:'cancel',name:'Оберіг',art:5});for(let i=0;i<2;i++)a.push({id:id(),type:'distill',name:'Дистиляція',art:5});return shuffle(full?a:applyCopyPlan(a));}
+export function deck(full=false){const a=[];COLORS.forEach((c,ci)=>NAMES[ci].forEach((n,i)=>{const copies=i===1&&['blue','green'].includes(c.id)?2:[1,3,2,1][i];for(let k=0;k<copies;k++)a.push({id:id(),type:'ingredient',name:n,color:c.id,art:c.art,variant:i,illustration:ci*4+i,points:[2,1,1,3][i],negative:-[2,1,2,3][i],effect:i===1?'extra':i===2?'draw':null});}));COLORS.forEach((c,ci)=>INGREDIENT_EFFECTS.forEach((e,i)=>a.push({id:id(),type:'ingredient',name:NEW_NAMES[ci][i],color:c.id,art:c.art,variant:4+i,illustration:ci*5+i,artSet:'new-ingredients-v1',...e,id:id(),type:'ingredient',effect:e.id})));for(const [name,color,illustration]of [['Рута','blue',6],['Мох на криниці','green',7]])a.push({id:id(),type:'ingredient',name,color,artSet:'folklore-v3',illustration,variant:9,points:1,negative:-1,effect:null});COLORS.forEach((color,row)=>COMBO_EFFECTS.forEach((effect,column)=>a.push({id:id(),type:'ingredient',name:COMBO_NAMES[row][column],color:color.id,art:color.art,variant:10+column,illustration:row*3+column,artSet:'combo-ingredients-v1',points:0,negative:-3,effect})));for(let i=0;i<(full?6:8);i++)a.push({id:id(),type:'cancel',name:'Оберіг',art:5});for(let i=0;i<(full?2:3);i++)a.push({id:id(),type:'distill',name:'Дистиляція',art:5});return shuffle(full?a:applyCopyPlan(a));}
 export function orders(){const rows=[['Стежка Мавки',['brown','purple','green','red'],8],['Купальська роса',['blue','purple','blue'],5],['Любисткова злагода',['blue','blue','red'],6],['Сон русалки',['purple','green','black'],5],['Полиновий оберіг',['brown','blue','brown'],6],['Мохова колиска',['green','green','brown','purple'],8],['Нічний гомін',['black','black','black'],7],['Слід характерника',['brown','green','green','red'],8],['Жар перелесника',['red','red','purple','red'],9],['Ніч папороті',['green','black','blue','brown','purple'],11],['Мед лісової пасіки',['blue','black','black','purple','purple'],12],['Відлуння Чугайстра',['brown','red','green','red','brown'],11]],a=[];for(let copy=0;copy<3;copy++)rows.forEach(([name,colors,value],i)=>a.push({id:id(),name,colors:[...colors],value,art:i%6}));a.push({id:id(),name:'Чортів казан',colors:[],value:0,chaos:true,art:5});return shuffle(a);}
 export function character(p){const c=CHARACTERS.find(c=>c.id===p.character);return c?.mapText&&Number.isInteger(p.hex)?{...c,harvest:null,mossWild:false,color:null,characterAction:null,title:c.mapTitle,text:c.mapText}:c;}
 export function makePlayer(name,token,bot=false){return {id:id(),token,name:String(name||'Мандрівник').trim().slice(0,22)||'Мандрівник',bot,host:false,character:null,hand:[],recipes:[],current:null,brew:[],score:0,completed:0};}
@@ -89,7 +89,7 @@ export function unitScores(p){
  }
  return out;
 }
-export function cleanBreak(p){const r=recipe(p);if(!r||r.chaos)return null;const bad=p.brew.find(b=>b.slot!==null&&b.slot!==undefined&&(b.substituted||b.card.type!=='ingredient'||b.card.color!==r.colors[b.slot]||(b.playedAs&&b.playedAs!==r.colors[b.slot])));return bad?{slot:bad.slot,card:bad.card.name}:null;}
+export function cleanBreak(p){const r=recipe(p);if(!r||r.chaos)return null;const bad=p.brew.find(b=>b.slot!==null&&b.slot!==undefined&&!b.mossFill&&(b.substituted||b.card.type!=='ingredient'||b.card.color!==r.colors[b.slot]||(b.playedAs&&b.playedAs!==r.colors[b.slot])));return bad?{slot:bad.slot,card:bad.card.name}:null;}
 export function potPreview(p,s=null){const r=recipe(p),now=brewScore(p),done=full(p)||!!r?.chaos&&p.brew.length>0,legacy=!!s?.legacy,clean=!legacy&&full(p)&&cleanPotion(p),broken=legacy?null:cleanBreak(p);return {now,full:done,clean,cleanBonus:CLEAN_BONUS,cleanPossible:!legacy&&!!r&&!r.chaos&&!broken,cleanBroken:broken,reward:done?recipeReward(p):0,onClose:Math.max(0,now+(done?recipeReward(p):0)+(clean?CLEAN_BONUS:0))};}
 function resonanceCount(p,unit){
  const color=unit.card.effect==='echo'&&unit.echoSource?.color||unit.card.color;
@@ -233,6 +233,7 @@ function ingredientEffect(s,p,b){
    comboNotice(s,p,b,'Множник ×'+b.multiplier);
   }
  }
+ if(!s.legacy&&p.character==='mosskeeper'&&b.card.type==='ingredient'&&b.card.color==='green'&&b.slot!==null&&b.slot!==undefined&&!b.extra){const r=recipe(p);if(r&&!r.chaos&&r.colors[b.slot]==='green')r.colors.forEach((col,slot)=>{if(col==='green'&&!filled(p,slot))p.brew.push({id:id(),card:{id:id(),type:'essence',name:'Мохова ковдра',color:'green',points:0,negative:0},slot,attacks:[],mossFill:true});});}
  if(s.turnData.twinRoot&&b.slot!==null&&b.slot!==undefined&&!b.extra){delete s.turnData.twinRoot;const r=recipe(p),slot=b.slot+1;if(r&&!r.chaos&&slot<r.colors.length&&!filled(p,slot))p.brew.push({id:id(),card:{id:id(),type:'essence',name:'Сплетене коріння',color:r.colors[slot],points:0,negative:0,waived:true},slot,playedAs:r.colors[slot],attacks:[],substituted:true});}
  const flower=effectiveHex(s,p)===2&&!s.turnData.hexUsed&&s.turnData.flowerCard===b.card.id;
  if(flower){b.effectMuted=true;s.turnData.hexUsed=true;s.turnData.allowance++;delete s.turnData.flowerCard;comboNotice(s,p,b,'Квіти: ефект → продовження');return;}
@@ -406,7 +407,7 @@ export const HEXES_B=[null,
  {name:'Грибниця',cap:3,side:'B',icons:'✕✕ → ⇄',rule:'Скиньте 2 карти з руки — заберіть будь-яку карту урожаю з будь-якого гекса.'},
  {name:'Вінки на воді',cap:2,side:'B',icons:'✕✕= → ✦',rule:'Скиньте 2 складники одного типу — +2 слави. Якщо у вас найменше слави — +3.'},
  {name:'Сплетене коріння',cap:2,side:'B',icons:'✕ → ⏭',rule:'Скиньте будь-яку карту — наступний складник цього ходу закриє свою позицію і ще одну за нею (без очок, зілля вже не чисте).'},
- {name:'Болотний вогник',cap:2,side:'B',icons:'○ → ⇄?',rule:'Візьміть випадкову карту з руки суперника й віддайте йому будь-яку свою.'},
+ {name:'Мохова схованка',cap:2,side:'B',passive:true,icons:'⤵ → 🂠 (❧ +🂠)',rule:'Хто щойно прийшов сюди — відкриває верхню карту колоди й забирає її. Якщо це Мох ❧ — забирає ще одну.'},
  {name:'Мурашник',cap:3,side:'B',icons:'○ → ⚡⇄',rule:'Перенесіть один саботаж зі свого котла на останній складник суперника.'},
  {name:'Відбиття',cap:2,side:'B',icons:'✕◈ → +очки',rule:'Скиньте Рідину — останній складник у вашому котлі отримує свої надруковані очки ще раз (множник не діє).'}];
 export const HEX_ICONS_A=['✕ → ✧','✕ → ♠','○ → +1','○ → ↶','0 → 🛡','⬣ → ⇄','✕◈ → ↻'];
@@ -419,7 +420,6 @@ function bOptions(s,p,hex,step,picks=[]){
  if(hex===1){if(step==='take')return s.hexes.flatMap(x=>x).map(cardOpt);return p.hand.filter(c=>!picks.includes(c.id)).map(cardOpt);}
  if(hex===2){const cnt={};food.forEach(c=>cnt[c.color]=(cnt[c.color]||0)+1);const first=picks[0]&&p.hand.find(c=>c.id===picks[0]);return food.filter(c=>!picks.includes(c.id)&&(first?c.color===first.color:cnt[c.color]>=2)).map(cardOpt);}
  if(hex===3)return p.hand.map(cardOpt);
- if(hex===4){if(step==='player')return opp.filter(q=>q.hand.length).map(playerOpt);return p.hand.map(cardOpt);}
  if(hex===5){if(step==='unit')return p.brew.filter(b=>b.attacks.some(a=>!a.cancelled)).map(b=>({id:b.id,kind:'card',card:b.attacks.find(a=>!a.cancelled).card,label:b.card.name}));return opp.filter(q=>q.brew.length).map(playerOpt);}
  if(hex===6)return food.filter(c=>c.color==='purple'||chugFree(s,p)).map(cardOpt);
  return [];
@@ -429,11 +429,11 @@ function bReady(s,p,hex){const r=recipe(p);
  if(hex===1)return p.hand.length>=2&&s.hexes.some(x=>x.length);
  if(hex===2)return bOptions(s,p,2,'pay').length>=2;
  if(hex===3)return p.hand.length>=1&&!!r&&!r.chaos&&!s.turnData.twinRoot;
- if(hex===4)return p.hand.length>=1&&s.players.some(q=>q!==p&&q.hand.length);
+ if(hex===4)return false;
  if(hex===5)return p.brew.some(b=>b.attacks.some(a=>!a.cancelled))&&s.players.some(q=>q!==p&&q.brew.length);
  if(hex===6){const u=reflectUnit(p);return !!u&&(u.card.points||0)>0&&bOptions(s,p,6,'pay').length>0;}
  return false;}
-const B_STEPS={1:['take','pay','pay'],2:['pay','pay'],3:['pay'],4:['player','give'],5:['unit','player'],6:['pay']};
+const B_STEPS={1:['take','pay','pay'],2:['pay','pay'],3:['pay'],5:['unit','player'],6:['pay']};
 const B_PROMPTS={take:'Оберіть карту урожаю, яку заберете',pay:'Оберіть карту для скиду',player:'Оберіть суперника',give:'Оберіть карту, яку віддасте',unit:'Оберіть саботаж у своєму котлі'};
 function startB(s,p,hex){if(!bReady(s,p,hex))fail('Умову цієї поляни зараз не виконано.');const step=B_STEPS[hex][0];s.hexChoice={id:id(),owner:p.id,kind:'b',hex,name:hexInfo(s,hex).name,steps:B_STEPS[hex],stepIndex:0,step,prompt:B_PROMPTS[step],picks:[],options:bOptions(s,p,hex,step)};}
 function chooseB(s,p,a){const ch=s.hexChoice;
@@ -446,7 +446,6 @@ function resolveB(s,p,hex,picks){const name=hexInfo(s,hex).name;
  if(hex===1){const pile=s.hexes.find(x=>x.some(c=>c.id===picks[0]));const got=pile.splice(pile.findIndex(c=>c.id===picks[0]),1)[0];s.discard.push(takeCard(p,picks[1]),takeCard(p,picks[2]));p.hand.push(got);log(s,p.name+' на «'+name+'» забирає '+got.name+'.');return;}
  if(hex===2){s.discard.push(takeCard(p,picks[0]),takeCard(p,picks[1]));const low=s.players.every(q=>q===p||p.score<=q.score),gain=low?3:2;p.score+=gain;log(s,p.name+' плете вінки: +'+gain+' слави.');return;}
  if(hex===3){s.discard.push(takeCard(p,picks[0]));s.turnData.twinRoot=true;log(s,p.name+': наступний складник закриє дві позиції.');return;}
- if(hex===4){const q=s.players.find(x=>x.id===picks[0]);const got=q.hand.splice(Math.floor(Math.random()*q.hand.length),1)[0];const given=takeCard(p,picks[1]);q.hand.push(given);p.hand.push(got);log(s,p.name+' міняється з '+q.name+' наосліп.');return;}
  if(hex===5){const u=p.brew.find(b=>b.id===picks[0]),q=s.players.find(x=>x.id===picks[1]);const i=u.attacks.findIndex(a=>!a.cancelled);const [att]=u.attacks.splice(i,1);q.brew.at(-1).attacks.push({...att,fromId:p.id,from:p.name});log(s,p.name+' переносить саботаж на котел '+q.name+'.');return;}
  if(hex===6){const u=reflectUnit(p);s.discard.push(takeCard(p,picks[0]));u.boost=(u.boost||0)+(u.card.points||0);log(s,p.name+': «'+u.card.name+'» дає свої очки ще раз.');return;}
 }
@@ -532,6 +531,7 @@ function moveHex(s,p,hex){
   const from=p.hex,path=hexPath(s,p,hex),harvest=[...(false?path.slice(1,-1).flatMap(h=>s.hexes[h].splice(0)):[]),...s.hexes[hex].splice(0)];
   p.hexLocked=false;p.hex=hex;p.hand.push(...harvest);
   const before=p.hand.length;if(character(p)?.harvest)p.pendingHarvest=true;else draw(s,p,1);
+  if(hex===4&&sideB(s,4)){const k=p.hand.length;draw(s,p,1);const found=p.hand[k];if(found?.type==='ingredient'&&found.color==='green')draw(s,p,1);log(s,p.name+' знаходить у Моховій схованці: '+p.hand.slice(k).map(c=>c.name).join(', ')+'.');}
   hexTravelEvent(s,p,from,hex,path,harvest.map(c=>c.id),p.hand.slice(before).map(c=>c.id));
  }
  p.hexScout={};
@@ -544,7 +544,7 @@ function hexSkillTargets(s,p){
  result.ready=true;
  const hex=effectiveHex(s,p),food=p.hand.filter(c=>c.type==='ingredient');
  if(sideB(s,hex)){result.side='B';result.bReady=bReady(s,p,hex);return result;}
- if(hex===0){result.payments=s.turnData.oakPaid?[]:food.map(c=>c.id);result.borrow=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i));}
+ if(hex===0){result.payments=s.turnData.oakPaid?[]:food.map(c=>c.id);result.borrow=HEXES.map((_,i)=>i).filter(i=>adjacentHex(s,p.hex,i)&&!(i===4&&sideB(s,4)));}
  if(hex===1)result.payments=food.map(c=>c.id);
  if(hex===2)result.payments=food.filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
  if(hex===3)result.cards=s.discard.slice(-3).filter(c=>canChooseBrew(s,p,c)).map(c=>c.id);
