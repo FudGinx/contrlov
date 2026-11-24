@@ -210,3 +210,7 @@
 .hex-icons-inline{font-weight:700;color:#e6c77a}
 
 .hex-sides-setup{margin:8px 0}.hex-sides-setup summary{cursor:pointer;font-weight:700}.hex-side-row{display:flex;align-items:center;gap:8px;margin:4px 0}.hex-side-row span{width:18px;text-align:center}
+
+.trade-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}.trade-actions p{margin:0}.trade-status{margin-top:10px;color:#d7c9a3}
+
+.trade-explanation .trade-pass{margin-top:10px}
