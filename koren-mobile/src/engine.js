@@ -239,6 +239,7 @@ function canChooseBrew(s,p,c,bonus=false){
  if(bonus){probe.phase='chain';probe.turnData={...s.turnData,actionUsed:false};}
  return canAdd(probe,p,c);
 }
+function echoFrom(s,p,b,src){b.echoSource={id:src.card.id,name:src.card.name,effect:src.card.effect,color:src.card.color};comboNotice(s,p,b,'Відлуння: '+src.card.name);resolveIngredientEffect(s,p,b,src.card.effect);}
 function resolveIngredientEffect(s,p,b,effect){
  if(b.effectMuted||b.carried)return;
  if(effect==='resonance'&&b.card.effect==='echo')b.echoResonance=true;
@@ -251,7 +252,15 @@ function resolveIngredientEffect(s,p,b,effect){
   if(cards.length)s.effectChoice={id:id(),owner:p.id,kind:effect,cards};
   else log(s,'У скиді немає доступного складника.');
  }
- if(effect==='echo'){
+ if(effect==='echo'&&!s.legacy){
+  const prior=p.brew.slice(0,p.brew.indexOf(b)).reverse().find(x=>!x.disabled&&!x.substituted),wildEcho=prior?.card.effect==='brew-wild'&&!prior.effectMuted&&!prior.carried&&b.playedAs&&b.playedAs!==b.card.color;
+  const opts=p.brew.filter(x=>x!==b&&!x.disabled&&!x.substituted&&!x.effectMuted&&!x.carried&&x.card.effect&&!['echo','brew-wild'].includes(x.card.effect));
+  if(wildEcho)echoFrom(s,p,b,prior);
+  else if(!opts.length)comboNotice(s,p,b,'Відлуння: у котлі немає ефекту для повтору');
+  else if(opts.length===1)echoFrom(s,p,b,opts[0]);
+  else s.effectChoice={id:id(),owner:p.id,kind:'echo',unit:b.id,cards:opts.map(x=>({...x.card,id:'echo-'+x.id}))};
+ }
+ if(effect==='echo'&&s.legacy){
   const index=p.brew.indexOf(b),prior=p.brew.slice(0,index).reverse().find(x=>!x.disabled&&!x.substituted);
   if(prior?.card.effect&&prior.card.effect!=='echo'&&!prior.effectMuted&&!prior.carried){
    b.echoSource={id:prior.card.id,name:prior.card.name,effect:prior.card.effect,color:prior.card.color};
@@ -267,7 +276,7 @@ function resolveIngredientEffect(s,p,b,effect){
 function pendingMultiplier(p){
  return 2*p.brew.filter(x=>!x.disabled&&!x.effectMuted&&!x.substituted&&!x.amplifierSpent).reduce((sum,x)=>sum+(x.amplifierCharges||(x.card.effect==='amplify'?1:0)),0);
 }
-function chooseEffect(s,p,a){const choice=s.effectChoice;if(choice.owner!==p.id||a.choice!==choice.id)fail('Цей вибір недоступний.');if(choice.kind==='harvest'&&!a.card){draw(s,p,1+(choice.afterDraw||0));s.effectChoice=null;return;}if(['starter','extend'].includes(choice.kind)&&!a.card){s.effectChoice=null;if(choice.kind==='extend')s.turnData.extendUsed=true;if(choice.endAfter)end(s);return;}
+function chooseEffect(s,p,a){const choice=s.effectChoice;if(choice.owner!==p.id||a.choice!==choice.id)fail('Цей вибір недоступний.');if(choice.kind==='echo'){const src=choice.cards.some(c=>c.id===a.card)&&p.brew.find(x=>'echo-'+x.id===a.card),b=p.brew.find(x=>x.id===choice.unit);if(!src||!b)fail('Оберіть карту у своєму котлі.');s.effectChoice=null;echoFrom(s,p,b,src);return;}if(choice.kind==='harvest'&&!a.card){draw(s,p,1+(choice.afterDraw||0));s.effectChoice=null;return;}if(['starter','extend'].includes(choice.kind)&&!a.card){s.effectChoice=null;if(choice.kind==='extend')s.turnData.extendUsed=true;if(choice.endAfter)end(s);return;}
 if(choice.kind==='stoke'){
  if(a.card){if(!choice.cards.some(c=>c.id===a.card)||!p.hand.some(c=>c.id===a.card&&c.type==='ingredient'))fail('Оберіть складник для жару.');s.discard.push(takeCard(p,a.card));s.turnData.allowance++;log(s,p.name+' розпалює казан: ще одне додавання.');}
  s.effectChoice=null;return;

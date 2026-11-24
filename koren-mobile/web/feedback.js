@@ -103,7 +103,7 @@ inspectTable=function(el){const unit=el.closest('.table-unit[data-brew-ids]');if
  let note=b.slot===null?'Додаткова карта поза рецептом: не закриває позицію, але її очки, ефект і прикріплений саботаж враховуються.':'Позиція '+(b.slot+1)+' · '+(color(b.playedAs)?.name||color(b.card.color)?.name)+'.';
  if(b.placementReason&&b.slot!==null)note+=' '+b.placementReason+'.';
  else if(b.card.effect==='brew-wild')note+=' Універсальний складник замінює будь-який тип.';
- if(b.echoSource)note+=' Відлуння повторило «'+b.echoSource.name+'», навіть якщо цю карту додали попереднього ходу.';
- else if(b.card.effect==='echo')note+=' Відлуння повторює ефект попереднього власного складника в цьому казані, зокрема з попереднього ходу.';
+ if(b.echoSource)note+=' Відлуння повторило «'+b.echoSource.name+'».';
+ else if(b.card.effect==='echo')note+=state.legacy?' Відлуння повторює ефект попереднього власного складника в цьому казані, зокрема з попереднього ходу.':' Відлуння повторює ефект будь-якого вашого складника в цьому казані — на ваш вибір.';
  modalRoot.querySelector('.inspect-copy')?.insertAdjacentHTML('beforeend','<p class="inspect-placement-note"><b>У цьому зіллі</b><br>'+esc(note)+'</p>');
 };
