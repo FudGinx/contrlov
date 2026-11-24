@@ -192,7 +192,7 @@ function planBotMove(s,p){
  s.turnData.planSteps=(s.turnData.planSteps||0)+1;if(s.turnData.planSteps>30)return null;
  const t0=Date.now(),pi=s.players.indexOf(p),root=structuredClone({...s,log:[],events:[]});root.deck=shuffle(root.deck);
  const base={score:p.score,completed:p.completed},startTurn=s.turn,seen=new Set();let nodes=0,best={v:planValue(root,pi,base)+0.05,first:null};
- const key=st=>{const q=st.players[pi];return JSON.stringify([st.phase,q.current,q.hand.map(c=>c.id),q.brew.map(b=>[b.card.id,b.slot,b.multiplier,b.amplifierCharges,b.amplifierSpent,b.disabled,b.zeroed,b.effectMuted,b.attacks.length]),st.turnData,st.effectChoice?.id,st.hexChoice?.kind,q.score]);};
+ const key=st=>{const q=st.players[pi];return JSON.stringify([st.phase,q.current,q.hand.map(c=>c.id),q.brew.map(b=>[b.card.id,b.slot,b.multiplier,b.amplifierCharges,b.amplifierSpent,b.disabled,b.zeroed,b.effectMuted,b.attacks.length]),st.turnData,st.effectChoice?.id,st.hexChoice?.kind,st.hexChoice?.picks,q.score]);};
  const dfs=(st,first)=>{
   if(nodes++>PLAN_NODES||Date.now()-t0>PLAN_MS)return;
   let guard=0;while(st.phase==='reaction'&&guard++<8){const r=st.players[st.reactionQueue[st.reactionIndex]];if(!r||r===st.players[pi])break;try{action(st,r.id,{type:'react'});}catch(e){return;}}
