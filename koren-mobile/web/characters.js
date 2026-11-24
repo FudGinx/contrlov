@@ -44,7 +44,7 @@ function hexField(){
   const canBorrow=canUseCurrentHex()&&targets.borrow?.includes(i);
   const canPay=(canUseCurrentHex()||choice)&&i===p.hex;
   const people=state.players.filter(q=>q.hex===i);
-  const tokens=people.map(q=>'<span class="hex-token '+(q.id===p.id&&(moving||perk?.mode==='blud')?'hex-draggable':'')+'" data-hex-token="'+esc(q.id)+'" style="--token-hue:'+(state.players.indexOf(q)*61)+'" aria-label="'+esc(q.name)+'">'+tablePortrait(q)+'</span>').join('');
+  const tokens=people.map(q=>'<span class="hex-token '+(q.id===p.id&&(moving||perk?.mode==='blud'||perk?.mode==='bludTile')?'hex-draggable':'')+'" data-hex-token="'+esc(q.id)+'" style="--token-hue:'+(state.players.indexOf(q)*61)+'" aria-label="'+esc(q.name)+'">'+tablePortrait(q)+'</span>').join('');
   return '<div class="hex-cell" '+(canBorrow||canPay?'data-drop="hex-payment" data-hex-destination="'+i+'" ':'')+'style="--hx:'+x+'%;--hy:'+y+'%"><button class="hex-tile '+(i===p.hex?'here ':'')+(reachable?'hex-reachable ':'')+(tile.blocked?'hex-blocked':'')+'" data-hex-tile="'+i+'" data-art="'+i+'" '+(canBorrow||canPay?'data-drop="hex-payment" ':'')+' aria-label="'+esc(tile.name)+'"><span class="hex-crest">'+hexSigns[i]+'</span><span class="hex-stock">'+(tile.blocked?'ᛟ ': '')+(tile.count?'▰ '+tile.count:'—')+'</span><strong>'+esc(tile.name)+'</strong></button><div class="hex-tokens">'+tokens+'</div></div>';
  }).join('');
  const selected=hexMenu??p.hex,shown=selected===p.hex?map.tiles[effective]:map.tiles[selected],here=selected===p.hex;
@@ -70,6 +70,7 @@ function hexField(){
   controls='<p>'+(map.tiles[selected].blocked?'Чугайстер закрив вхід.':legal?'Перехід: урожай і одна карта за рух.':'Оберіть шлях після варки.')+'</p>'+(legal?'<button data-hex-action="go">Перейти</button>':'');
  }
  if(perk?.mode==='blud')controls+='<div class="hex-options">'+state.players.filter(q=>perk.players?.includes(q.id)).map(q=>'<button data-hex-action="swap" data-hex-player="'+q.id+'" data-hex-target="'+q.hex+'">Обмінятися з '+esc(q.name)+'</button>').join('')+'</div>';
+ if(perk?.mode==='bludTile')controls+=perk.targets.includes(selected)?'<button data-hex-action="bludTile">Поміняти місцями свій гекс і «'+esc(map.tiles[selected].name)+'»</button>':'<p class="hint">Блуд: оберіть сусідній гекс (не Дуб), щоб поміняти його місцями зі своїм.</p>';
  if(perk?.mode==='chugaister')controls+='<button data-hex-action="lock">Закрити вхід</button>';
  if(perk?.mode==='mosskeeper'&&perk.targets.includes(selected))controls+='<button data-hex-action="character">Зібрати мохом</button>';
  return '<section class="world-station hex-station" data-station="hex"><div class="hex-layout"><div class="hex-field">'+field+'</div><aside class="hex-panel"><h2>'+esc(shown.name)+'</h2><p>'+esc(shown.rule)+'</p>'+controls+'<button class="ghost" data-hex-action="rules">Правила мапи</button></aside></div></section>';
@@ -212,7 +213,7 @@ handleFolkloreClick=function(e){
  else if(d.hexAction==='skipChoice')act({type:'hexChoose'});
  else if(d.hexAction==='legacyChoice'){if(state.hexMap.choice?.kind==='seed'){hexSeedCard=d.hexCard;render();}else act({type:'hexChoose',card:d.hexCard});}
  else if(d.hexAction==='swap')act({type:'hexPerk',hex:Number(d.hexTarget),player:d.hexPlayer});
- else if(d.hexAction==='lock')act({type:'hexPerk',hex:p.hex});
+ else if(d.hexAction==='bludTile')act({type:'hexPerk',hex:hexMenu});else if(d.hexAction==='lock')act({type:'hexPerk',hex:p.hex});
  else if(d.hexAction==='character')act({type:'hexPerk',hex:hexMenu});
  return true;
 };
@@ -223,7 +224,7 @@ function stopHexDrag(event,cancel=false){
  if(cancel)return;
  if(!drag.moved){hexMenu=me().hex;hexSkillOpen=true;render();return;}
  const hit=document.elementFromPoint(event.clientX,event.clientY),token=hit?.closest('[data-hex-token]');const tile=hit?.closest('.hex-cell')?.querySelector('[data-hex-tile]')||hit?.closest('[data-hex-tile]');
- if(!tile||!tile.closest('.hex-station')||!isMine())return;if(state.hexMap.perk?.mode==='blud'&&state.phase!=='move'){const other=token?.dataset.hexToken||state.players.find(q=>q.id!==state.me&&q.hex===Number(tile.dataset.hexTile))?.id;if(other)return act({type:'hexPerk',hex:Number(tile.dataset.hexTile),player:other});return;}
+ if(!tile||!tile.closest('.hex-station')||!isMine())return;if(state.hexMap.perk?.mode==='bludTile'&&state.phase!=='move'){const h=Number(tile.dataset.hexTile);if(state.hexMap.perk.targets.includes(h))return act({type:'hexPerk',hex:h});return;}if(state.hexMap.perk?.mode==='blud'&&state.phase!=='move'){const other=token?.dataset.hexToken||state.players.find(q=>q.id!==state.me&&q.hex===Number(tile.dataset.hexTile))?.id;if(other)return act({type:'hexPerk',hex:Number(tile.dataset.hexTile),player:other});return;}
  const hex=Number(tile.dataset.hexTile),p=me();
  if(hex===p.hex){hexMenu=hex;hexSkillOpen=false;render();return;}
  const map=state.hexMap;

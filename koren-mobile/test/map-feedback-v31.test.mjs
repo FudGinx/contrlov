@@ -49,17 +49,17 @@ test('travel reports harvest and deck reward separately and keeps faces private'
  const other=view(s,q.id).events.filter(e=>e.type==='move'&&[...ids,reward.id].includes(e.card.id));
  assert.ok(other.every(e=>e.card.type==='back'&&e.card.color===undefined));
 });
-test('water travel includes the intermediate step and collects its harvest too',()=>{
+test('water travel shows the intermediate step but collects only the destination harvest',()=>{
  const{s,p}=fixture(1);p.character='vodianyk';s.phase='move';s.hexes[0]=[card()];s.hexes[4]=[card()];s.deck=[card()];
  action(s,p.id,{type:'hexMove',hex:4});const event=s.events.find(e=>e.type==='hexTravel');
- assert.deepEqual(event.path,[1,0,4]);assert.equal(event.harvest,2);assert.equal(event.travelDraw,1);
- assert.equal(s.hexes[0].length,0);assert.ok(event.duration>=2800);
+ assert.deepEqual(event.path,[1,0,4]);assert.equal(event.harvest,1);assert.equal(event.travelDraw,1);
+ assert.equal(s.hexes[0].length,1);assert.ok(event.duration>=2800);
 });
 test('moss gathering and token swap produce distinct movement feedback',()=>{
  const{s,p}=fixture(1);p.character='mosskeeper';s.phase='move';s.hexes[2]=[card(),card()];
  action(s,p.id,{type:'hexPerk',hex:2});const event=s.events.find(e=>e.type==='hexTravel');
  assert.equal(event.mode,'mosskeeper');assert.equal(event.harvestHex,2);assert.equal(event.harvest,2);assert.equal(event.travelDraw,0);
- const swap=fixture(1);swap.p.character='blud';swap.q.hex=4;
+ const swap=fixture(1);swap.s.legacy=true;swap.p.character='blud';swap.q.hex=4;
  action(swap.s,swap.p.id,{type:'hexPerk',hex:4,player:swap.q.id});
  const movement=swap.s.events.find(e=>e.type==='hexTravel');assert.equal(movement.companion.owner,swap.q.id);assert.equal(movement.harvest,0);
 });

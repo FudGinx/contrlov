@@ -167,16 +167,16 @@ test('witch on the map without a discard mushroom takes an ordinary random card 
  assert.equal(s.turn,0);assert.ok(!s.effectChoice);assert.equal(p.hand.length,before+1);
 });
 test('blud swaps physical chips and can immediately use the destination ability once per turn',()=>{
- const{s,p,q}=fixture(1);p.character='blud';q.hex=3;s.discard=[ingredient('extra')];
+ const{s,p,q}=fixture(1);s.legacy=true;p.character='blud';q.hex=3;s.discard=[ingredient('extra')];
  action(s,p.id,{type:'hexPerk',hex:3,player:q.id});
  assert.equal(p.hex,3);assert.equal(q.hex,1);assert.equal(s.turnData.startHex,3);
  action(s,p.id,{type:'hexUse'});assert.equal(s.hexChoice.kind,'roots-brew');
 });
-test('water movement reaches two steps with one draw and harvests every hex on the path',()=>{
+test('water movement reaches two steps with one draw and harvests only where it stops',()=>{
  const{s,p}=fixture(1);p.character='vodianyk';s.phase='move';
  s.hexes[0]=[ingredient()];s.hexes[4]=[ingredient()];s.deck=[ingredient()];
  action(s,p.id,{type:'hexMove',hex:4});
- assert.equal(p.hex,4);assert.equal(p.hand.length,3);assert.equal(s.hexes[0].length,0);
+ assert.equal(p.hex,4);assert.equal(p.hand.length,2);assert.equal(s.hexes[0].length,1);
 });
 test('chugaister blocks incoming movement, allows a co-occupant to leave and releases on departure',()=>{
  const{s,p,q}=fixture(1);p.character='chugaister';q.hex=1;
@@ -191,4 +191,13 @@ test('drawing a hidden harvest never leaks its identity to other animation histo
  action(s,p.id,{type:'hexMove',hex:2});
  const event=view(s,q.id).events.find(e=>e.card?.id===secret.id);
  assert.equal(event.card.type,'back');assert.equal(event.card.color,undefined);
+});
+test('blud swaps his glade with a neighbouring one: tokens stay, harvest travels with the tile',()=>{
+ const{s,p,q}=fixture(1);p.character='blud';
+ const perk=view(s,p.id).hexMap.perk;assert.equal(perk.mode,'bludTile');assert.ok(!perk.targets.includes(0));
+ const B=perk.targets[0];q.hex=B;s.hexes[B]=[ingredient()];s.hexes[1]=[];const order=[...(s.hexOrder||[0,1,2,3,4,5,6])];
+ action(s,p.id,{type:'hexPerk',hex:B});
+ assert.equal(p.hex,B);assert.equal(q.hex,1);assert.equal(s.hexes[B].length,1);assert.equal(s.turnData.startHex,B);
+ assert.equal(s.hexOrder.indexOf(B),order.indexOf(1));assert.equal(s.hexOrder.indexOf(1),order.indexOf(B));
+ assert.equal(view(s,p.id).hexMap.perk,null);
 });
