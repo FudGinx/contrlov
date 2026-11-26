@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Аналізатор партій</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: травник подводит итоги сезона — спокойно, точно, без шума.
+   IDEA: страница ведёт себя как полевой журнал травника: одна книга, куда вкладывают листы партий.
+   PICTURE: большая зона «вложите листы партий», затем шкалы с коридором нормы ±5.
+   COLOUR and TYPE: лесная зелень игры, золото печати, ягодный акцент; Alegreya SC для заголовков, Alegreya Sans для текста.
+   LAYOUT: одна колонка до 1100px, шкалы — строки с полосой и меткой нормы. */
+:root{color-scheme:light dark;--bg:light-dark(#f3efe2,#10231b);--panel:light-dark(#fffdf6,#183328);--ink:light-dark(#1c2a22,#efe6cc);--muted:light-dark(#5d6b60,#a9b8a5);--gold:light-dark(#9a7424,#e6c77a);--band:light-dark(#e3ecd9,#21402f);--line:light-dark(#d8d0b8,#2d4a3b);--hi:light-dark(#b0442d,#ff9a7a);--lo:light-dark(#2f5fa8,#8fb7ff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Alegreya Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1100px;margin:0 auto}
+h1,h2{font-family:"Alegreya SC",Georgia,serif;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,5vw,48px);color:var(--gold)}
+h2{font-size:26px;margin:36px 0 10px}
+p{margin:.4em 0}
+.lead{max-width:62ch;color:var(--muted)}
+.drop{margin-top:22px;border:2px dashed var(--gold);border-radius:18px;background:var(--panel);padding:clamp(22px,4vw,40px);display:grid;gap:14px;justify-items:center;text-align:center;transition:background .2s}
+.drop.over{background:var(--band)}
+.drop svg{width:86px;height:86px}
+.drop b{font-size:20px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+button,.pick{font:700 16px "Alegreya Sans",sans-serif;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid var(--gold);background:var(--gold);color:var(--bg);cursor:pointer;display:inline-flex;align-items:center}
+button.ghost{background:transparent;color:var(--ink)}
+button:focus-visible,.pick:focus-within{outline:3px solid var(--hi);outline-offset:2px}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+.toggle{display:flex;gap:10px;align-items:center;font-weight:700;min-height:44px}
+.toggle input{width:22px;height:22px;accent-color:var(--gold)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:22px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat b{display:block;font-size:clamp(26px,4vw,34px);line-height:1.1;color:var(--gold)}
+.stat span{color:var(--muted);font-size:14px}
+.rows{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 14px}
+.row{display:grid;grid-template-columns:minmax(0,13em) minmax(0,1fr) 5.2em 7.5em;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.name{font-weight:700;overflow-wrap:anywhere}
+.name small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.track{position:relative;height:16px;background:var(--bg);border-radius:8px;overflow:hidden}
+.norm{position:absolute;top:0;bottom:0;background:var(--band)}
+.mid{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--muted)}
+.bar{position:absolute;left:0;top:4px;height:8px;border-radius:4px;background:var(--gold)}
+.row.hi .bar{background:var(--hi)}.row.lo .bar{background:var(--lo)}
+.pct{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tag{font-size:13px;white-space:nowrap;color:var(--muted)}
+.row.hi .tag{color:var(--hi);font-weight:700}.row.lo .tag{color:var(--lo);font-weight:700}
+.note{font-size:14px;color:var(--muted);margin-top:8px}
+.files{font-size:14px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
+.empty{color:var(--muted);text-align:center;padding:24px}
+@media(max-width:640px){.row{grid-template-columns:minmax(0,1fr) 4.6em;row-gap:4px}.track{grid-column:1/-1;grid-row:2}.tag{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){.drop{transition:none}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap">
+ <h1>Аналізатор партій «Корінь розбрату»</h1>
+ <p class="lead">Перетащите сюда файлы <b>JSON</b>, скачанные кнопкой «Аналітика партії (JSON)» после матча. Можно сразу много. Всё считается в браузере, файлы никуда не отправляются.</p>
+ <label class="drop" id="drop">
+  <svg viewBox="0 0 86 86" aria-hidden="true"><rect x="16" y="10" width="50" height="64" rx="6" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/><rect x="22" y="16" width="50" height="64" rx="6" fill="var(--panel)" stroke="var(--gold)" stroke-width="3"/><path d="M32 34h30M32 44h30M32 54h20" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><path d="M47 4v20m-8-8 8 8 8-8" stroke="var(--hi)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <b>Вложите листы партий</b>
+  <span class="btns"><span class="pick">Выбрать файлы<input id="file" type="file" accept=".json,application/json" multiple></span><button class="ghost" id="clear" type="button">Очистить</button></span>
+  <span class="files" id="files">Файлов пока нет.</span>
+ </label>
+ <label class="toggle"><input type="checkbox" id="humans"> Считать только живых игроков (боты остаются соперниками)</label>
+ <div id="out"><p class="empty">Здесь появятся проценты по персонажам, полянам, картам и саботажу.</p></div>
+</div></section>
+<script>
+{
+const CARD={p1:'Простий +1',p2:'Простий +2',p3:'Простий +3',draw:'Добір',sift:'Просіювання 5→1',recover:'Зі скиду',extra:'Ще одне',stoke:'Жар',rebrew:'Переварка','brew-wild':'Універсальний',echo:'Відлуння',amplify:'Підсилення ×2',resonance:'Резонанс',cancel:'Оберіг',distill:'Дистиляція'};
+let games=[];const seen=new Set();
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+async function addFiles(list){let bad=0;for(const f of list){try{const d=JSON.parse(await f.text());if(d.format!=='koren-analytics'||!d.finishedAt){bad++;continue;}const key=d.code+'|'+d.finishedAt;if(seen.has(key))continue;seen.add(key);games.push(d);}catch(e){bad++;}}
+ $('files').textContent=games.length?`Загружено партий: ${games.length}`+(bad?` · не подошло файлов: ${bad}`:''):(bad?`Эти файлы не похожи на аналитику партии (${bad}).`:'Файлов пока нет.');render();}
+$('file').addEventListener('change',e=>{addFiles([...e.target.files]);e.target.value='';});
+const drop=$('drop');['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
+$('clear').addEventListener('click',e=>{e.preventDefault();games=[];seen.clear();$('files').textContent='Файлов пока нет.';render();});
+$('humans').addEventListener('change',render);
+function render(){
+ if(!games.length){$('out').innerHTML='<p class="empty">Здесь появятся проценты по персонажам, полянам, картам и саботажу.</p>';return;}
+ const onlyH=$('humans').checked,P=[];
+ for(const g of games){const win=g.players.filter(p=>p.winner);for(const p of g.players){if(onlyH&&p.bot)continue;P.push({g,p,w:win.includes(p)?1/win.length:0});}}
+ if(!P.length){$('out').innerHTML='<p class="empty">В этих партиях нет живых игроков. Снимите галочку.</p>';return;}
+ const exp=P.reduce((a,x)=>a+1/x.g.players.length,0)/P.length*100;
+ const avg=f=>P.reduce((a,x)=>a+f(x),0)/P.length;
+ const mins=games.reduce((a,g)=>a+(g.durationSec||0),0)/games.length/60,rounds=games.reduce((a,g)=>a+(g.rounds||0),0)/games.length;
+ const group=(fn)=>{const m=new Map();for(const x of P)for(const [k,u] of fn(x)){const r=m.get(k)||{n:0,w:0,u:0};r.n++;r.w+=x.w;r.u+=u;m.set(k,r);}return [...m].map(([k,r])=>({k,...r}));};
+ const section=(title,items,label,extra)=>{items.sort((a,b)=>b.w/b.n-a.w/a.n);const max=Math.max(60,...items.map(i=>i.w/i.n*100+5));
+  const rows=items.map(i=>{const x=i.w/i.n*100,se=Math.sqrt(Math.max(exp/100*(1-exp/100),1e-9)/i.n)*200,off=x-exp,cls=Math.abs(off)>Math.max(5,se)?(off>0?'hi':'lo'):'',tag=cls==='hi'?'▲ выше нормы':cls==='lo'?'▼ ниже нормы':(Math.abs(off)>5?'мало данных':'норма');
+   return `<div class="row ${cls}"><div class="name">${esc(label(i.k))}<small>n=${i.n} · ±${se.toFixed(0)}${extra?' · '+esc(extra(i)):''}</small></div><div class="track" aria-hidden="true"><div class="norm" style="left:${Math.max(0,exp-5)/max*100}%;width:${10/max*100}%"></div><div class="mid" style="left:${exp/max*100}%"></div><div class="bar" style="width:${Math.min(100,x/max*100)}%"></div></div><div class="pct">${x.toFixed(1)}%</div><div class="tag">${tag}</div></div>`;}).join('');
+  return `<h2>${title}</h2><div class="rows">${rows||'<p class="empty">Нет данных.</p>'}</div>`;};
+ const ch=section('Персонажи',group(x=>[[x.p.characterName||x.p.character,x.p.score]]),k=>k,i=>'слава '+(i.u/i.n).toFixed(1));
+ const hx=section('Поляны — победы тех, кто пользовался',group(x=>{const r=Object.entries(x.p.hexUse||{}).map(([k,v])=>{const [code,name]=k.split(/:(.*)/s);return [name+(code.endsWith('B')?' (оборот)':''),v];});if(x.p.hideoutFinds)r.push(['Мохова схованка (оборот)',x.p.hideoutFinds]);return r;}),k=>k,i=>'использований '+i.u);
+ const cd=section('Карты — победы тех, кто сварил или сыграл',group(x=>[...Object.entries(x.p.plays||{}),...Object.entries(x.p.whites||{})]),k=>CARD[k]||k,i=>'розыгрышей '+i.u);
+ const sb=section('Саботаж — победы тех, кто подкидывал',group(x=>Object.entries(x.p.sabotage||{})),k=>CARD[k]||k,i=>'подкидываний '+i.u);
+ const st=section('Места за столом',group(x=>[['Место '+(x.p.seat+1),1]]),k=>k);
+ $('out').innerHTML=`<div class="stats"><div class="stat"><b>${games.length}</b><span>партий</span></div><div class="stat"><b>${exp.toFixed(1)}%</b><span>норма побед для игрока</span></div><div class="stat"><b>${avg(x=>x.p.score).toFixed(1)}</b><span>средняя слава</span></div><div class="stat"><b>${mins.toFixed(0)} мин</b><span>средняя партия · ${rounds.toFixed(1)} круга</span></div></div>
+ <p class="note">Светлая полоса — коридор нормы ±5 процентных пунктов, вертикальная черта — норма. ▲/▼ ставится, только если отклонение больше 5 п.п. и больше погрешности (±). Пока партий мало, почти всё будет «мало данных» — это нормально.</p>
+ ${ch}${hx}${cd}${sb}${st}`;
+}
+}
+</script>
+</body>
+</html>
