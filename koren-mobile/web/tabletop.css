@@ -214,3 +214,6 @@
 .trade-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}.trade-actions p{margin:0}.trade-status{margin-top:10px;color:#d7c9a3}
 
 .trade-explanation .trade-pass{margin-top:10px}
+
+.turn-bell.turn-bell-blocked{background:radial-gradient(ellipse at 30% 20%,#9aa39c,#5f6862)!important;color:#1d2622;filter:saturate(.4);cursor:not-allowed}
+.turn-order-note{margin:8px 0}
