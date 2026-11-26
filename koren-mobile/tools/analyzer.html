@@ -61,11 +61,11 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 <body>
 <section class="band"><div class="wrap">
  <h1>Аналізатор партій «Корінь розбрату»</h1>
- <p class="lead">Перетащите сюда файлы <b>JSON</b>, скачанные кнопкой «Аналітика партії (JSON)» после матча. Можно сразу много. Всё считается в браузере, файлы никуда не отправляются.</p>
+ <p class="lead">Перетащите сюда файлы, скачанные после матча кнопкой «Аналітика партії (JSON)» или «Таблиця гравців (CSV)». Можно сразу много. Всё считается в браузере, файлы никуда не отправляются.</p>
  <label class="drop" id="drop">
   <svg viewBox="0 0 86 86" aria-hidden="true"><rect x="16" y="10" width="50" height="64" rx="6" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/><rect x="22" y="16" width="50" height="64" rx="6" fill="var(--panel)" stroke="var(--gold)" stroke-width="3"/><path d="M32 34h30M32 44h30M32 54h20" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/><path d="M47 4v20m-8-8 8 8 8-8" stroke="var(--hi)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <b>Вложите листы партий</b>
-  <span class="btns"><span class="pick">Выбрать файлы<input id="file" type="file" accept=".json,application/json" multiple></span><button class="ghost" id="clear" type="button">Очистить</button></span>
+  <span class="btns"><span class="pick">Выбрать файлы<input id="file" type="file" accept=".json,.csv,application/json,text/csv" multiple></span><button class="ghost" id="clear" type="button">Очистить</button></span>
   <span class="files" id="files">Файлов пока нет.</span>
  </label>
  <label class="toggle"><input type="checkbox" id="humans"> Считать только живых игроков (боты остаются соперниками)</label>
@@ -77,8 +77,17 @@ const CARD={p1:'Простий +1',p2:'Простий +2',p3:'Простий +3'
 let games=[];const seen=new Set();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
-async function addFiles(list){let bad=0;for(const f of list){try{const d=JSON.parse(await f.text());if(d.format!=='koren-analytics'||!d.finishedAt){bad++;continue;}const key=d.code+'|'+d.finishedAt;if(seen.has(key))continue;seen.add(key);games.push(d);}catch(e){bad++;}}
- $('files').textContent=games.length?`Загружено партий: ${games.length}`+(bad?` · не подошло файлов: ${bad}`:''):(bad?`Эти файлы не похожи на аналитику партии (${bad}).`:'Файлов пока нет.');render();}
+function why(name,text){const t=text.replace(/^\ufeff/,'').trim();if(/\.csv$/i.test(name)||t.startsWith('"code"'))return 'это таблица CSV — нужен файл JSON (кнопка «Аналітика партії (JSON)»)';if(t.startsWith('<'))return 'это веб-страница, а не файл партии — скачайте JSON ещё раз';return 'файл не читается как JSON';}
+function normalize(d){if(!d||!Array.isArray(d.players)||!d.players.length)return null;if(d.format&&d.format!=='koren-analytics')return null;if(!d.players.some(p=>typeof p.score==='number'))return null;
+ if(!d.players.some(p=>p.winner)){const best=Math.max(...d.players.map(p=>p.score||0));d.players.forEach(p=>p.winner=(p.score||0)===best);}
+ d.players.forEach((p,i)=>{p.seat??=i;p.characterName||=p.character||'—';});d.finishedAt||=d.startedAt||String(Date.now());return d;}
+function parseCsv(t){const rows=[];let row=[],cur='',q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'&&t[i+1]==='"'){cur+='"';i++;}else if(c==='"')q=false;else cur+=c;}else if(c==='"')q=true;else if(c===','){row.push(cur);cur='';}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);rows.push(row);row=[];cur='';}else cur+=c;}if(cur||row.length){row.push(cur);rows.push(row);}return rows.filter(r=>r.length>1);}
+function csvGames(text){const rows=parseCsv(text.replace(/^﻿/,''));const head=rows.shift()||[];if(head[0]!=='code')return [];const kv=v=>Object.fromEntries((v||'').split(';').map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.lastIndexOf(':');return [x.slice(0,i),Number(x.slice(i+1))];}));const map=new Map();
+ for(const r of rows){const o=Object.fromEntries(head.map((h,i)=>[h,r[i]]));const key=o.code+'|'+o.finished;if(!map.has(key))map.set(key,{format:'koren-analytics',code:o.code,finishedAt:o.finished,durationSec:Number(o.duration_sec)||0,rounds:Number(o.rounds)||0,players:[]});
+  map.get(key).players.push({seat:Number(o.seat)-1,name:o.name,bot:o.bot==='1',characterName:o.character,score:Number(o.score),completed:Number(o.potions),winner:o.winner==='1',hexUse:kv(o.hex_uses),plays:kv(o.plays),sabotage:kv(o.sabotage_cards),whites:{cancel:Number(o.wards_used)||0,distill:Number(o.distills_used)||0},hideoutFinds:Number(o.hideout_finds)||0});}
+ return [...map.values()].map(g=>{g.players.forEach(p=>{for(const k of Object.keys(p.whites))if(!p.whites[k])delete p.whites[k];});return g;});}
+async function addFiles(list){const errs=[];for(const f of list){let text='';try{text=await f.text();if(/\.csv$/i.test(f.name)||text.replace(/^﻿/,'').startsWith('"code"')){const gs=csvGames(text);if(!gs.length){errs.push(f.name+': в таблице нет строк игроков');continue;}for(const d of gs){const key=d.code+'|'+d.finishedAt;if(seen.has(key))continue;seen.add(key);games.push(d);}continue;}const d=normalize(JSON.parse(text.replace(/^﻿/,'')));if(!d){errs.push(f.name+': в файле нет итогов партии (партия не доиграна или начата до обновления сайта)');continue;}const key=(d.code||f.name)+'|'+d.finishedAt;if(seen.has(key))continue;seen.add(key);games.push(d);}catch(e){errs.push(f.name+': '+why(f.name,text));}}
+ $('files').innerHTML=(games.length?`Загружено партий: ${games.length}`:'Партий пока нет.')+errs.map(e=>'<br><span style="color:var(--hi)">✗ '+esc(e)+'</span>').join('');render();}
 $('file').addEventListener('change',e=>{addFiles([...e.target.files]);e.target.value='';});
 const drop=$('drop');['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
 drop.addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
