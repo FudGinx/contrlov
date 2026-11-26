@@ -128,7 +128,7 @@ async function generateAiHints(word,letter){
  const key=normalize(word)+'|'+normalize(letter);
  if(aiCache.has(key))return aiCache.get(key);
  if(!process.env.GROQ_API_KEY)return [];
- const prompt='Слово: '+word+'. Буква: '+letter+'. Придумай 4–7 точных подсказок для русской игры. Только ОДНО слово на букву '+letter+' в каждой подсказке. Нужны сильные прямые связи: отличительный признак, часть, действие, назначение, известная ассоциация. Не предлагай общую среду или слова, подходящие к сотням других предметов; избегай случайных ассоциаций и выдуманных слов. Никаких однокоренных слов с ответом. Лучше 3 точных, чем 7 слабых. Ответ строго JSON: {"hints":["слово"]}';
+ const prompt='Загадка: '+word+'. Буква: '+letter+'. Подбери до 7 самых точных однословных русских подсказок на эту букву. Используй существительные, глаголы, прилагательные, наречия. Рассмотри характерные действия, свойства, части, назначение и узнаваемые ассоциации. Сравни кандидатов: оставь только те, которые реально помогают угадать именно загадку. Сортируй от сильнейших к слабейшим. Не добирай количество слабыми связями, не повторяй смысл, не используй однокоренные с загадкой. Например самолёт/П: пилот, полёт, пассажирский, приземляется. Ответ JSON: {"hints":["слово"]}';
  try{
   const model=await availableGroqModel();
   const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+process.env.GROQ_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'system',content:'Return valid JSON only. Russian language.'},{role:'user',content:prompt}],temperature:0.35,max_completion_tokens:650,...(/gpt-oss/.test(model)?{reasoning_effort:'low'}:{})}),signal:AbortSignal.timeout(15000)});
