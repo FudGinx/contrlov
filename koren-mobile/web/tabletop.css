@@ -217,3 +217,14 @@
 
 .turn-bell.turn-bell-blocked{background:radial-gradient(ellipse at 30% 20%,#9aa39c,#5f6862)!important;color:#1d2622;filter:saturate(.4);cursor:not-allowed}
 .turn-order-note{margin:8px 0}
+
+.player-tab{position:relative}
+.player-tab.first-player{box-shadow:inset 0 0 0 2px #e6c77a,0 0 14px rgba(230,199,122,.45)}
+.first-token{position:absolute;left:2px;top:2px;z-index:4;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff1b8,#e6c77a 45%,#a37a25);color:#3a2a08;font:800 11px/1 system-ui,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.5),inset 0 0 0 1px #fff3c4;pointer-events:auto}
+.first-token.flying{position:fixed;z-index:1001;pointer-events:none;width:20px;height:20px}
+.round-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;pointer-events:none;background:rgba(8,20,15,.35);animation:roundFade 3.1s ease forwards}
+.round-card{display:grid;gap:4px;justify-items:center;padding:22px 38px;border-radius:18px;background:rgba(20,40,31,.94);border:2px solid #e6c77a;box-shadow:0 10px 40px rgba(0,0,0,.5);color:#f3e2a6;text-align:center}
+.round-card b{font:700 clamp(26px,4vw,40px)/1.1 Georgia,serif}
+.round-card span{font-size:15px;color:#d7c9a3}
+@keyframes roundFade{0%{opacity:0}10%{opacity:1}88%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.round-overlay{animation:none}}
